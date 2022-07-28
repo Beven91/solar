@@ -80,7 +80,7 @@
     "react-dom": "^18.2.0",
     "core-js":"^3.23.1",
     "redux-promise-middleware": "^5.1.1",
-    "solar-core": "^2.3.3",
+    "solar-core": "^2.3.4",
     "solar-mobile": "^2.0.1",
     "react-router-dom": "^5.2.0"
   },

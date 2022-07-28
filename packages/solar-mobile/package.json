@@ -27,7 +27,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "antd-mobile": "^2.0.3",
-    "solar-core": "^2.2.7"
+    "solar-core": "^2.3.4"
   },
   "dependencies": {
     "pinch-zoom-js": "^2.3.4",

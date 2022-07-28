@@ -63,7 +63,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "solar-core": "^2.2.7"
+    "solar-core": "^2.3.4"
   },
   "solar": {
     "prefix":"$projectName$",
