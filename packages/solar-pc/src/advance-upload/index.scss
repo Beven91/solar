@@ -1,0 +1,72 @@
+ .advance-upload {
+  text-align: left;
+  overflow: hidden;
+  .upload-hide {
+    &.dragger {
+      display: none;
+    }
+    .ant-upload {
+      display: none;
+    }
+  }
+  .ant-upload-select-picture-card i {
+    font-size: 28px;
+    color: #999;
+  }
+  .ant-upload-select-picture-card .ant-upload-text {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #666;
+  }
+  .audio,
+  .video {
+    .ant-upload-list-item {
+      .ant-upload-list-item-name {
+        display: block;
+        position: absolute;
+        bottom: 0px;
+      }
+      .anticon.anticon-file{
+        svg{
+          display:none;
+        }
+      }
+      .anticon.anticon-file:before {
+        display: block !important;
+      }
+    }
+  }
+  .audio {
+    .anticon.anticon-file:before {
+      font-family: "ireeder-cms" !important;
+      content: "\e61f";
+      color: #1296db;
+    }
+  }
+  .video {
+    .anticon.anticon-file:before {
+      font-family: "iconfont" !important;
+      content: "\e617";
+      color: #1296db;
+    }
+  }
+  .advance-input .ant-form-item-children:after {
+    display: none !important;
+  }
+  .ant-upload-drag {
+    margin: 10px 0px;
+  }
+}
+
+.preview-file-modal {
+  .ant-modal-content {
+    background-color: #e8e8e8;
+  }
+  text-align: center;
+  .preview-video {
+    width: 300px;
+    height: 200px;
+    background-color: #000;
+    margin: 0px auto;
+  }
+}

@@ -1,0 +1,26 @@
+.image-zoom-container{
+  height:100%;
+  width:100%;
+  position: fixed;
+  z-index:1000;
+  display:flex;
+  top:0px;
+  bottom:0px;
+  left:0px;
+  right:0px;
+  justify-content:center;
+  align-items: center;
+  background-color:#000;
+  display:none;
+  .image{
+    width:100%;
+    user-select: none;
+  }
+}
+.image-zoom-container.show{
+  display:flex;
+}
+
+.pinch-zoom-container{
+  width: 100%;
+}

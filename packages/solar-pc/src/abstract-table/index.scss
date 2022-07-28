@@ -1,0 +1,110 @@
+/* 
+  通过设置.ant-table-hide-scrollbar样式，
+  来然antd的tablehead能正确获取到滚动跳高度
+  从而保证悬浮列的表格头部与表格高度对其，否则会出现错位
+*/
+$width:5px;
+
+*::-webkit-scrollbar {
+  width: $width;
+  height: $width;
+}
+
+.abstract-table-wrapper {
+
+  th.column-cellOperator {
+    right:$width !important;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 1em;
+    background-color: rgba(50, 50, 50, .3);
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 1em;
+    background-color: transparent;
+  }
+}
+
+.abstract-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+
+
+  &.auto-height {
+    height: auto;
+  }
+
+  td {
+    word-wrap: 'break-word';
+    word-break: 'break-all'
+  }
+
+  .abstract-flex {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .table-operators {
+    padding: 0px 0px 15px 0px;
+    float: left;
+    overflow: hidden;
+    user-select: none;
+
+    .operator:first-child {
+      margin: 0px 5px 0px 0px;
+    }
+
+    .operator-confirm {
+      display: flex !important;
+    }
+
+    .operator {
+      margin: 0px 5px;
+    }
+  }
+
+  td .table-operators {
+    float: none;
+    padding: 0px;
+  }
+
+  .multi-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 200px;
+    white-space: nowrap;
+  }
+
+  .table-operators {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    .cell-operator {
+      margin: 0px 5px 0px 0px;
+      font-size: 12px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+  }
+
+  .tab-filters {
+    margin: 0px 0px 0px 5px;
+  }
+
+  .abstract-table-control-cell {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .cell-image {
+    width:80px;
+    height:80px;
+  }
+}

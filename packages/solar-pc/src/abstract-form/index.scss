@@ -1,0 +1,79 @@
+.ellipsis {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.abstract-form {
+  overflow-x: hidden;
+
+  .abstract-form-item-col.hidden,
+  .abstract-form-item.hidden {
+    display: none !important;
+  }
+
+  .abstract-form-item>.ant-form-item-control-wrapper>.ant-form-item-control>.ant-form-item-children {
+    .ant-input-number {
+      width: 100%;
+    }
+
+    .ant-calendar-picker {
+      width: 100%;
+    }
+  }
+
+  .abstract-form-item.has-after>.ant-form-item-control-wrapper>.ant-form-item-control>.ant-form-item-children {
+    display: flex;
+    flex-direction: row;
+
+    > :first-child {
+      flex: 1;
+    }
+  }
+
+  .abstract-form-item-col.three {
+    min-width: 330px;
+  }
+}
+
+.abstract-form.readonly {
+  .abstract-form-item {
+
+    .ant-select-disabled,
+    input,
+    textarea,
+    .ant-select-selector,
+    .ant-picker-disabled,
+    .ant-input-number-input-wrap,
+    .ant-input-number-disabled,
+    .ant-checkbox-disabled,
+    .ant-checkbox-disabled+span,
+    .ant-select-selection {
+      border: 0px !important;
+      background: transparent !important;
+      color: inherit !important;
+      cursor: default !important;
+    }
+
+    .ant-picker-disabled .ant-picker-suffix,
+    .ant-form-item-required:before {
+      display: none;
+    }
+
+    .ant-upload-list-item-actions {
+      .anticon.anticon-delete {
+        display: none;
+      }
+    }
+
+    .ant-select-arrow,
+    .ant-form-extra {
+      display: none !important;
+    }
+
+    .ant-input+.anticon {
+      display: none;
+    }
+  }
+}

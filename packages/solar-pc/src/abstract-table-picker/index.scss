@@ -1,0 +1,31 @@
+.object-picker-modal {
+  overflow: hidden !important;
+
+  .abstract-search-form{
+    padding-top:0px;
+  }
+
+  .ant-modal {
+    .ant-modal-content {
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+
+      .ant-modal-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .object-picker-container {
+    overflow: hidden;
+    flex: 1;
+  }
+}
+
+.abstract-picker-input {
+  vertical-align: middle !important;
+}

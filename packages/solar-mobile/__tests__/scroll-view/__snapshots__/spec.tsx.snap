@@ -1,0 +1,865 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScrollView renders correctly 1`] = `
+<div
+  className="scroll-view iscroll-viewable vertical "
+  onScroll={null}
+>
+  <div
+    className="scroll-inner-view"
+  >
+    <div
+      className="content"
+    >
+      <p>
+         三余无梦生 
+        <input
+          type="checkbox"
+        />
+         
+      </p>
+      <img
+        src=""
+      />
+      <h4>
+        表单
+      </h4>
+      <div
+        className="am-list"
+      >
+        <div
+          className="am-list-header"
+        >
+          CheckboxItem demo
+        </div>
+        <div
+          className="am-list-body"
+        >
+          <div
+            className="am-list-item am-checkbox-item am-list-item-middle"
+            onClick={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchCancel={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+          >
+            <div
+              className="am-list-thumb"
+            >
+              <label
+                className="am-checkbox-wrapper"
+              >
+                <span
+                  className="am-checkbox"
+                  style={Object {}}
+                >
+                  <input
+                    checked={false}
+                    className="am-checkbox-input"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    onFocus={[Function]}
+                    type="checkbox"
+                  />
+                  <span
+                    className="am-checkbox-inner"
+                  />
+                </span>
+              </label>
+            </div>
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                Ph.D.
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div
+            className="am-list-item am-checkbox-item am-list-item-middle"
+            onClick={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchCancel={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+          >
+            <div
+              className="am-list-thumb"
+            >
+              <label
+                className="am-checkbox-wrapper"
+              >
+                <span
+                  className="am-checkbox"
+                  style={Object {}}
+                >
+                  <input
+                    checked={false}
+                    className="am-checkbox-input"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    onFocus={[Function]}
+                    type="checkbox"
+                  />
+                  <span
+                    className="am-checkbox-inner"
+                  />
+                </span>
+              </label>
+            </div>
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                Bachelor
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div
+            className="am-list-item am-checkbox-item am-list-item-middle"
+            onClick={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchCancel={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+          >
+            <div
+              className="am-list-thumb"
+            >
+              <label
+                className="am-checkbox-wrapper"
+              >
+                <span
+                  className="am-checkbox"
+                  style={Object {}}
+                >
+                  <input
+                    checked={false}
+                    className="am-checkbox-input"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    onFocus={[Function]}
+                    type="checkbox"
+                  />
+                  <span
+                    className="am-checkbox-inner"
+                  />
+                </span>
+              </label>
+            </div>
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                College diploma
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div
+            className="am-list-item am-checkbox-item am-checkbox-item-disabled am-list-item-middle"
+            data-seed="logId"
+            defaultChecked={true}
+            onClick={[Function]}
+          >
+            <div
+              className="am-list-thumb"
+            >
+              <label
+                className="am-checkbox-wrapper"
+              >
+                <span
+                  className="am-checkbox am-checkbox-checked am-checkbox-disabled"
+                  style={Object {}}
+                >
+                  <input
+                    checked={true}
+                    className="am-checkbox-input"
+                    disabled={true}
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    onFocus={[Function]}
+                    type="checkbox"
+                  />
+                  <span
+                    className="am-checkbox-inner"
+                  />
+                </span>
+              </label>
+            </div>
+            <div
+              className="am-list-line am-list-line-multiple"
+            >
+              <div
+                className="am-list-content"
+              >
+                Undergraduate
+                <div
+                  className="am-list-brief"
+                >
+                  Auxiliary text
+                </div>
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div>
+            <div
+              className="am-list-item am-list-item-middle"
+              onClick={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseUp={[Function]}
+              onTouchCancel={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+            >
+              <div
+                className="am-list-line"
+              >
+                <div
+                  className="am-list-content"
+                >
+                  Datetime
+                </div>
+                <div
+                  className="am-list-extra"
+                >
+                  请选择
+                </div>
+                <div
+                  aria-hidden="true"
+                  className="am-list-arrow am-list-arrow-horizontal"
+                />
+              </div>
+              <div
+                className="am-list-ripple"
+                style={
+                  Object {
+                    "display": "none",
+                  }
+                }
+              />
+            </div>
+          </div>
+          <div
+            className="am-list-item am-input-item am-list-item-middle"
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-input-label am-input-label-5"
+              >
+                光标在左
+              </div>
+              <div
+                className="am-input-control"
+              >
+                <input
+                  disabled={false}
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  placeholder="start from left"
+                  readOnly={false}
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            className="am-list-item am-input-item am-list-item-middle"
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-input-label am-input-label-5"
+              >
+                光标在右
+              </div>
+              <div
+                className="am-input-control"
+              >
+                <input
+                  disabled={false}
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  placeholder="start from right"
+                  readOnly={false}
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            className="am-list-item am-input-item am-list-item-middle"
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-input-label am-input-label-5"
+              >
+                数字键盘
+              </div>
+              <div
+                className="am-input-control"
+              >
+                <input
+                  disabled={false}
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  placeholder="money format"
+                  readOnly={false}
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            className="am-list-item am-list-item-middle"
+            onClick={[Function]}
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                <p>
+                   双刀 
+                  <input
+                    type="radio"
+                  />
+                   
+                </p>
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div
+            className="am-list-item am-list-item-middle"
+            onClick={[Function]}
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                开关
+              </div>
+              <div
+                className="am-list-extra"
+              >
+                <label
+                  className="am-switch"
+                >
+                  <input
+                    checked={false}
+                    className="am-switch-checkbox"
+                    disabled={false}
+                    name=""
+                    onChange={[Function]}
+                    onClick={[Function]}
+                    type="checkbox"
+                    value="off"
+                  />
+                  <div
+                    className="checkbox"
+                    style={Object {}}
+                  />
+                </label>
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div
+            className="am-list-item am-list-item-middle"
+            onClick={[Function]}
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                输入
+              </div>
+              <div
+                className="am-list-extra"
+              >
+                <input
+                  style={
+                    Object {
+                      "width": "100%",
+                    }
+                  }
+                  type="text"
+                />
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+          <div
+            className="am-list-item am-list-item-middle"
+            onClick={[Function]}
+          >
+            <div
+              className="am-list-line"
+            >
+              <div
+                className="am-list-content"
+              >
+                备注
+              </div>
+              <div
+                className="am-list-extra"
+              >
+                <textarea
+                  onChange={[Function]}
+                  style={
+                    Object {
+                      "height": 80,
+                      "width": "100%",
+                    }
+                  }
+                  value="华华人间世，浩浩海江衣。知年指荏苒，繁花漫荒初。 洒洒落人间，微微同太古。"
+                />
+              </div>
+            </div>
+            <div
+              className="am-list-ripple"
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <a
+        aria-disabled={false}
+        className="am-button am-button-primary"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchCancel={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+      >
+        <span>
+          打开窗口
+        </span>
+      </a>
+      <div>
+         
+      </div>
+      <a
+        aria-disabled={false}
+        className="am-button am-button-primary"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchCancel={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+      >
+        <span>
+          跳转到200
+        </span>
+      </a>
+    </div>
+    <div>
+      <h4>
+        轮播组件
+      </h4>
+      <div
+        className="slider am-carousel"
+        style={
+          Object {
+            "MozBoxSizing": "border-box",
+            "boxSizing": "border-box",
+            "display": "block",
+            "height": "auto",
+            "position": "relative",
+            "visibility": "hidden",
+            "width": "100%",
+          }
+        }
+      >
+        <div
+          className="slider-frame"
+          onClick={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchCancel={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          style={
+            Object {
+              "MozBoxSizing": "border-box",
+              "WebkitTransform": "translate3d(0, 0, 0)",
+              "boxSizing": "border-box",
+              "display": "block",
+              "height": "auto",
+              "margin": "0px",
+              "msTransform": "translate(0, 0)",
+              "overflow": "hidden",
+              "padding": 0,
+              "position": "relative",
+              "transform": "translate3d(0, 0, 0)",
+            }
+          }
+        >
+          <ul
+            className="slider-list"
+            style={
+              Object {
+                "MozBoxSizing": "border-box",
+                "WebkitTransform": "translate3d(0px, 0px, 0)",
+                "boxSizing": "border-box",
+                "cursor": "inherit",
+                "display": "block",
+                "height": 0,
+                "margin": "0px 0px",
+                "msTransform": "translate(0px, 0px)",
+                "padding": 0,
+                "position": "relative",
+                "transform": "translate3d(0px, 0px, 0)",
+                "width": 0,
+              }
+            }
+          >
+            <li
+              className="slider-slide"
+              style={
+                Object {
+                  "MozBoxSizing": "border-box",
+                  "boxSizing": "border-box",
+                  "display": "inline-block",
+                  "height": "auto",
+                  "left": 0,
+                  "listStyleType": "none",
+                  "marginBottom": "auto",
+                  "marginLeft": 0,
+                  "marginRight": 0,
+                  "marginTop": "auto",
+                  "position": "absolute",
+                  "top": 0,
+                  "verticalAlign": "top",
+                  "width": 0,
+                }
+              }
+            >
+              <a
+                style={
+                  Object {
+                    "display": "inline-block",
+                    "height": 238,
+                    "width": "100%",
+                  }
+                }
+              >
+                <img
+                  alt=""
+                  onLoad={[Function]}
+                  src=""
+                  style={
+                    Object {
+                      "height": "100%",
+                      "verticalAlign": "top",
+                      "width": "100%",
+                    }
+                  }
+                />
+              </a>
+            </li>
+            <li
+              className="slider-slide"
+              style={
+                Object {
+                  "MozBoxSizing": "border-box",
+                  "boxSizing": "border-box",
+                  "display": "inline-block",
+                  "height": "auto",
+                  "left": 0,
+                  "listStyleType": "none",
+                  "marginBottom": "auto",
+                  "marginLeft": 0,
+                  "marginRight": 0,
+                  "marginTop": "auto",
+                  "position": "absolute",
+                  "top": 0,
+                  "verticalAlign": "top",
+                  "width": 0,
+                }
+              }
+            >
+              <a
+                style={
+                  Object {
+                    "display": "inline-block",
+                    "height": 238,
+                    "width": "100%",
+                  }
+                }
+              >
+                <img
+                  alt=""
+                  onLoad={[Function]}
+                  src=""
+                  style={
+                    Object {
+                      "height": "100%",
+                      "verticalAlign": "top",
+                      "width": "100%",
+                    }
+                  }
+                />
+              </a>
+            </li>
+            <li
+              className="slider-slide"
+              style={
+                Object {
+                  "MozBoxSizing": "border-box",
+                  "boxSizing": "border-box",
+                  "display": "inline-block",
+                  "height": "auto",
+                  "left": 0,
+                  "listStyleType": "none",
+                  "marginBottom": "auto",
+                  "marginLeft": 0,
+                  "marginRight": 0,
+                  "marginTop": "auto",
+                  "position": "absolute",
+                  "top": 0,
+                  "verticalAlign": "top",
+                  "width": 0,
+                }
+              }
+            >
+              <a
+                style={
+                  Object {
+                    "display": "inline-block",
+                    "height": 238,
+                    "width": "100%",
+                  }
+                }
+              >
+                <img
+                  alt=""
+                  onLoad={[Function]}
+                  src=""
+                  style={
+                    Object {
+                      "height": "100%",
+                      "verticalAlign": "top",
+                      "width": "100%",
+                    }
+                  }
+                />
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div
+          className="slider-decorator-0"
+          style={
+            Object {
+              "bottom": 0,
+              "position": "absolute",
+              "textAlign": "center",
+              "width": "100%",
+            }
+          }
+        >
+          <div
+            className="am-carousel-wrap"
+          >
+            <div
+              className="am-carousel-wrap-dot am-carousel-wrap-dot-active"
+            >
+              <span
+                style={Object {}}
+              />
+            </div>
+            <div
+              className="am-carousel-wrap-dot"
+            >
+              <span
+                style={Object {}}
+              />
+            </div>
+            <div
+              className="am-carousel-wrap-dot"
+            >
+              <span
+                style={Object {}}
+              />
+            </div>
+          </div>
+        </div>
+        <style
+          dangerouslySetInnerHTML={
+            Object {
+              "__html": ".slider-slide > img {width: 100%; display: block;}",
+            }
+          }
+          type="text/css"
+        />
+      </div>
+    </div>
+    <div>
+      <h4>
+        嵌套滚动
+      </h4>
+      <div
+        className="scroll-view iscroll-viewable vertical "
+        onScroll={null}
+        style={
+          Object {
+            "height": 400,
+          }
+        }
+      >
+        <div
+          className="scroll-inner-view"
+        >
+          <p>
+            素还真
+          </p>
+          <img
+            src=""
+          />
+          <p>
+            天踦爵
+          </p>
+          <img
+            src=""
+          />
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4>
+        水平滚动
+      </h4>
+      <div
+        className="scroll-view iscroll-viewable horizon horizon"
+        onScroll={null}
+      >
+        <div
+          className="scroll-inner-view"
+        >
+          <div
+            className="container"
+          >
+            <div
+              className="inner"
+            />
+            <div
+              className="inner2"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="content yellow"
+    />
+    <div
+      className="content blue"
+    />
+    ~到底啦....
+  </div>
+</div>
+`;

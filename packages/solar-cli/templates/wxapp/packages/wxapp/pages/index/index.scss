@@ -1,0 +1,32 @@
+.index-container{
+  height: 100%;
+  .header{
+    text-align: center;
+    .title{
+      font-size:32px;
+      margin-top:12px;
+    }
+    .logo{
+      width:100px;
+      height:100px;
+      margin:100px auto 0px auto;
+    }
+  }
+  .body{
+    padding-top:100px;
+    .description{
+      text-align: center;
+      font-size:28px;
+      color:#8f8f8f;
+    }
+    .btn-aquired{
+      width:70%;
+      margin:40px auto 0px auto;
+      background-color:#ff0543;
+      height:80px;
+      line-height: 80px;
+      border-radius: 0px;
+      font-size:36px;
+    }
+  }
+}

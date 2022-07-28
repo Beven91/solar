@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "resolveJsonModule":true,
+    "experimentalDecorators":true,
+    "allowJs": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "lib": [
+      "es2019",
+      "DOM"
+    ],
+    "sourceRoot": "./packages"
+  },
+  "include": [
+    "./packages/**/*",
+    "./node_modules/solar-types/**/*"
+  ]
+}

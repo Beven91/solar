@@ -1,0 +1,14 @@
+.form-group {
+  &.normal{
+    border-top:0px;
+    border-bottom: 0px;
+    border-left: 0px;
+    border-right: 0px;
+  }
+  &.gap {
+    margin-bottom: 24px;
+  }
+  .from-group-title{
+    font-weight: 700;
+  }
+}

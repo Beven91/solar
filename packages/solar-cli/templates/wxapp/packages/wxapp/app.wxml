@@ -1,0 +1,4 @@
+<!-- 基于 webpack-wxapp-module-plugin/layout-loader 提供的wxml 母版页 -->
+<view class="page-layout" capture-bind:tap="onVenylogClick">
+  <slot />
+</view>

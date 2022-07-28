@@ -1,0 +1,23 @@
+.abstract-tree-view {
+  .abstract-tree-node {
+    .abstract-node-title {
+      margin-right: 20px;
+    }
+
+    &:hover {
+      .node-actions {
+        opacity: 1;
+      }
+    }
+
+    .node-actions {
+      display: inline-block;
+      transition: opacity .3s ease;
+      opacity: 0;
+
+      .cell-operator {
+        margin: 0px 8px;
+      }
+    }
+  }
+}

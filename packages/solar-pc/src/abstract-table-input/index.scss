@@ -1,0 +1,28 @@
+.abstract-table-input{
+  .ant-table-footer{
+    background-color: #fff;
+    padding:0px;
+  }
+  .abstract-form-item{
+    margin-bottom:0px;
+  }
+  .abstract-table-input-addrow{
+    text-align: center;
+    
+    .abstract-table-input-addrow-btn{
+      display:inline-block;
+    }
+  }
+  .abstract-table-input-footer{
+    background-color: #fff;
+    .abstract-table-input-btns{
+      padding:16px 0px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .abstract-table-input-footer-ext{
+      padding:16px 0px;
+      border-bottom: 1px solid #f0f0f0;
+      background-color: #fafafa;
+    }
+  }
+}

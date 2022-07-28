@@ -1,0 +1,7 @@
+.vscode/
+__tests__/
+__mocks__/
+www/
+.eslintrc.js
+.babelrc
+.gitignore

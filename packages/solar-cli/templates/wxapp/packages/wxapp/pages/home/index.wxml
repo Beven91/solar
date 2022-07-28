@@ -1,0 +1,9 @@
+<view class="home-container">
+  <view class="header">
+    <image class="logo" src="{{ avatar }}" mode="aspectFill" />
+    <view class="title">{{ user.nick }}</view>
+  </view>
+  <view class="body">
+    <view class="welcome">欢迎使用小程序脚手架</view>
+  </view>
+</view>

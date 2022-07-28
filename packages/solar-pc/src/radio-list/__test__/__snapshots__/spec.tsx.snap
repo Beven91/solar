@@ -1,0 +1,138 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`radio-list renders correctly 1`] = `
+<RadioListDemo>
+  <RadioList
+    data={
+      Array [
+        Object {
+          "label": "美国",
+          "value": 1,
+        },
+        Object {
+          "label": "英国",
+          "value": 2,
+        },
+      ]
+    }
+    direction="vertical"
+    labelName="label"
+    onChange={[Function]}
+    value=""
+    valueName="value"
+  >
+    <ForwardRef
+      className=" radio-list  vertical"
+      data={
+        Array [
+          Object {
+            "label": "美国",
+            "value": 1,
+          },
+          Object {
+            "label": "英国",
+            "value": 2,
+          },
+        ]
+      }
+      labelName="label"
+      onChange={[Function]}
+      value=""
+      valueName="value"
+    >
+      <div
+        className="ant-radio-group ant-radio-group-outline  radio-list  vertical"
+      >
+        <Radio
+          className="radio-list-item"
+          key="1"
+          type="radio"
+          value={1}
+        >
+          <label
+            className="ant-radio-wrapper radio-list-item"
+          >
+            <Checkbox
+              checked={false}
+              className=""
+              defaultChecked={false}
+              onBlur={[Function]}
+              onChange={[Function]}
+              onFocus={[Function]}
+              prefixCls="ant-radio"
+              style={Object {}}
+              type="radio"
+              value={1}
+            >
+              <span
+                className="ant-radio"
+                style={Object {}}
+              >
+                <input
+                  checked={false}
+                  className="ant-radio-input"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  type="radio"
+                  value={1}
+                />
+                <span
+                  className="ant-radio-inner"
+                />
+              </span>
+            </Checkbox>
+            <span>
+              美国
+            </span>
+          </label>
+        </Radio>
+        <Radio
+          className="radio-list-item"
+          key="2"
+          type="radio"
+          value={2}
+        >
+          <label
+            className="ant-radio-wrapper radio-list-item"
+          >
+            <Checkbox
+              checked={false}
+              className=""
+              defaultChecked={false}
+              onBlur={[Function]}
+              onChange={[Function]}
+              onFocus={[Function]}
+              prefixCls="ant-radio"
+              style={Object {}}
+              type="radio"
+              value={2}
+            >
+              <span
+                className="ant-radio"
+                style={Object {}}
+              >
+                <input
+                  checked={false}
+                  className="ant-radio-input"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  type="radio"
+                  value={2}
+                />
+                <span
+                  className="ant-radio-inner"
+                />
+              </span>
+            </Checkbox>
+            <span>
+              英国
+            </span>
+          </label>
+        </Radio>
+      </div>
+    </ForwardRef>
+  </RadioList>
+</RadioListDemo>
+`;

@@ -1,0 +1,8 @@
+{
+  "name":"$projectName$-provider",
+  "version": "1.0.0",
+  "dependencies": {
+    "$projectName$-configs":"^1.0.0",
+    "$projectName$-services":"^1.0.0"
+  }
+}

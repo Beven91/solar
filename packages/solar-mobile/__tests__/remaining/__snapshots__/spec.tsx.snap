@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Remaining custom 1`] = `
+<div>
+  <Remaining
+    format="{day} {hour}：{minutes}：{seconds}"
+    onProcessing={[Function]}
+    remaining={86400}
+    unit="hour"
+  >
+    <div
+      className="remaining processing"
+    >
+      <div
+        className="custom"
+      >
+        23
+        :
+        59
+        :
+        57
+      </div>
+    </div>
+  </Remaining>
+</div>
+`;
+
+exports[`Remaining default 1`] = `
+<Remaining
+  format="{day} {hour}：{minutes}：{seconds}"
+  remaining={55}
+  unit="hour"
+>
+  <div
+    className="remaining processing"
+  />
+</Remaining>
+`;
+
+exports[`Remaining default 2`] = `
+<Remaining
+  format="{day} {hour}：{minutes}：{seconds}"
+  remaining={55}
+  unit="hour"
+>
+  <div
+    className="remaining processing"
+  >
+     00：00：52
+  </div>
+</Remaining>
+`;
+
+exports[`Remaining format {day}天 {hour}：{minutes}：{seconds} 1`] = `
+<Remaining
+  format="{day}天 {hour}：{minutes}：{seconds}"
+  remaining={160000}
+  unit="day"
+>
+  <div
+    className="remaining processing"
+  >
+    01天 20：26：37
+  </div>
+</Remaining>
+`;
+
+exports[`Remaining format hour 1`] = `
+<Remaining
+  format="{day} {hour}：{minutes}：{seconds}"
+  remaining={3605}
+  unit="hour"
+>
+  <div
+    className="remaining processing"
+  >
+     01：00：02
+  </div>
+</Remaining>
+`;
+
+exports[`Remaining format minutes 1`] = `
+<Remaining
+  format="{minutes}：{seconds}"
+  remaining={3500}
+  unit="minutes"
+>
+  <div
+    className="remaining processing"
+  >
+    58：17
+  </div>
+</Remaining>
+`;
+
+exports[`Remaining format seconds 1`] = `
+<Remaining
+  format="{seconds}"
+  remaining={60}
+  unit="seconds"
+>
+  <div
+    className="remaining processing"
+  >
+    57
+  </div>
+</Remaining>
+`;
+
+exports[`Remaining onend 1`] = `
+<Remaining
+  format="{day} {hour}：{minutes}：{seconds}"
+  onEnd={
+    [MockFunction] {
+      "calls": Array [
+        Array [],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    }
+  }
+  remaining={0}
+  unit="hour"
+/>
+`;
+
+exports[`Remaining onend 2`] = `
+<Remaining
+  format="{day} {hour}：{minutes}：{seconds}"
+  onEnd={
+    [MockFunction] {
+      "calls": Array [
+        Array [],
+        Array [],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+        Object {
+          "type": "return",
+          "value": undefined,
+        },
+      ],
+    }
+  }
+  remaining={3}
+  unit="hour"
+/>
+`;

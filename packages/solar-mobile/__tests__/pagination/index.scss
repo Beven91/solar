@@ -1,0 +1,32 @@
+.order-list{
+  height:100%;
+  .am-list-body{
+    background-color:transparent;
+  }
+  .item{
+    display:block;
+    min-height:150px;
+    border:1px solid #dcdcdc;
+    border-radius: 4px;
+    margin:10px;
+    background-color:#fff;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    padding:10px;
+    box-sizing: border-box;
+    text-align: center;
+    .no{
+      font-size:32px;
+      flex:1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color:#c38f36;
+    }
+    .des{
+      flex:1;
+      color:#888888;
+      font-size: 16px;
+    }
+  }
+}

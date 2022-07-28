@@ -1,0 +1,2346 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`abstract-picker renders correctly 1`] = `
+<AbstractTableInputDemo>
+  <AbstractTableInput
+    columns={
+      Array [
+        Object {
+          "name": "no",
+          "title": "编号",
+        },
+        Object {
+          "name": "name",
+          "title": "环境名称",
+        },
+        Object {
+          "editor": [Function],
+          "name": "value",
+          "title": "平台",
+        },
+        Object {
+          "editor": [Function],
+          "name": "appId",
+          "title": "小程序appId",
+        },
+      ]
+    }
+    createRow={[Function]}
+    footer={[Function]}
+    onChange={[Function]}
+    pagination={false}
+    rowKey="no"
+    rules={
+      Object {
+        "appId": Array [
+          Object {
+            "message": "请设置小程序appIds",
+            "required": true,
+          },
+        ],
+      }
+    }
+    value={Array []}
+  >
+    <ChildForm
+      component={false}
+      formRef={
+        Object {
+          "current": Object {
+            "__INTERNAL__": Object {
+              "itemRef": [Function],
+              "name": undefined,
+            },
+            "getFieldError": [Function],
+            "getFieldInstance": [Function],
+            "getFieldValue": [Function],
+            "getFieldsError": [Function],
+            "getFieldsValue": [Function],
+            "getInternalHooks": [Function],
+            "isFieldTouched": [Function],
+            "isFieldValidating": [Function],
+            "isFieldsTouched": [Function],
+            "isFieldsValidating": [Function],
+            "resetFields": [Function],
+            "scrollToField": [Function],
+            "setFields": [Function],
+            "setFieldsValue": [Function],
+            "submit": [Function],
+            "validateFields": [Function],
+          },
+        }
+      }
+      initialValues={
+        Object {
+          "rows": Array [],
+        }
+      }
+      onValuesChange={[Function]}
+    >
+      <ForwardRef(InternalForm)
+        component={false}
+        formRef={
+          Object {
+            "current": Object {
+              "__INTERNAL__": Object {
+                "itemRef": [Function],
+                "name": undefined,
+              },
+              "getFieldError": [Function],
+              "getFieldInstance": [Function],
+              "getFieldValue": [Function],
+              "getFieldsError": [Function],
+              "getFieldsValue": [Function],
+              "getInternalHooks": [Function],
+              "isFieldTouched": [Function],
+              "isFieldValidating": [Function],
+              "isFieldsTouched": [Function],
+              "isFieldsValidating": [Function],
+              "resetFields": [Function],
+              "scrollToField": [Function],
+              "setFields": [Function],
+              "setFieldsValue": [Function],
+              "submit": [Function],
+              "validateFields": [Function],
+            },
+          }
+        }
+        initialValues={
+          Object {
+            "rows": Array [],
+          }
+        }
+        onValuesChange={[Function]}
+      >
+        <SizeContextProvider>
+          <ForwardRef(Form)
+            className="ant-form ant-form-horizontal"
+            component={false}
+            form={
+              Object {
+                "__INTERNAL__": Object {
+                  "itemRef": [Function],
+                  "name": undefined,
+                },
+                "getFieldError": [Function],
+                "getFieldInstance": [Function],
+                "getFieldValue": [Function],
+                "getFieldsError": [Function],
+                "getFieldsValue": [Function],
+                "getInternalHooks": [Function],
+                "isFieldTouched": [Function],
+                "isFieldValidating": [Function],
+                "isFieldsTouched": [Function],
+                "isFieldsValidating": [Function],
+                "resetFields": [Function],
+                "scrollToField": [Function],
+                "setFields": [Function],
+                "setFieldsValue": [Function],
+                "submit": [Function],
+                "validateFields": [Function],
+              }
+            }
+            formRef={
+              Object {
+                "current": Object {
+                  "__INTERNAL__": Object {
+                    "itemRef": [Function],
+                    "name": undefined,
+                  },
+                  "getFieldError": [Function],
+                  "getFieldInstance": [Function],
+                  "getFieldValue": [Function],
+                  "getFieldsError": [Function],
+                  "getFieldsValue": [Function],
+                  "getInternalHooks": [Function],
+                  "isFieldTouched": [Function],
+                  "isFieldValidating": [Function],
+                  "isFieldsTouched": [Function],
+                  "isFieldsValidating": [Function],
+                  "resetFields": [Function],
+                  "scrollToField": [Function],
+                  "setFields": [Function],
+                  "setFieldsValue": [Function],
+                  "submit": [Function],
+                  "validateFields": [Function],
+                },
+              }
+            }
+            initialValues={
+              Object {
+                "rows": Array [],
+              }
+            }
+            onFinishFailed={[Function]}
+            onValuesChange={[Function]}
+          >
+            <AbstractTable
+              autoHeight={true}
+              buttons={
+                Array [
+                  Object {
+                    "click": [Function],
+                    "confirm": "确定要删除当前行?",
+                    "icon": <ForwardRef(DeleteOutlined) />,
+                    "target": "cell",
+                    "tip": "删除",
+                  },
+                ]
+              }
+              className="abstract-table-input "
+              columns={
+                Array [
+                  Object {
+                    "editable": false,
+                    "name": "no",
+                    "onCell": null,
+                    "title": "编号",
+                  },
+                  Object {
+                    "editable": false,
+                    "name": "name",
+                    "onCell": null,
+                    "title": "环境名称",
+                  },
+                  Object {
+                    "editable": true,
+                    "editor": [Function],
+                    "name": "value",
+                    "onCell": [Function],
+                    "title": "平台",
+                  },
+                  Object {
+                    "editable": true,
+                    "editor": [Function],
+                    "name": "appId",
+                    "onCell": [Function],
+                    "title": "小程序appId",
+                  },
+                ]
+              }
+              components={
+                Object {
+                  "body": Object {
+                    "cell": [Function],
+                  },
+                }
+              }
+              createRow={[Function]}
+              data={
+                Object {
+                  "count": 0,
+                  "models": Array [],
+                }
+              }
+              filters={Object {}}
+              footer={[Function]}
+              initQuery={true}
+              locale={
+                Object {
+                  "emptyText": <div
+                    className="abstract-table-input-addrow"
+                  >
+                    <div
+                      className="abstract-table-input-addrow-btn"
+                      onClick={[Function]}
+                    >
+                      <ForwardRef(InternalButton)
+                        icon={<ForwardRef(PlusOutlined) />}
+                        type="dashed"
+                      >
+                        追加一行
+                      </ForwardRef(InternalButton)>
+                    </div>
+                  </div>,
+                }
+              }
+              onChange={[Function]}
+              onSelectRows={[Function]}
+              order="DESC"
+              pageSize={10}
+              pagination={false}
+              paramMode="scope"
+              renderTopBar={[Function]}
+              rowKey="no"
+              rules={
+                Object {
+                  "appId": Array [
+                    Object {
+                      "message": "请设置小程序appIds",
+                      "required": true,
+                    },
+                  ],
+                }
+              }
+              searchFields={Array []}
+              select="none"
+              selectedRows={Array []}
+              sort=""
+              value={Array []}
+            >
+              <div
+                className="abstract-table-input   auto-height abstract-table-wrapper abstract-flex"
+              >
+                <AbstractSearch
+                  fields={Array []}
+                  onQuery={[Function]}
+                >
+                  <TopActions
+                    buttons={Array []}
+                    onAction={[Function]}
+                    renderTopBar={[Function]}
+                    selectedRows={Array []}
+                  />
+                </AbstractSearch>
+                <div
+                  className="abstract-table abstract-flex"
+                >
+                  <FilterTabs
+                    filters={Array []}
+                    loadFilters={null}
+                    onChange={[Function]}
+                    value=""
+                  />
+                  <div
+                    className="abstract-flex"
+                  >
+                    <Table
+                      buttons={
+                        Array [
+                          Object {
+                            "click": [Function],
+                            "confirm": "确定要删除当前行?",
+                            "icon": <ForwardRef(DeleteOutlined) />,
+                            "target": "cell",
+                            "tip": "删除",
+                          },
+                        ]
+                      }
+                      className="abstract-flex abstract-table-inner"
+                      columns={
+                        Array [
+                          Object {
+                            "className": "column-no",
+                            "dataIndex": "no",
+                            "defaultSortOrder": undefined,
+                            "editable": false,
+                            "ellipsis": true,
+                            "key": "col-no",
+                            "name": "no",
+                            "onCell": null,
+                            "render": [Function],
+                            "sorter": false,
+                            "title": "编号",
+                            "width": undefined,
+                          },
+                          Object {
+                            "className": "column-name",
+                            "dataIndex": "name",
+                            "defaultSortOrder": undefined,
+                            "editable": false,
+                            "ellipsis": true,
+                            "key": "col-name",
+                            "name": "name",
+                            "onCell": null,
+                            "render": [Function],
+                            "sorter": false,
+                            "title": "环境名称",
+                            "width": undefined,
+                          },
+                          Object {
+                            "className": "column-value",
+                            "dataIndex": "value",
+                            "defaultSortOrder": undefined,
+                            "editable": true,
+                            "editor": [Function],
+                            "ellipsis": true,
+                            "key": "col-value",
+                            "name": "value",
+                            "onCell": [Function],
+                            "render": [Function],
+                            "sorter": false,
+                            "title": "平台",
+                            "width": undefined,
+                          },
+                          Object {
+                            "className": "column-appId",
+                            "dataIndex": "appId",
+                            "defaultSortOrder": undefined,
+                            "editable": true,
+                            "editor": [Function],
+                            "ellipsis": true,
+                            "key": "col-appId",
+                            "name": "appId",
+                            "onCell": [Function],
+                            "render": [Function],
+                            "sorter": false,
+                            "title": "小程序appId",
+                            "width": undefined,
+                          },
+                          Object {
+                            "className": "column-cell-operator",
+                            "dataIndex": "cell-operator",
+                            "defaultSortOrder": undefined,
+                            "ellipsis": true,
+                            "fixed": "right",
+                            "key": "col-cell-operator",
+                            "name": "cell-operator",
+                            "render": [Function],
+                            "sorter": false,
+                            "title": "操作",
+                            "width": undefined,
+                          },
+                        ]
+                      }
+                      components={
+                        Object {
+                          "body": Object {
+                            "cell": [Function],
+                          },
+                        }
+                      }
+                      createRow={[Function]}
+                      data={
+                        Object {
+                          "count": 0,
+                          "models": Array [],
+                        }
+                      }
+                      dataSource={Array []}
+                      footer={[Function]}
+                      initQuery={true}
+                      locale={
+                        Object {
+                          "emptyText": <div
+                            className="abstract-table-input-addrow"
+                          >
+                            <div
+                              className="abstract-table-input-addrow-btn"
+                              onClick={[Function]}
+                            >
+                              <ForwardRef(InternalButton)
+                                icon={<ForwardRef(PlusOutlined) />}
+                                type="dashed"
+                              >
+                                追加一行
+                              </ForwardRef(InternalButton)>
+                            </div>
+                          </div>,
+                        }
+                      }
+                      onChange={[Function]}
+                      onSelectRows={[Function]}
+                      order="DESC"
+                      pageSize={10}
+                      pagination={false}
+                      paramMode="scope"
+                      rowKey="no"
+                      rowSelection={
+                        Object {
+                          "onSelect": [Function],
+                          "onSelectAll": [Function],
+                          "selectedRowKeys": Array [],
+                          "type": "checkbox",
+                        }
+                      }
+                      rules={
+                        Object {
+                          "appId": Array [
+                            Object {
+                              "message": "请设置小程序appIds",
+                              "required": true,
+                            },
+                          ],
+                        }
+                      }
+                      scroll={Object {}}
+                      selectedRows={Array []}
+                      sort=""
+                      value={Array []}
+                    >
+                      <div
+                        className="ant-table-wrapper abstract-flex abstract-table-inner"
+                      >
+                        <Spin
+                          size="default"
+                          spinning={false}
+                          wrapperClassName=""
+                        >
+                          <div
+                            className="ant-spin-nested-loading"
+                          >
+                            <div
+                              className="ant-spin-container"
+                              key="container"
+                            >
+                              <Table
+                                buttons={
+                                  Array [
+                                    Object {
+                                      "click": [Function],
+                                      "confirm": "确定要删除当前行?",
+                                      "icon": <ForwardRef(DeleteOutlined) />,
+                                      "target": "cell",
+                                      "tip": "删除",
+                                    },
+                                  ]
+                                }
+                                className="ant-table-empty"
+                                columns={
+                                  Array [
+                                    Object {
+                                      "className": "column-no",
+                                      "dataIndex": "no",
+                                      "defaultSortOrder": undefined,
+                                      "editable": false,
+                                      "ellipsis": true,
+                                      "key": "col-no",
+                                      "name": "no",
+                                      "onCell": null,
+                                      "render": [Function],
+                                      "sorter": false,
+                                      "title": "编号",
+                                      "width": undefined,
+                                    },
+                                    Object {
+                                      "className": "column-name",
+                                      "dataIndex": "name",
+                                      "defaultSortOrder": undefined,
+                                      "editable": false,
+                                      "ellipsis": true,
+                                      "key": "col-name",
+                                      "name": "name",
+                                      "onCell": null,
+                                      "render": [Function],
+                                      "sorter": false,
+                                      "title": "环境名称",
+                                      "width": undefined,
+                                    },
+                                    Object {
+                                      "className": "column-value",
+                                      "dataIndex": "value",
+                                      "defaultSortOrder": undefined,
+                                      "editable": true,
+                                      "editor": [Function],
+                                      "ellipsis": true,
+                                      "key": "col-value",
+                                      "name": "value",
+                                      "onCell": [Function],
+                                      "render": [Function],
+                                      "sorter": false,
+                                      "title": "平台",
+                                      "width": undefined,
+                                    },
+                                    Object {
+                                      "className": "column-appId",
+                                      "dataIndex": "appId",
+                                      "defaultSortOrder": undefined,
+                                      "editable": true,
+                                      "editor": [Function],
+                                      "ellipsis": true,
+                                      "key": "col-appId",
+                                      "name": "appId",
+                                      "onCell": [Function],
+                                      "render": [Function],
+                                      "sorter": false,
+                                      "title": "小程序appId",
+                                      "width": undefined,
+                                    },
+                                    Object {
+                                      "className": "column-cell-operator",
+                                      "dataIndex": "cell-operator",
+                                      "defaultSortOrder": undefined,
+                                      "ellipsis": true,
+                                      "fixed": "right",
+                                      "key": "col-cell-operator",
+                                      "name": "cell-operator",
+                                      "render": [Function],
+                                      "sorter": false,
+                                      "title": "操作",
+                                      "width": undefined,
+                                    },
+                                  ]
+                                }
+                                components={
+                                  Object {
+                                    "body": Object {
+                                      "cell": [Function],
+                                    },
+                                  }
+                                }
+                                createRow={[Function]}
+                                data={Array []}
+                                dataSource={Array []}
+                                emptyText={
+                                  <div
+                                    className="abstract-table-input-addrow"
+                                  >
+                                    <div
+                                      className="abstract-table-input-addrow-btn"
+                                      onClick={[Function]}
+                                    >
+                                      <ForwardRef(InternalButton)
+                                        icon={<ForwardRef(PlusOutlined) />}
+                                        type="dashed"
+                                      >
+                                        追加一行
+                                      </ForwardRef(InternalButton)>
+                                    </div>
+                                  </div>
+                                }
+                                expandable={
+                                  Object {
+                                    "__PARENT_RENDER_ICON__": undefined,
+                                    "childrenColumnName": undefined,
+                                    "expandIcon": [Function],
+                                    "expandIconColumnIndex": undefined,
+                                    "indentSize": 15,
+                                  }
+                                }
+                                footer={[Function]}
+                                initQuery={true}
+                                internalHooks="rc-table-internal-hook"
+                                internalRefs={
+                                  Object {
+                                    "body": Object {
+                                      "current": <div
+                                        class="ant-table-content"
+                                      >
+                                        <table
+                                          style="table-layout: fixed;"
+                                        >
+                                          <colgroup>
+                                            <col
+                                              class="ant-table-selection-col"
+                                            />
+                                          </colgroup>
+                                          <thead
+                                            class="ant-table-thead"
+                                          >
+                                            <tr>
+                                              <th
+                                                class="ant-table-cell ant-table-selection-column"
+                                              >
+                                                <div
+                                                  class="ant-table-selection"
+                                                >
+                                                  <label
+                                                    class="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                                  >
+                                                    <span
+                                                      class="ant-checkbox ant-checkbox-disabled"
+                                                    >
+                                                      <input
+                                                        class="ant-checkbox-input"
+                                                        disabled=""
+                                                        type="checkbox"
+                                                        value=""
+                                                      />
+                                                      <span
+                                                        class="ant-checkbox-inner"
+                                                      />
+                                                    </span>
+                                                  </label>
+                                                </div>
+                                              </th>
+                                              <th
+                                                class="ant-table-cell column-no ant-table-cell-ellipsis"
+                                                title="编号"
+                                              >
+                                                编号
+                                              </th>
+                                              <th
+                                                class="ant-table-cell column-name ant-table-cell-ellipsis"
+                                                title="环境名称"
+                                              >
+                                                环境名称
+                                              </th>
+                                              <th
+                                                class="ant-table-cell column-value ant-table-cell-ellipsis"
+                                                title="平台"
+                                              >
+                                                平台
+                                              </th>
+                                              <th
+                                                class="ant-table-cell column-appId ant-table-cell-ellipsis"
+                                                title="小程序appId"
+                                              >
+                                                小程序appId
+                                              </th>
+                                              <th
+                                                class="ant-table-cell column-cell-operator ant-table-cell-fix-right ant-table-cell-fix-right-first ant-table-cell-ellipsis"
+                                                style="position: sticky; right: 0px;"
+                                                title="操作"
+                                              >
+                                                <span
+                                                  class="ant-table-cell-content"
+                                                >
+                                                  操作
+                                                </span>
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody
+                                            class="ant-table-tbody"
+                                          >
+                                            <tr
+                                              class="ant-table-placeholder"
+                                            >
+                                              <td
+                                                class="ant-table-cell"
+                                                colspan="6"
+                                              >
+                                                <div
+                                                  class="abstract-table-input-addrow"
+                                                >
+                                                  <div
+                                                    class="abstract-table-input-addrow-btn"
+                                                  >
+                                                    <button
+                                                      class="ant-btn ant-btn-dashed"
+                                                      type="button"
+                                                    >
+                                                      <span
+                                                        aria-label="plus"
+                                                        class="anticon anticon-plus"
+                                                        role="img"
+                                                      >
+                                                        <svg
+                                                          aria-hidden="true"
+                                                          data-icon="plus"
+                                                          fill="currentColor"
+                                                          focusable="false"
+                                                          height="1em"
+                                                          viewBox="64 64 896 896"
+                                                          width="1em"
+                                                        >
+                                                          <defs>
+                                                            <style />
+                                                          </defs>
+                                                          <path
+                                                            d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z"
+                                                          />
+                                                          <path
+                                                            d="M176 474h672q8 0 8 8v60q0 8-8 8H176q-8 0-8-8v-60q0-8 8-8z"
+                                                          />
+                                                        </svg>
+                                                      </span>
+                                                      <span>
+                                                        追加一行
+                                                      </span>
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>,
+                                    },
+                                  }
+                                }
+                                locale={
+                                  Object {
+                                    "emptyText": <div
+                                      className="abstract-table-input-addrow"
+                                    >
+                                      <div
+                                        className="abstract-table-input-addrow-btn"
+                                        onClick={[Function]}
+                                      >
+                                        <ForwardRef(InternalButton)
+                                          icon={<ForwardRef(PlusOutlined) />}
+                                          type="dashed"
+                                        >
+                                          追加一行
+                                        </ForwardRef(InternalButton)>
+                                      </div>
+                                    </div>,
+                                  }
+                                }
+                                onChange={[Function]}
+                                onSelectRows={[Function]}
+                                order="DESC"
+                                pageSize={10}
+                                pagination={false}
+                                paramMode="scope"
+                                prefixCls="ant-table"
+                                rowClassName={[Function]}
+                                rowKey={[Function]}
+                                rowSelection={
+                                  Object {
+                                    "onSelect": [Function],
+                                    "onSelectAll": [Function],
+                                    "selectedRowKeys": Array [],
+                                    "type": "checkbox",
+                                  }
+                                }
+                                rules={
+                                  Object {
+                                    "appId": Array [
+                                      Object {
+                                        "message": "请设置小程序appIds",
+                                        "required": true,
+                                      },
+                                    ],
+                                  }
+                                }
+                                scroll={Object {}}
+                                selectedRows={Array []}
+                                sort=""
+                                transformColumns={[Function]}
+                                value={Array []}
+                              >
+                                <div
+                                  className="ant-table ant-table-empty ant-table-has-fix-right"
+                                >
+                                  <Component
+                                    pingLeft={false}
+                                    pingRight={false}
+                                    props={
+                                      Object {
+                                        "buttons": Array [
+                                          Object {
+                                            "click": [Function],
+                                            "confirm": "确定要删除当前行?",
+                                            "icon": <ForwardRef(DeleteOutlined) />,
+                                            "target": "cell",
+                                            "tip": "删除",
+                                          },
+                                        ],
+                                        "cellWidth": undefined,
+                                        "className": "ant-table-empty",
+                                        "columns": Array [
+                                          Object {
+                                            "className": "column-no",
+                                            "dataIndex": "no",
+                                            "defaultSortOrder": undefined,
+                                            "editable": false,
+                                            "ellipsis": true,
+                                            "key": "col-no",
+                                            "name": "no",
+                                            "onCell": null,
+                                            "render": [Function],
+                                            "sorter": false,
+                                            "title": "编号",
+                                            "width": undefined,
+                                          },
+                                          Object {
+                                            "className": "column-name",
+                                            "dataIndex": "name",
+                                            "defaultSortOrder": undefined,
+                                            "editable": false,
+                                            "ellipsis": true,
+                                            "key": "col-name",
+                                            "name": "name",
+                                            "onCell": null,
+                                            "render": [Function],
+                                            "sorter": false,
+                                            "title": "环境名称",
+                                            "width": undefined,
+                                          },
+                                          Object {
+                                            "className": "column-value",
+                                            "dataIndex": "value",
+                                            "defaultSortOrder": undefined,
+                                            "editable": true,
+                                            "editor": [Function],
+                                            "ellipsis": true,
+                                            "key": "col-value",
+                                            "name": "value",
+                                            "onCell": [Function],
+                                            "render": [Function],
+                                            "sorter": false,
+                                            "title": "平台",
+                                            "width": undefined,
+                                          },
+                                          Object {
+                                            "className": "column-appId",
+                                            "dataIndex": "appId",
+                                            "defaultSortOrder": undefined,
+                                            "editable": true,
+                                            "editor": [Function],
+                                            "ellipsis": true,
+                                            "key": "col-appId",
+                                            "name": "appId",
+                                            "onCell": [Function],
+                                            "render": [Function],
+                                            "sorter": false,
+                                            "title": "小程序appId",
+                                            "width": undefined,
+                                          },
+                                          Object {
+                                            "className": "column-cell-operator",
+                                            "dataIndex": "cell-operator",
+                                            "defaultSortOrder": undefined,
+                                            "ellipsis": true,
+                                            "fixed": "right",
+                                            "key": "col-cell-operator",
+                                            "name": "cell-operator",
+                                            "render": [Function],
+                                            "sorter": false,
+                                            "title": "操作",
+                                            "width": undefined,
+                                          },
+                                        ],
+                                        "components": Object {
+                                          "body": Object {
+                                            "cell": [Function],
+                                          },
+                                        },
+                                        "createRow": [Function],
+                                        "data": Array [],
+                                        "dataSource": Array [],
+                                        "direction": undefined,
+                                        "emptyText": <div
+                                          className="abstract-table-input-addrow"
+                                        >
+                                          <div
+                                            className="abstract-table-input-addrow-btn"
+                                            onClick={[Function]}
+                                          >
+                                            <ForwardRef(InternalButton)
+                                              icon={<ForwardRef(PlusOutlined) />}
+                                              type="dashed"
+                                            >
+                                              追加一行
+                                            </ForwardRef(InternalButton)>
+                                          </div>
+                                        </div>,
+                                        "expandable": Object {
+                                          "__PARENT_RENDER_ICON__": undefined,
+                                          "childrenColumnName": undefined,
+                                          "expandIcon": [Function],
+                                          "expandIconColumnIndex": undefined,
+                                          "indentSize": 15,
+                                        },
+                                        "footer": [Function],
+                                        "initQuery": true,
+                                        "internalHooks": "rc-table-internal-hook",
+                                        "internalRefs": Object {
+                                          "body": Object {
+                                            "current": <div
+                                              class="ant-table-content"
+                                            >
+                                              <table
+                                                style="table-layout: fixed;"
+                                              >
+                                                <colgroup>
+                                                  <col
+                                                    class="ant-table-selection-col"
+                                                  />
+                                                </colgroup>
+                                                <thead
+                                                  class="ant-table-thead"
+                                                >
+                                                  <tr>
+                                                    <th
+                                                      class="ant-table-cell ant-table-selection-column"
+                                                    >
+                                                      <div
+                                                        class="ant-table-selection"
+                                                      >
+                                                        <label
+                                                          class="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                                        >
+                                                          <span
+                                                            class="ant-checkbox ant-checkbox-disabled"
+                                                          >
+                                                            <input
+                                                              class="ant-checkbox-input"
+                                                              disabled=""
+                                                              type="checkbox"
+                                                              value=""
+                                                            />
+                                                            <span
+                                                              class="ant-checkbox-inner"
+                                                            />
+                                                          </span>
+                                                        </label>
+                                                      </div>
+                                                    </th>
+                                                    <th
+                                                      class="ant-table-cell column-no ant-table-cell-ellipsis"
+                                                      title="编号"
+                                                    >
+                                                      编号
+                                                    </th>
+                                                    <th
+                                                      class="ant-table-cell column-name ant-table-cell-ellipsis"
+                                                      title="环境名称"
+                                                    >
+                                                      环境名称
+                                                    </th>
+                                                    <th
+                                                      class="ant-table-cell column-value ant-table-cell-ellipsis"
+                                                      title="平台"
+                                                    >
+                                                      平台
+                                                    </th>
+                                                    <th
+                                                      class="ant-table-cell column-appId ant-table-cell-ellipsis"
+                                                      title="小程序appId"
+                                                    >
+                                                      小程序appId
+                                                    </th>
+                                                    <th
+                                                      class="ant-table-cell column-cell-operator ant-table-cell-fix-right ant-table-cell-fix-right-first ant-table-cell-ellipsis"
+                                                      style="position: sticky; right: 0px;"
+                                                      title="操作"
+                                                    >
+                                                      <span
+                                                        class="ant-table-cell-content"
+                                                      >
+                                                        操作
+                                                      </span>
+                                                    </th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody
+                                                  class="ant-table-tbody"
+                                                >
+                                                  <tr
+                                                    class="ant-table-placeholder"
+                                                  >
+                                                    <td
+                                                      class="ant-table-cell"
+                                                      colspan="6"
+                                                    >
+                                                      <div
+                                                        class="abstract-table-input-addrow"
+                                                      >
+                                                        <div
+                                                          class="abstract-table-input-addrow-btn"
+                                                        >
+                                                          <button
+                                                            class="ant-btn ant-btn-dashed"
+                                                            type="button"
+                                                          >
+                                                            <span
+                                                              aria-label="plus"
+                                                              class="anticon anticon-plus"
+                                                              role="img"
+                                                            >
+                                                              <svg
+                                                                aria-hidden="true"
+                                                                data-icon="plus"
+                                                                fill="currentColor"
+                                                                focusable="false"
+                                                                height="1em"
+                                                                viewBox="64 64 896 896"
+                                                                width="1em"
+                                                              >
+                                                                <defs>
+                                                                  <style />
+                                                                </defs>
+                                                                <path
+                                                                  d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z"
+                                                                />
+                                                                <path
+                                                                  d="M176 474h672q8 0 8 8v60q0 8-8 8H176q-8 0-8-8v-60q0-8 8-8z"
+                                                                />
+                                                              </svg>
+                                                            </span>
+                                                            <span>
+                                                              追加一行
+                                                            </span>
+                                                          </button>
+                                                        </div>
+                                                      </div>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>,
+                                          },
+                                        },
+                                        "loading": undefined,
+                                        "locale": Object {
+                                          "emptyText": <div
+                                            className="abstract-table-input-addrow"
+                                          >
+                                            <div
+                                              className="abstract-table-input-addrow-btn"
+                                              onClick={[Function]}
+                                            >
+                                              <ForwardRef(InternalButton)
+                                                icon={<ForwardRef(PlusOutlined) />}
+                                                type="dashed"
+                                              >
+                                                追加一行
+                                              </ForwardRef(InternalButton)>
+                                            </div>
+                                          </div>,
+                                        },
+                                        "mergedExpandedKeys": Set {},
+                                        "onChange": [Function],
+                                        "onSelectRows": [Function],
+                                        "order": "DESC",
+                                        "pageSize": 10,
+                                        "pagination": false,
+                                        "paramMode": "scope",
+                                        "prefixCls": "ant-table",
+                                        "rowClassName": [Function],
+                                        "rowKey": [Function],
+                                        "rowSelection": Object {
+                                          "onSelect": [Function],
+                                          "onSelectAll": [Function],
+                                          "selectedRowKeys": Array [],
+                                          "type": "checkbox",
+                                        },
+                                        "rules": Object {
+                                          "appId": Array [
+                                            Object {
+                                              "message": "请设置小程序appIds",
+                                              "required": true,
+                                            },
+                                          ],
+                                        },
+                                        "scroll": Object {},
+                                        "selectedRows": Array [],
+                                        "sort": "",
+                                        "stickyOffsets": Object {
+                                          "left": Array [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                          ],
+                                          "right": Array [
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                          ],
+                                        },
+                                        "transformColumns": [Function],
+                                        "value": Array [],
+                                      }
+                                    }
+                                  >
+                                    <div
+                                      className="ant-table-container"
+                                    >
+                                      <div
+                                        className="ant-table-content"
+                                        onScroll={[Function]}
+                                        style={Object {}}
+                                      >
+                                        <table
+                                          style={
+                                            Object {
+                                              "tableLayout": "fixed",
+                                            }
+                                          }
+                                        >
+                                          <ColGroup
+                                            colWidths={
+                                              Array [
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                              ]
+                                            }
+                                            columns={
+                                              Array [
+                                                Object {
+                                                  "RC_TABLE_INTERNAL_COL_DEFINE": Object {
+                                                    "className": "ant-table-selection-col",
+                                                  },
+                                                  "className": "ant-table-selection-column",
+                                                  "fixed": undefined,
+                                                  "render": [Function],
+                                                  "title": <div
+                                                    className="ant-table-selection"
+                                                  >
+                                                    <ForwardRef(InternalCheckbox)
+                                                      checked={false}
+                                                      disabled={true}
+                                                      indeterminate={false}
+                                                      onChange={[Function]}
+                                                      skipGroup={true}
+                                                    />
+                                                  </div>,
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-no",
+                                                  "dataIndex": "no",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": false,
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-no",
+                                                  "name": "no",
+                                                  "onCell": null,
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "编号",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-name",
+                                                  "dataIndex": "name",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": false,
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-name",
+                                                  "name": "name",
+                                                  "onCell": null,
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "环境名称",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-value",
+                                                  "dataIndex": "value",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": true,
+                                                  "editor": [Function],
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-value",
+                                                  "name": "value",
+                                                  "onCell": [Function],
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "平台",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-appId",
+                                                  "dataIndex": "appId",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": true,
+                                                  "editor": [Function],
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-appId",
+                                                  "name": "appId",
+                                                  "onCell": [Function],
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "小程序appId",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-cell-operator",
+                                                  "dataIndex": "cell-operator",
+                                                  "defaultSortOrder": undefined,
+                                                  "ellipsis": true,
+                                                  "fixed": "right",
+                                                  "key": "col-cell-operator",
+                                                  "name": "cell-operator",
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "操作",
+                                                  "width": undefined,
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <colgroup>
+                                              <col
+                                                className="ant-table-selection-col"
+                                                key="0"
+                                                style={
+                                                  Object {
+                                                    "width": undefined,
+                                                  }
+                                                }
+                                              />
+                                            </colgroup>
+                                          </ColGroup>
+                                          <Header
+                                            colWidths={
+                                              Array [
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                                undefined,
+                                              ]
+                                            }
+                                            columCount={6}
+                                            columns={
+                                              Array [
+                                                Object {
+                                                  "RC_TABLE_INTERNAL_COL_DEFINE": Object {
+                                                    "className": "ant-table-selection-col",
+                                                  },
+                                                  "className": "ant-table-selection-column",
+                                                  "fixed": undefined,
+                                                  "render": [Function],
+                                                  "title": <div
+                                                    className="ant-table-selection"
+                                                  >
+                                                    <ForwardRef(InternalCheckbox)
+                                                      checked={false}
+                                                      disabled={true}
+                                                      indeterminate={false}
+                                                      onChange={[Function]}
+                                                      skipGroup={true}
+                                                    />
+                                                  </div>,
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-no",
+                                                  "dataIndex": "no",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": false,
+                                                  "ellipsis": true,
+                                                  "key": "col-no",
+                                                  "name": "no",
+                                                  "onCell": null,
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "编号",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-name",
+                                                  "dataIndex": "name",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": false,
+                                                  "ellipsis": true,
+                                                  "key": "col-name",
+                                                  "name": "name",
+                                                  "onCell": null,
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "环境名称",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-value",
+                                                  "dataIndex": "value",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": true,
+                                                  "editor": [Function],
+                                                  "ellipsis": true,
+                                                  "key": "col-value",
+                                                  "name": "value",
+                                                  "onCell": [Function],
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "平台",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-appId",
+                                                  "dataIndex": "appId",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": true,
+                                                  "editor": [Function],
+                                                  "ellipsis": true,
+                                                  "key": "col-appId",
+                                                  "name": "appId",
+                                                  "onCell": [Function],
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "小程序appId",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-cell-operator",
+                                                  "dataIndex": "cell-operator",
+                                                  "defaultSortOrder": undefined,
+                                                  "ellipsis": true,
+                                                  "fixed": "right",
+                                                  "key": "col-cell-operator",
+                                                  "name": "cell-operator",
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "操作",
+                                                  "width": undefined,
+                                                },
+                                              ]
+                                            }
+                                            fixHeader={false}
+                                            flattenColumns={
+                                              Array [
+                                                Object {
+                                                  "RC_TABLE_INTERNAL_COL_DEFINE": Object {
+                                                    "className": "ant-table-selection-col",
+                                                  },
+                                                  "className": "ant-table-selection-column",
+                                                  "fixed": undefined,
+                                                  "render": [Function],
+                                                  "title": <div
+                                                    className="ant-table-selection"
+                                                  >
+                                                    <ForwardRef(InternalCheckbox)
+                                                      checked={false}
+                                                      disabled={true}
+                                                      indeterminate={false}
+                                                      onChange={[Function]}
+                                                      skipGroup={true}
+                                                    />
+                                                  </div>,
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-no",
+                                                  "dataIndex": "no",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": false,
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-no",
+                                                  "name": "no",
+                                                  "onCell": null,
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "编号",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-name",
+                                                  "dataIndex": "name",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": false,
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-name",
+                                                  "name": "name",
+                                                  "onCell": null,
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "环境名称",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-value",
+                                                  "dataIndex": "value",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": true,
+                                                  "editor": [Function],
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-value",
+                                                  "name": "value",
+                                                  "onCell": [Function],
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "平台",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-appId",
+                                                  "dataIndex": "appId",
+                                                  "defaultSortOrder": undefined,
+                                                  "editable": true,
+                                                  "editor": [Function],
+                                                  "ellipsis": true,
+                                                  "fixed": undefined,
+                                                  "key": "col-appId",
+                                                  "name": "appId",
+                                                  "onCell": [Function],
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "小程序appId",
+                                                  "width": undefined,
+                                                },
+                                                Object {
+                                                  "className": "column-cell-operator",
+                                                  "dataIndex": "cell-operator",
+                                                  "defaultSortOrder": undefined,
+                                                  "ellipsis": true,
+                                                  "fixed": "right",
+                                                  "key": "col-cell-operator",
+                                                  "name": "cell-operator",
+                                                  "render": [Function],
+                                                  "sorter": false,
+                                                  "title": "操作",
+                                                  "width": undefined,
+                                                },
+                                              ]
+                                            }
+                                            scroll={Object {}}
+                                            stickyOffsets={
+                                              Object {
+                                                "left": Array [
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                ],
+                                                "right": Array [
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                ],
+                                              }
+                                            }
+                                          >
+                                            <thead
+                                              className="ant-table-thead"
+                                            >
+                                              <HeaderRow
+                                                cellComponent="th"
+                                                cells={
+                                                  Array [
+                                                    Object {
+                                                      "children": <div
+                                                        className="ant-table-selection"
+                                                      >
+                                                        <ForwardRef(InternalCheckbox)
+                                                          checked={false}
+                                                          disabled={true}
+                                                          indeterminate={false}
+                                                          onChange={[Function]}
+                                                          skipGroup={true}
+                                                        />
+                                                      </div>,
+                                                      "className": "ant-table-selection-column",
+                                                      "colEnd": 0,
+                                                      "colSpan": 1,
+                                                      "colStart": 0,
+                                                      "column": Object {
+                                                        "RC_TABLE_INTERNAL_COL_DEFINE": Object {
+                                                          "className": "ant-table-selection-col",
+                                                        },
+                                                        "className": "ant-table-selection-column",
+                                                        "fixed": undefined,
+                                                        "render": [Function],
+                                                        "title": <div
+                                                          className="ant-table-selection"
+                                                        >
+                                                          <ForwardRef(InternalCheckbox)
+                                                            checked={false}
+                                                            disabled={true}
+                                                            indeterminate={false}
+                                                            onChange={[Function]}
+                                                            skipGroup={true}
+                                                          />
+                                                        </div>,
+                                                        "width": undefined,
+                                                      },
+                                                      "key": undefined,
+                                                      "rowSpan": 1,
+                                                    },
+                                                    Object {
+                                                      "children": "编号",
+                                                      "className": "column-no",
+                                                      "colEnd": 1,
+                                                      "colSpan": 1,
+                                                      "colStart": 1,
+                                                      "column": Object {
+                                                        "className": "column-no",
+                                                        "dataIndex": "no",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": false,
+                                                        "ellipsis": true,
+                                                        "key": "col-no",
+                                                        "name": "no",
+                                                        "onCell": null,
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "编号",
+                                                        "width": undefined,
+                                                      },
+                                                      "key": "col-no",
+                                                      "rowSpan": 1,
+                                                    },
+                                                    Object {
+                                                      "children": "环境名称",
+                                                      "className": "column-name",
+                                                      "colEnd": 2,
+                                                      "colSpan": 1,
+                                                      "colStart": 2,
+                                                      "column": Object {
+                                                        "className": "column-name",
+                                                        "dataIndex": "name",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": false,
+                                                        "ellipsis": true,
+                                                        "key": "col-name",
+                                                        "name": "name",
+                                                        "onCell": null,
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "环境名称",
+                                                        "width": undefined,
+                                                      },
+                                                      "key": "col-name",
+                                                      "rowSpan": 1,
+                                                    },
+                                                    Object {
+                                                      "children": "平台",
+                                                      "className": "column-value",
+                                                      "colEnd": 3,
+                                                      "colSpan": 1,
+                                                      "colStart": 3,
+                                                      "column": Object {
+                                                        "className": "column-value",
+                                                        "dataIndex": "value",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": true,
+                                                        "editor": [Function],
+                                                        "ellipsis": true,
+                                                        "key": "col-value",
+                                                        "name": "value",
+                                                        "onCell": [Function],
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "平台",
+                                                        "width": undefined,
+                                                      },
+                                                      "key": "col-value",
+                                                      "rowSpan": 1,
+                                                    },
+                                                    Object {
+                                                      "children": "小程序appId",
+                                                      "className": "column-appId",
+                                                      "colEnd": 4,
+                                                      "colSpan": 1,
+                                                      "colStart": 4,
+                                                      "column": Object {
+                                                        "className": "column-appId",
+                                                        "dataIndex": "appId",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": true,
+                                                        "editor": [Function],
+                                                        "ellipsis": true,
+                                                        "key": "col-appId",
+                                                        "name": "appId",
+                                                        "onCell": [Function],
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "小程序appId",
+                                                        "width": undefined,
+                                                      },
+                                                      "key": "col-appId",
+                                                      "rowSpan": 1,
+                                                    },
+                                                    Object {
+                                                      "children": "操作",
+                                                      "className": "column-cell-operator",
+                                                      "colEnd": 5,
+                                                      "colSpan": 1,
+                                                      "colStart": 5,
+                                                      "column": Object {
+                                                        "className": "column-cell-operator",
+                                                        "dataIndex": "cell-operator",
+                                                        "defaultSortOrder": undefined,
+                                                        "ellipsis": true,
+                                                        "fixed": "right",
+                                                        "key": "col-cell-operator",
+                                                        "name": "cell-operator",
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "操作",
+                                                        "width": undefined,
+                                                      },
+                                                      "key": "col-cell-operator",
+                                                      "rowSpan": 1,
+                                                    },
+                                                  ]
+                                                }
+                                                flattenColumns={
+                                                  Array [
+                                                    Object {
+                                                      "RC_TABLE_INTERNAL_COL_DEFINE": Object {
+                                                        "className": "ant-table-selection-col",
+                                                      },
+                                                      "className": "ant-table-selection-column",
+                                                      "fixed": undefined,
+                                                      "render": [Function],
+                                                      "title": <div
+                                                        className="ant-table-selection"
+                                                      >
+                                                        <ForwardRef(InternalCheckbox)
+                                                          checked={false}
+                                                          disabled={true}
+                                                          indeterminate={false}
+                                                          onChange={[Function]}
+                                                          skipGroup={true}
+                                                        />
+                                                      </div>,
+                                                      "width": undefined,
+                                                    },
+                                                    Object {
+                                                      "className": "column-no",
+                                                      "dataIndex": "no",
+                                                      "defaultSortOrder": undefined,
+                                                      "editable": false,
+                                                      "ellipsis": true,
+                                                      "fixed": undefined,
+                                                      "key": "col-no",
+                                                      "name": "no",
+                                                      "onCell": null,
+                                                      "render": [Function],
+                                                      "sorter": false,
+                                                      "title": "编号",
+                                                      "width": undefined,
+                                                    },
+                                                    Object {
+                                                      "className": "column-name",
+                                                      "dataIndex": "name",
+                                                      "defaultSortOrder": undefined,
+                                                      "editable": false,
+                                                      "ellipsis": true,
+                                                      "fixed": undefined,
+                                                      "key": "col-name",
+                                                      "name": "name",
+                                                      "onCell": null,
+                                                      "render": [Function],
+                                                      "sorter": false,
+                                                      "title": "环境名称",
+                                                      "width": undefined,
+                                                    },
+                                                    Object {
+                                                      "className": "column-value",
+                                                      "dataIndex": "value",
+                                                      "defaultSortOrder": undefined,
+                                                      "editable": true,
+                                                      "editor": [Function],
+                                                      "ellipsis": true,
+                                                      "fixed": undefined,
+                                                      "key": "col-value",
+                                                      "name": "value",
+                                                      "onCell": [Function],
+                                                      "render": [Function],
+                                                      "sorter": false,
+                                                      "title": "平台",
+                                                      "width": undefined,
+                                                    },
+                                                    Object {
+                                                      "className": "column-appId",
+                                                      "dataIndex": "appId",
+                                                      "defaultSortOrder": undefined,
+                                                      "editable": true,
+                                                      "editor": [Function],
+                                                      "ellipsis": true,
+                                                      "fixed": undefined,
+                                                      "key": "col-appId",
+                                                      "name": "appId",
+                                                      "onCell": [Function],
+                                                      "render": [Function],
+                                                      "sorter": false,
+                                                      "title": "小程序appId",
+                                                      "width": undefined,
+                                                    },
+                                                    Object {
+                                                      "className": "column-cell-operator",
+                                                      "dataIndex": "cell-operator",
+                                                      "defaultSortOrder": undefined,
+                                                      "ellipsis": true,
+                                                      "fixed": "right",
+                                                      "key": "col-cell-operator",
+                                                      "name": "cell-operator",
+                                                      "render": [Function],
+                                                      "sorter": false,
+                                                      "title": "操作",
+                                                      "width": undefined,
+                                                    },
+                                                  ]
+                                                }
+                                                index={0}
+                                                key="0"
+                                                rowComponent="tr"
+                                                stickyOffsets={
+                                                  Object {
+                                                    "left": Array [
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                    ],
+                                                    "right": Array [
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                    ],
+                                                  }
+                                                }
+                                              >
+                                                <tr>
+                                                  <Cell
+                                                    className="ant-table-selection-column"
+                                                    colEnd={0}
+                                                    colSpan={1}
+                                                    colStart={0}
+                                                    column={
+                                                      Object {
+                                                        "RC_TABLE_INTERNAL_COL_DEFINE": Object {
+                                                          "className": "ant-table-selection-col",
+                                                        },
+                                                        "className": "ant-table-selection-column",
+                                                        "fixed": undefined,
+                                                        "render": [Function],
+                                                        "title": <div
+                                                          className="ant-table-selection"
+                                                        >
+                                                          <ForwardRef(InternalCheckbox)
+                                                            checked={false}
+                                                            disabled={true}
+                                                            indeterminate={false}
+                                                            onChange={[Function]}
+                                                            skipGroup={true}
+                                                          />
+                                                        </div>,
+                                                        "width": undefined,
+                                                      }
+                                                    }
+                                                    component="th"
+                                                    firstFixLeft={false}
+                                                    firstFixRight={false}
+                                                    key="RC_TABLE_KEY"
+                                                    lastFixLeft={false}
+                                                    lastFixRight={false}
+                                                    prefixCls="ant-table"
+                                                    rowSpan={1}
+                                                    rowType="header"
+                                                  >
+                                                    <th
+                                                      className="ant-table-cell ant-table-selection-column"
+                                                      colSpan={null}
+                                                      rowSpan={null}
+                                                      style={Object {}}
+                                                    >
+                                                      <div
+                                                        className="ant-table-selection"
+                                                      >
+                                                        <Checkbox
+                                                          checked={false}
+                                                          disabled={true}
+                                                          indeterminate={false}
+                                                          onChange={[Function]}
+                                                          skipGroup={true}
+                                                        >
+                                                          <label
+                                                            className="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                                          >
+                                                            <Checkbox
+                                                              checked={false}
+                                                              className=""
+                                                              defaultChecked={false}
+                                                              disabled={true}
+                                                              onBlur={[Function]}
+                                                              onChange={[Function]}
+                                                              onFocus={[Function]}
+                                                              prefixCls="ant-checkbox"
+                                                              style={Object {}}
+                                                              type="checkbox"
+                                                            >
+                                                              <span
+                                                                className="ant-checkbox ant-checkbox-disabled"
+                                                                style={Object {}}
+                                                              >
+                                                                <input
+                                                                  checked={false}
+                                                                  className="ant-checkbox-input"
+                                                                  disabled={true}
+                                                                  onBlur={[Function]}
+                                                                  onChange={[Function]}
+                                                                  onFocus={[Function]}
+                                                                  type="checkbox"
+                                                                />
+                                                                <span
+                                                                  className="ant-checkbox-inner"
+                                                                />
+                                                              </span>
+                                                            </Checkbox>
+                                                          </label>
+                                                        </Checkbox>
+                                                      </div>
+                                                    </th>
+                                                  </Cell>
+                                                  <Cell
+                                                    className="column-no"
+                                                    colEnd={1}
+                                                    colSpan={1}
+                                                    colStart={1}
+                                                    column={
+                                                      Object {
+                                                        "className": "column-no",
+                                                        "dataIndex": "no",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": false,
+                                                        "ellipsis": true,
+                                                        "key": "col-no",
+                                                        "name": "no",
+                                                        "onCell": null,
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "编号",
+                                                        "width": undefined,
+                                                      }
+                                                    }
+                                                    component="th"
+                                                    ellipsis={true}
+                                                    firstFixLeft={false}
+                                                    firstFixRight={false}
+                                                    key="col-no"
+                                                    lastFixLeft={false}
+                                                    lastFixRight={false}
+                                                    prefixCls="ant-table"
+                                                    rowSpan={1}
+                                                    rowType="header"
+                                                  >
+                                                    <th
+                                                      className="ant-table-cell column-no ant-table-cell-ellipsis"
+                                                      colSpan={null}
+                                                      rowSpan={null}
+                                                      style={Object {}}
+                                                      title="编号"
+                                                    >
+                                                      编号
+                                                    </th>
+                                                  </Cell>
+                                                  <Cell
+                                                    className="column-name"
+                                                    colEnd={2}
+                                                    colSpan={1}
+                                                    colStart={2}
+                                                    column={
+                                                      Object {
+                                                        "className": "column-name",
+                                                        "dataIndex": "name",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": false,
+                                                        "ellipsis": true,
+                                                        "key": "col-name",
+                                                        "name": "name",
+                                                        "onCell": null,
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "环境名称",
+                                                        "width": undefined,
+                                                      }
+                                                    }
+                                                    component="th"
+                                                    ellipsis={true}
+                                                    firstFixLeft={false}
+                                                    firstFixRight={false}
+                                                    key="col-name"
+                                                    lastFixLeft={false}
+                                                    lastFixRight={false}
+                                                    prefixCls="ant-table"
+                                                    rowSpan={1}
+                                                    rowType="header"
+                                                  >
+                                                    <th
+                                                      className="ant-table-cell column-name ant-table-cell-ellipsis"
+                                                      colSpan={null}
+                                                      rowSpan={null}
+                                                      style={Object {}}
+                                                      title="环境名称"
+                                                    >
+                                                      环境名称
+                                                    </th>
+                                                  </Cell>
+                                                  <Cell
+                                                    className="column-value"
+                                                    colEnd={3}
+                                                    colSpan={1}
+                                                    colStart={3}
+                                                    column={
+                                                      Object {
+                                                        "className": "column-value",
+                                                        "dataIndex": "value",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": true,
+                                                        "editor": [Function],
+                                                        "ellipsis": true,
+                                                        "key": "col-value",
+                                                        "name": "value",
+                                                        "onCell": [Function],
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "平台",
+                                                        "width": undefined,
+                                                      }
+                                                    }
+                                                    component="th"
+                                                    ellipsis={true}
+                                                    firstFixLeft={false}
+                                                    firstFixRight={false}
+                                                    key="col-value"
+                                                    lastFixLeft={false}
+                                                    lastFixRight={false}
+                                                    prefixCls="ant-table"
+                                                    rowSpan={1}
+                                                    rowType="header"
+                                                  >
+                                                    <th
+                                                      className="ant-table-cell column-value ant-table-cell-ellipsis"
+                                                      colSpan={null}
+                                                      rowSpan={null}
+                                                      style={Object {}}
+                                                      title="平台"
+                                                    >
+                                                      平台
+                                                    </th>
+                                                  </Cell>
+                                                  <Cell
+                                                    className="column-appId"
+                                                    colEnd={4}
+                                                    colSpan={1}
+                                                    colStart={4}
+                                                    column={
+                                                      Object {
+                                                        "className": "column-appId",
+                                                        "dataIndex": "appId",
+                                                        "defaultSortOrder": undefined,
+                                                        "editable": true,
+                                                        "editor": [Function],
+                                                        "ellipsis": true,
+                                                        "key": "col-appId",
+                                                        "name": "appId",
+                                                        "onCell": [Function],
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "小程序appId",
+                                                        "width": undefined,
+                                                      }
+                                                    }
+                                                    component="th"
+                                                    ellipsis={true}
+                                                    firstFixLeft={false}
+                                                    firstFixRight={false}
+                                                    key="col-appId"
+                                                    lastFixLeft={false}
+                                                    lastFixRight={false}
+                                                    prefixCls="ant-table"
+                                                    rowSpan={1}
+                                                    rowType="header"
+                                                  >
+                                                    <th
+                                                      className="ant-table-cell column-appId ant-table-cell-ellipsis"
+                                                      colSpan={null}
+                                                      rowSpan={null}
+                                                      style={Object {}}
+                                                      title="小程序appId"
+                                                    >
+                                                      小程序appId
+                                                    </th>
+                                                  </Cell>
+                                                  <Cell
+                                                    className="column-cell-operator"
+                                                    colEnd={5}
+                                                    colSpan={1}
+                                                    colStart={5}
+                                                    column={
+                                                      Object {
+                                                        "className": "column-cell-operator",
+                                                        "dataIndex": "cell-operator",
+                                                        "defaultSortOrder": undefined,
+                                                        "ellipsis": true,
+                                                        "fixed": "right",
+                                                        "key": "col-cell-operator",
+                                                        "name": "cell-operator",
+                                                        "render": [Function],
+                                                        "sorter": false,
+                                                        "title": "操作",
+                                                        "width": undefined,
+                                                      }
+                                                    }
+                                                    component="th"
+                                                    ellipsis={true}
+                                                    firstFixLeft={false}
+                                                    firstFixRight={true}
+                                                    fixRight={0}
+                                                    key="col-cell-operator"
+                                                    lastFixLeft={false}
+                                                    lastFixRight={false}
+                                                    prefixCls="ant-table"
+                                                    rowSpan={1}
+                                                    rowType="header"
+                                                  >
+                                                    <th
+                                                      className="ant-table-cell column-cell-operator ant-table-cell-fix-right ant-table-cell-fix-right-first ant-table-cell-ellipsis"
+                                                      colSpan={null}
+                                                      rowSpan={null}
+                                                      style={
+                                                        Object {
+                                                          "position": "sticky",
+                                                          "right": 0,
+                                                        }
+                                                      }
+                                                      title="操作"
+                                                    >
+                                                      <span
+                                                        className="ant-table-cell-content"
+                                                      >
+                                                        操作
+                                                      </span>
+                                                    </th>
+                                                  </Cell>
+                                                </tr>
+                                              </HeaderRow>
+                                            </thead>
+                                          </Header>
+                                          <Body
+                                            childrenColumnName="children"
+                                            data={Array []}
+                                            emptyNode={
+                                              <div
+                                                className="abstract-table-input-addrow"
+                                              >
+                                                <div
+                                                  className="abstract-table-input-addrow-btn"
+                                                  onClick={[Function]}
+                                                >
+                                                  <ForwardRef(InternalButton)
+                                                    icon={<ForwardRef(PlusOutlined) />}
+                                                    type="dashed"
+                                                  >
+                                                    追加一行
+                                                  </ForwardRef(InternalButton)>
+                                                </div>
+                                              </div>
+                                            }
+                                            expandedKeys={Set {}}
+                                            getRowKey={[Function]}
+                                            measureColumnWidth={false}
+                                          >
+                                            <tbody
+                                              className="ant-table-tbody"
+                                            >
+                                              <ExpandedRow
+                                                cellComponent={[Function]}
+                                                className="ant-table-placeholder"
+                                                colSpan={6}
+                                                component="tr"
+                                                componentWidth={0}
+                                                expanded={true}
+                                                fixColumn={false}
+                                                fixHeader={false}
+                                                horizonScroll={false}
+                                                prefixCls="ant-table"
+                                              >
+                                                <tr
+                                                  className="ant-table-placeholder"
+                                                  style={
+                                                    Object {
+                                                      "display": null,
+                                                    }
+                                                  }
+                                                >
+                                                  <Cell
+                                                    colSpan={6}
+                                                    component={[Function]}
+                                                    prefixCls="ant-table"
+                                                  >
+                                                    <EditableCell
+                                                      className="ant-table-cell"
+                                                      colSpan={6}
+                                                      rowSpan={null}
+                                                      style={Object {}}
+                                                    >
+                                                      <td
+                                                        className="ant-table-cell"
+                                                        colSpan={6}
+                                                        rowSpan={null}
+                                                        style={Object {}}
+                                                      >
+                                                        <div
+                                                          className="abstract-table-input-addrow"
+                                                        >
+                                                          <div
+                                                            className="abstract-table-input-addrow-btn"
+                                                            onClick={[Function]}
+                                                          >
+                                                            <Button
+                                                              icon={<ForwardRef(PlusOutlined) />}
+                                                              type="dashed"
+                                                            >
+                                                              <Wave>
+                                                                <button
+                                                                  className="ant-btn ant-btn-dashed"
+                                                                  onClick={[Function]}
+                                                                  type="button"
+                                                                >
+                                                                  <ForwardRef(PlusOutlined)>
+                                                                    <AntdIcon
+                                                                      icon={
+                                                                        Object {
+                                                                          "icon": Object {
+                                                                            "attrs": Object {
+                                                                              "focusable": "false",
+                                                                              "viewBox": "64 64 896 896",
+                                                                            },
+                                                                            "children": Array [
+                                                                              Object {
+                                                                                "attrs": Object {},
+                                                                                "children": Array [
+                                                                                  Object {
+                                                                                    "attrs": Object {},
+                                                                                    "tag": "style",
+                                                                                  },
+                                                                                ],
+                                                                                "tag": "defs",
+                                                                              },
+                                                                              Object {
+                                                                                "attrs": Object {
+                                                                                  "d": "M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z",
+                                                                                },
+                                                                                "tag": "path",
+                                                                              },
+                                                                              Object {
+                                                                                "attrs": Object {
+                                                                                  "d": "M176 474h672q8 0 8 8v60q0 8-8 8H176q-8 0-8-8v-60q0-8 8-8z",
+                                                                                },
+                                                                                "tag": "path",
+                                                                              },
+                                                                            ],
+                                                                            "tag": "svg",
+                                                                          },
+                                                                          "name": "plus",
+                                                                          "theme": "outlined",
+                                                                        }
+                                                                      }
+                                                                    >
+                                                                      <span
+                                                                        aria-label="plus"
+                                                                        className="anticon anticon-plus"
+                                                                        role="img"
+                                                                      >
+                                                                        <IconReact
+                                                                          icon={
+                                                                            Object {
+                                                                              "icon": Object {
+                                                                                "attrs": Object {
+                                                                                  "focusable": "false",
+                                                                                  "viewBox": "64 64 896 896",
+                                                                                },
+                                                                                "children": Array [
+                                                                                  Object {
+                                                                                    "attrs": Object {},
+                                                                                    "children": Array [
+                                                                                      Object {
+                                                                                        "attrs": Object {},
+                                                                                        "tag": "style",
+                                                                                      },
+                                                                                    ],
+                                                                                    "tag": "defs",
+                                                                                  },
+                                                                                  Object {
+                                                                                    "attrs": Object {
+                                                                                      "d": "M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z",
+                                                                                    },
+                                                                                    "tag": "path",
+                                                                                  },
+                                                                                  Object {
+                                                                                    "attrs": Object {
+                                                                                      "d": "M176 474h672q8 0 8 8v60q0 8-8 8H176q-8 0-8-8v-60q0-8 8-8z",
+                                                                                    },
+                                                                                    "tag": "path",
+                                                                                  },
+                                                                                ],
+                                                                                "tag": "svg",
+                                                                              },
+                                                                              "name": "plus",
+                                                                              "theme": "outlined",
+                                                                            }
+                                                                          }
+                                                                        >
+                                                                          <svg
+                                                                            aria-hidden="true"
+                                                                            data-icon="plus"
+                                                                            fill="currentColor"
+                                                                            focusable="false"
+                                                                            height="1em"
+                                                                            key="svg-plus"
+                                                                            viewBox="64 64 896 896"
+                                                                            width="1em"
+                                                                          >
+                                                                            <defs
+                                                                              key="svg-plus-svg-0"
+                                                                            >
+                                                                              <style
+                                                                                key="svg-plus-svg-0-defs-0"
+                                                                              />
+                                                                            </defs>
+                                                                            <path
+                                                                              d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z"
+                                                                              key="svg-plus-svg-1"
+                                                                            />
+                                                                            <path
+                                                                              d="M176 474h672q8 0 8 8v60q0 8-8 8H176q-8 0-8-8v-60q0-8 8-8z"
+                                                                              key="svg-plus-svg-2"
+                                                                            />
+                                                                          </svg>
+                                                                        </IconReact>
+                                                                      </span>
+                                                                    </AntdIcon>
+                                                                  </ForwardRef(PlusOutlined)>
+                                                                  <span
+                                                                    key=".0"
+                                                                  >
+                                                                    追加一行
+                                                                  </span>
+                                                                </button>
+                                                              </Wave>
+                                                            </Button>
+                                                          </div>
+                                                        </div>
+                                                      </td>
+                                                    </EditableCell>
+                                                  </Cell>
+                                                </tr>
+                                              </ExpandedRow>
+                                            </tbody>
+                                          </Body>
+                                        </table>
+                                      </div>
+                                    </div>
+                                    <Panel
+                                      className="ant-table-footer"
+                                    >
+                                      <div
+                                        className="ant-table-footer"
+                                      >
+                                        <div
+                                          className="abstract-table-input-footer"
+                                        >
+                                          <div
+                                            className="abstract-table-input-footer-ext"
+                                          >
+                                            aaaaaaa
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </Panel>
+                                  </Component>
+                                </div>
+                              </Table>
+                            </div>
+                          </div>
+                        </Spin>
+                      </div>
+                    </Table>
+                  </div>
+                </div>
+              </div>
+            </AbstractTable>
+          </ForwardRef(Form)>
+        </SizeContextProvider>
+      </ForwardRef(InternalForm)>
+    </ChildForm>
+  </AbstractTableInput>
+</AbstractTableInputDemo>
+`;

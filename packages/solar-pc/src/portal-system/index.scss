@@ -1,0 +1,21 @@
+.portal-system {
+  &,
+  .isolation-app {
+    height:100%;
+  }
+  .isolation-app {
+    display: none;
+  }
+  &.isolation {
+    .isolation-app {
+      display: block;
+    }
+  }
+  .system-spinning{
+    left:50%;
+    top:30%;
+    transform: translate(-50%,-50%);
+    position: absolute;
+  }
+}
+

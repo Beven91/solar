@@ -1,0 +1,174 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Crash renders error 1`] = `
+<PageError
+  onClick={[Function]}
+>
+  <Crash
+    btnText="返回"
+    className=""
+    icon=""
+    message="大侠别急，您可点击以返回试试~"
+    onClick={[Function]}
+    title="页面竟然崩溃了"
+  >
+    <div
+      className="crash-component  "
+    >
+      <img
+        className="logo"
+        src=""
+      />
+      <div
+        className="crash-title"
+      >
+         
+        页面竟然崩溃了
+      </div>
+      <div
+        className="crash-description"
+      >
+        大侠别急，您可点击以返回试试~
+      </div>
+      <div
+        className="crash-button"
+        onClick={[Function]}
+      >
+         
+        返回
+         
+      </div>
+    </div>
+  </Crash>
+</PageError>
+`;
+
+exports[`Crash renders error title 1`] = `
+<PageError
+  onClick={[Function]}
+  title="出错啦..."
+>
+  <Crash
+    btnText="返回"
+    className=""
+    icon=""
+    message="大侠别急，您可点击以返回试试~"
+    onClick={[Function]}
+    title="出错啦..."
+  >
+    <div
+      className="crash-component  "
+    >
+      <img
+        className="logo"
+        src=""
+      />
+      <div
+        className="crash-title"
+      >
+         
+        出错啦...
+      </div>
+      <div
+        className="crash-description"
+      >
+        大侠别急，您可点击以返回试试~
+      </div>
+      <div
+        className="crash-button"
+        onClick={[Function]}
+      >
+         
+        返回
+         
+      </div>
+    </div>
+  </Crash>
+</PageError>
+`;
+
+exports[`Crash renders not-found 1`] = `
+<Notfound
+  title="这是一个未知的领域..."
+>
+  <Crash
+    btnText="返回"
+    className=""
+    icon=""
+    message="大侠别急，您可点击以返回试试~"
+    onClick={[Function]}
+    title="这是一个未知的领域..."
+  >
+    <div
+      className="crash-component  "
+    >
+      <img
+        className="logo"
+        src=""
+      />
+      <div
+        className="crash-title"
+      >
+         
+        这是一个未知的领域...
+      </div>
+      <div
+        className="crash-description"
+      >
+        大侠别急，您可点击以返回试试~
+      </div>
+      <div
+        className="crash-button"
+        onClick={[Function]}
+      >
+         
+        返回
+         
+      </div>
+    </div>
+  </Crash>
+</Notfound>
+`;
+
+exports[`Crash renders not-found title 1`] = `
+<Notfound
+  title="404页面"
+>
+  <Crash
+    btnText="返回"
+    className=""
+    icon=""
+    message="大侠别急，您可点击以返回试试~"
+    onClick={[Function]}
+    title="404页面"
+  >
+    <div
+      className="crash-component  "
+    >
+      <img
+        className="logo"
+        src=""
+      />
+      <div
+        className="crash-title"
+      >
+         
+        404页面
+      </div>
+      <div
+        className="crash-description"
+      >
+        大侠别急，您可点击以返回试试~
+      </div>
+      <div
+        className="crash-button"
+        onClick={[Function]}
+      >
+         
+        返回
+         
+      </div>
+    </div>
+  </Crash>
+</Notfound>
+`;

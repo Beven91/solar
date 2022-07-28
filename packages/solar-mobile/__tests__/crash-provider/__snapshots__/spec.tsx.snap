@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Crash renders error and custom Error 1`] = `
+<CrashProvider
+  view={[Function]}
+  visible={false}
+>
+  <MyError
+    error="渲染异常"
+  >
+    <div>
+      AAA
+    </div>
+  </MyError>
+</CrashProvider>
+`;
+
+exports[`Crash renders error control 1`] = `
+<CrashProvider
+  view={[Function]}
+  visible={false}
+>
+  <div>
+    hello
+  </div>
+</CrashProvider>
+`;
+
+exports[`Crash renders error control 2`] = `
+<CrashProvider
+  view={[Function]}
+  visible={true}
+>
+  <Crash
+    btnText="返回"
+    className=""
+    icon=""
+    message="大侠别急，您可点击以返回试试~"
+    onClick={[Function]}
+    title="页面竟然崩溃了"
+  >
+    <div
+      className="crash-component  "
+    >
+      <img
+        className="logo"
+        src=""
+      />
+      <div
+        className="crash-title"
+      >
+         
+        页面竟然崩溃了
+      </div>
+      <div
+        className="crash-description"
+      >
+        大侠别急，您可点击以返回试试~
+      </div>
+      <div
+        className="crash-button"
+        onClick={[Function]}
+      >
+         
+        返回
+         
+      </div>
+    </div>
+  </Crash>
+</CrashProvider>
+`;
+
+exports[`Crash renders normal 1`] = `
+<CrashProvider
+  view={[Function]}
+  visible={false}
+>
+  <div>
+    胜多负少防守打法
+  </div>
+</CrashProvider>
+`;
+
+exports[`Crash renders throw error 1`] = `
+<CrashProvider
+  view={[Function]}
+  visible={false}
+>
+  <Crash
+    btnText="返回"
+    className=""
+    icon=""
+    message="大侠别急，您可点击以返回试试~"
+    onClick={[Function]}
+    title="页面竟然崩溃了"
+  >
+    <div
+      className="crash-component  "
+    >
+      <img
+        className="logo"
+        src=""
+      />
+      <div
+        className="crash-title"
+      >
+         
+        页面竟然崩溃了
+      </div>
+      <div
+        className="crash-description"
+      >
+        大侠别急，您可点击以返回试试~
+      </div>
+      <div
+        className="crash-button"
+        onClick={[Function]}
+      >
+         
+        返回
+         
+      </div>
+    </div>
+  </Crash>
+</CrashProvider>
+`;

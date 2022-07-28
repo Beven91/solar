@@ -1,0 +1,9 @@
+.radio-list {
+  &.vertical{
+    .radio-list-item{
+      display: block;
+      height: 30px;
+      line-height: 30px;
+    }
+  }
+}

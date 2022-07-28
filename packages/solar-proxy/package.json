@@ -1,0 +1,17 @@
+{
+  "name":"solar-proxy",
+  "version": "1.2.14",
+  "main": "dist/proxy",
+  "types": "src/proxy",
+  "scripts": {
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "http-proxy": "^1.17.0",
+    "cookie":"^0.4.1"
+  }
+}

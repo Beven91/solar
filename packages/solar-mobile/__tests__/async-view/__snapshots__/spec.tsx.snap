@@ -1,0 +1,138 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AsyncView load async component not visible 1`] = `
+<AsyncView
+  component={[Function]}
+  visible={false}
+/>
+`;
+
+exports[`AsyncView load async component props change to common 1`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+/>
+`;
+
+exports[`AsyncView load async component props change to common 2`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+>
+  <div
+    className="async-view"
+  >
+    <AnimateView2
+      component={[Function]}
+      visible={true}
+    >
+      <div
+        className="animate-view2"
+      >
+        组件内部内容
+      </div>
+    </AnimateView2>
+  </div>
+</AsyncView>
+`;
+
+exports[`AsyncView load async component visible 1`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+/>
+`;
+
+exports[`AsyncView load async component visible 2`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+/>
+`;
+
+exports[`AsyncView load common component not visible 1`] = `
+<AsyncView
+  component={[Function]}
+  visible={false}
+/>
+`;
+
+exports[`AsyncView load common component visible 1`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+>
+  <div
+    className="async-view"
+  >
+    <AnimateView
+      component={[Function]}
+      visible={true}
+    >
+      <div
+        className="animate-view"
+      >
+        组件内部内容
+      </div>
+    </AnimateView>
+  </div>
+</AsyncView>
+`;
+
+exports[`AsyncView load common component visible 2`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+>
+  <div
+    className="async-view"
+  >
+    <AnimateView
+      component={[Function]}
+      visible={true}
+    >
+      <div
+        className="animate-view"
+      >
+        组件内部内容
+      </div>
+    </AnimateView>
+  </div>
+</AsyncView>
+`;
+
+exports[`AsyncView update component to not visible 1`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+/>
+`;
+
+exports[`AsyncView update component to not visible 2`] = `
+<AsyncView
+  component={[Function]}
+  visible={true}
+/>
+`;
+
+exports[`AsyncView update component to not visible 3`] = `
+<AsyncView
+  component={[Function]}
+  visible={false}
+>
+  <div
+    className="async-view"
+  >
+    <AnimateView
+      component={[Function]}
+      visible={true}
+    >
+      <div
+        className="animate-view"
+      >
+        异步组件内部内容
+      </div>
+    </AnimateView>
+  </div>
+</AsyncView>
+`;

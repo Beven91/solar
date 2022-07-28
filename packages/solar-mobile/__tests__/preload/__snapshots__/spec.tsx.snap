@@ -1,0 +1,140 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Preload show 1`] = `
+<body>
+  <div
+    id="__preload_container__"
+  >
+    <div
+      class="preload no-mask"
+    >
+      <span>
+        <div
+          class="preload-icon default"
+        >
+          <div
+            class="animating"
+          />
+        </div>
+        <div
+          class="preload-text"
+        >
+          加载中...
+        </div>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Preload show 2`] = `
+<body>
+  <div
+    id="__preload_container__"
+  />
+</body>
+`;
+
+exports[`Preload show 3`] = `
+<body>
+  <div
+    id="__preload_container__"
+  >
+    <div
+      class="preload no-mask"
+    >
+      <span>
+        <div
+          class="preload-icon default"
+        >
+          <div
+            class="animating"
+          />
+        </div>
+        <div
+          class="preload-text"
+        >
+          请稍后
+        </div>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Preload show 4`] = `
+<body>
+  <div
+    id="__preload_container__"
+  >
+    <div
+      class="preload no-mask"
+    >
+      <span>
+        <div
+          class="preload-icon default"
+        >
+          <div
+            class="animating"
+          />
+        </div>
+        <div
+          class="preload-text"
+        >
+          请稍后
+        </div>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Preload show 5`] = `
+<body>
+  <div
+    id="__preload_container__"
+  >
+    <div
+      class="preload am-toast-mask"
+    >
+      <span>
+        <div
+          class="preload-icon default"
+        >
+          <div
+            class="animating"
+          />
+        </div>
+        <div
+          class="preload-text"
+        >
+          请稍后
+        </div>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Preload show 6`] = `
+<body>
+  <div
+    id="__preload_container__"
+  >
+    <div
+      class="preload am-toast-mask"
+    >
+      <span>
+        <div
+          class="preload-icon default"
+        >
+          <div
+            class="animating"
+          />
+        </div>
+        
+      </span>
+    </div>
+  </div>
+</body>
+`;

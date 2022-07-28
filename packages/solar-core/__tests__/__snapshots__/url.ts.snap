@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test Url detail?id=2#order/list 1`] = `
+Url {
+  "hashParams": Object {
+    "a": "",
+    "id": "233",
+  },
+  "hashPath": "order/list",
+  "hostname": "",
+  "params": Object {
+    "id": "2",
+  },
+  "pathname": "detail",
+  "port": "",
+  "protocol": "",
+  "search": "id=2",
+}
+`;
+
+exports[`test Url https://www.solar.com 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "",
+  "hostname": "www.solar.com",
+  "params": Object {},
+  "pathname": "",
+  "port": "",
+  "protocol": "https:",
+  "search": "",
+}
+`;
+
+exports[`test Url https://www.solar.com/ 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "",
+  "hostname": "www.solar.com",
+  "params": Object {},
+  "pathname": "/",
+  "port": "",
+  "protocol": "https:",
+  "search": "",
+}
+`;
+
+exports[`test Url https://www.solar.com/detail 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "",
+  "hostname": "www.solar.com",
+  "params": Object {},
+  "pathname": "/detail",
+  "port": "",
+  "protocol": "https:",
+  "search": "",
+}
+`;
+
+exports[`test Url https://www.solar.com/detail#orderass 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "orderass",
+  "hostname": "www.solar.com",
+  "params": Object {},
+  "pathname": "/detail",
+  "port": "",
+  "protocol": "https:",
+  "search": "",
+}
+`;
+
+exports[`test Url https://www.solar.com/detail?id=2 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "",
+  "hostname": "www.solar.com",
+  "params": Object {
+    "id": "2",
+  },
+  "pathname": "/detail",
+  "port": "",
+  "protocol": "https:",
+  "search": "id=2",
+}
+`;
+
+exports[`test Url https://www.solar.com/detail?id=2#order/list 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "order/list",
+  "hostname": "www.solar.com",
+  "params": Object {
+    "id": "2",
+  },
+  "pathname": "/detail",
+  "port": "",
+  "protocol": "https:",
+  "search": "id=2",
+}
+`;
+
+exports[`test Url https://www.solar.com/detail?id=2#order/list?age=18&name=hello&purl= 1`] = `
+Url {
+  "hashParams": Object {
+    "age": "18",
+    "name": "hello",
+    "purl": "https%3A%2F%2Fwww.solar.com%2Fdetail%3Fname%3D22%23%2Fhello%3Fid%3D20",
+  },
+  "hashPath": "order/list",
+  "hostname": "www.solar.com",
+  "params": Object {
+    "id": "2",
+  },
+  "pathname": "/detail",
+  "port": "",
+  "protocol": "https:",
+  "search": "id=2",
+}
+`;
+
+exports[`test Url https://www.solar.com/detail?id=2&url= 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "",
+  "hostname": "www.solar.com",
+  "params": Object {
+    "id": "2",
+    "url": "https%3A%2F%2Fwww.solar.com%2Fdetail%3Fname%3D22%23%2Fhello%3Fid%3D20",
+  },
+  "pathname": "/detail",
+  "port": "",
+  "protocol": "https:",
+  "search": "id=2&url=https%3A%2F%2Fwww.solar.com%2Fdetail%3Fname%3D22%23%2Fhello%3Fid%3D20",
+}
+`;
+
+exports[`test Url https://www.solar.com:180/detail 1`] = `
+Url {
+  "hashParams": Object {},
+  "hashPath": "",
+  "hostname": "www.solar.com",
+  "params": Object {},
+  "pathname": "/detail",
+  "port": "180",
+  "protocol": "https:",
+  "search": "",
+}
+`;

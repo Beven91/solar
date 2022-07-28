@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Validation event 1`] = `
+Array [
+  Object {
+    "message": "用户名不能为空",
+    "name": "userName",
+  },
+  Object {
+    "message": "密码不能为空",
+    "name": "password",
+  },
+]
+`;
+
+exports[`Validation event 2`] = `
+Array [
+  Object {
+    "message": "最多可以输入 4 个字符",
+    "name": "userName",
+  },
+  Object {
+    "message": "密码不能为空",
+    "name": "password",
+  },
+]
+`;

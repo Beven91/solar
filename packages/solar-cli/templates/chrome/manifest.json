@@ -1,0 +1,50 @@
+{
+  "name": "$projectName$",
+  "short_name": "$projectName$",
+  "description": "$projectName$",
+  "version": "0.0.1",
+  "minimum_chrome_version": "28",
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "64": "logo.png",
+    "128": "logo.png"
+  },
+  "browser_action": {
+    "default_icon": "logo.png",
+    "default_popup": "index.html#popup"
+  },
+  "background": {
+    "page": "index.html#background"
+  },
+  "options_ui":{
+    "page":"index.html#options"
+  },
+  "devtools_page": "index.html#dev-tools",
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "converted_from_user_script": true,
+  "permissions": [
+    "proxy",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "http://*/*",
+    "https://*/*",
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "css": [],
+      "run_at": "document_idle",
+      "js": [
+        "packages/$projectName$/content-script.js"
+      ]
+    }
+  ],
+  "manifest_version": 2
+}

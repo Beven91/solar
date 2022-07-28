@@ -1,0 +1,18 @@
+{
+  "name": "solar-docs",
+  "version": "1.0.1",
+  "bin": {
+    "solar-docs": "bin/cli.js"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "vuepress": "^1.9.7",
+    "deepmerge":"^4.2.2",
+    "@babel/parser":"^7.18.5",
+    "@babel/types":"^7.18.4",
+    "@babel/traverse":"^7.18.5",
+    "@babel/generator":"^7.18.2"
+  }
+}

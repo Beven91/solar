@@ -1,0 +1,547 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`abstract-picker renders correctly 1`] = `
+<AbstractPickerTest>
+  <div
+    style={
+      Object {
+        "margin": "0px auto",
+        "padding": 50,
+        "width": 800,
+      }
+    }
+  >
+    <FormItem
+      label="用户"
+      labelCol={
+        Object {
+          "sm": Object {
+            "span": 6,
+          },
+          "xs": Object {
+            "span": 24,
+          },
+        }
+      }
+      wrapperCol={
+        Object {
+          "sm": Object {
+            "span": 16,
+          },
+          "xs": Object {
+            "span": 24,
+          },
+        }
+      }
+    >
+      <Row
+        className="ant-form-item"
+        key="row"
+      >
+        <div
+          className="ant-row ant-form-item"
+          style={Object {}}
+        >
+          <FormItemLabel
+            label="用户"
+            labelCol={
+              Object {
+                "sm": Object {
+                  "span": 6,
+                },
+                "xs": Object {
+                  "span": 24,
+                },
+              }
+            }
+            prefixCls="ant-form"
+            wrapperCol={
+              Object {
+                "sm": Object {
+                  "span": 16,
+                },
+                "xs": Object {
+                  "span": 24,
+                },
+              }
+            }
+          >
+            <Col
+              className="ant-form-item-label"
+              sm={
+                Object {
+                  "span": 6,
+                }
+              }
+              xs={
+                Object {
+                  "span": 24,
+                }
+              }
+            >
+              <div
+                className="ant-col ant-form-item-label ant-col-xs-24 ant-col-sm-6"
+                style={Object {}}
+              >
+                <label
+                  className=""
+                  title="用户"
+                >
+                  用户
+                </label>
+              </div>
+            </Col>
+          </FormItemLabel>
+          <FormItemInput
+            errors={Array []}
+            label="用户"
+            labelCol={
+              Object {
+                "sm": Object {
+                  "span": 6,
+                },
+                "xs": Object {
+                  "span": 24,
+                },
+              }
+            }
+            onDomErrorVisibleChange={[Function]}
+            prefixCls="ant-form"
+            status=""
+            validateStatus=""
+            wrapperCol={
+              Object {
+                "sm": Object {
+                  "span": 16,
+                },
+                "xs": Object {
+                  "span": 24,
+                },
+              }
+            }
+          >
+            <Col
+              className="ant-form-item-control"
+              sm={
+                Object {
+                  "span": 16,
+                }
+              }
+              xs={
+                Object {
+                  "span": 24,
+                }
+              }
+            >
+              <div
+                className="ant-col ant-form-item-control ant-col-xs-24 ant-col-sm-16"
+                style={Object {}}
+              >
+                <div
+                  className="ant-form-item-control-input"
+                >
+                  <div
+                    className="ant-form-item-control-input-content"
+                  >
+                    <InputPicker
+                      columns={
+                        Array [
+                          Object {
+                            "name": "name",
+                            "title": "用户名",
+                          },
+                          Object {
+                            "name": "sex",
+                            "title": "性别",
+                          },
+                          Object {
+                            "name": "status",
+                            "title": "状态",
+                          },
+                          Object {
+                            "name": "department",
+                            "title": "部门",
+                          },
+                        ]
+                      }
+                      onChange={[Function]}
+                      onQuery={[Function]}
+                      placeholder=""
+                      searchFields={
+                        Array [
+                          Object {
+                            "name": "name",
+                            "title": "名称",
+                          },
+                        ]
+                      }
+                      value="王五"
+                      valueField="name"
+                      width={600}
+                    >
+                      <Input
+                        addonAfter={
+                          <ObjectPicker
+                            columns={
+                              Array [
+                                Object {
+                                  "name": "name",
+                                  "title": "用户名",
+                                },
+                                Object {
+                                  "name": "sex",
+                                  "title": "性别",
+                                },
+                                Object {
+                                  "name": "status",
+                                  "title": "状态",
+                                },
+                                Object {
+                                  "name": "department",
+                                  "title": "部门",
+                                },
+                              ]
+                            }
+                            onChange={[Function]}
+                            onQuery={[Function]}
+                            placeholder=""
+                            rowKey="name"
+                            searchFields={
+                              Array [
+                                Object {
+                                  "name": "name",
+                                  "title": "名称",
+                                },
+                              ]
+                            }
+                            select="single"
+                            value={
+                              Array [
+                                Object {
+                                  "name": "王五",
+                                },
+                              ]
+                            }
+                            width={600}
+                          >
+                            <ForwardRef(SearchOutlined) />
+                          </ObjectPicker>
+                        }
+                        className=" abstract-picker-input"
+                        placeholder=""
+                        type="text"
+                        value="王五"
+                      >
+                        <ClearableLabeledInput
+                          addonAfter={
+                            <ObjectPicker
+                              columns={
+                                Array [
+                                  Object {
+                                    "name": "name",
+                                    "title": "用户名",
+                                  },
+                                  Object {
+                                    "name": "sex",
+                                    "title": "性别",
+                                  },
+                                  Object {
+                                    "name": "status",
+                                    "title": "状态",
+                                  },
+                                  Object {
+                                    "name": "department",
+                                    "title": "部门",
+                                  },
+                                ]
+                              }
+                              onChange={[Function]}
+                              onQuery={[Function]}
+                              placeholder=""
+                              rowKey="name"
+                              searchFields={
+                                Array [
+                                  Object {
+                                    "name": "name",
+                                    "title": "名称",
+                                  },
+                                ]
+                              }
+                              select="single"
+                              value={
+                                Array [
+                                  Object {
+                                    "name": "王五",
+                                  },
+                                ]
+                              }
+                              width={600}
+                            >
+                              <ForwardRef(SearchOutlined) />
+                            </ObjectPicker>
+                          }
+                          bordered={true}
+                          className=" abstract-picker-input"
+                          element={
+                            <input
+                              className="ant-input"
+                              onBlur={[Function]}
+                              onChange={[Function]}
+                              onFocus={[Function]}
+                              onKeyDown={[Function]}
+                              placeholder=""
+                              type="text"
+                              value="王五"
+                            />
+                          }
+                          focused={false}
+                          handleReset={[Function]}
+                          inputType="input"
+                          placeholder=""
+                          prefixCls="ant-input"
+                          triggerFocus={[Function]}
+                          type="text"
+                          value="王五"
+                        >
+                          <span
+                            className="ant-input-group-wrapper  abstract-picker-input"
+                          >
+                            <span
+                              className="ant-input-wrapper ant-input-group"
+                            >
+                              <input
+                                className="ant-input"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                onFocus={[Function]}
+                                onKeyDown={[Function]}
+                                placeholder=""
+                                style={null}
+                                type="text"
+                                value="王五"
+                              />
+                              <span
+                                className="ant-input-group-addon"
+                              >
+                                <ObjectPicker
+                                  columns={
+                                    Array [
+                                      Object {
+                                        "name": "name",
+                                        "title": "用户名",
+                                      },
+                                      Object {
+                                        "name": "sex",
+                                        "title": "性别",
+                                      },
+                                      Object {
+                                        "name": "status",
+                                        "title": "状态",
+                                      },
+                                      Object {
+                                        "name": "department",
+                                        "title": "部门",
+                                      },
+                                    ]
+                                  }
+                                  onChange={[Function]}
+                                  onQuery={[Function]}
+                                  placeholder=""
+                                  rowKey="name"
+                                  searchFields={
+                                    Array [
+                                      Object {
+                                        "name": "name",
+                                        "title": "名称",
+                                      },
+                                    ]
+                                  }
+                                  select="single"
+                                  value={
+                                    Array [
+                                      Object {
+                                        "name": "王五",
+                                      },
+                                    ]
+                                  }
+                                  width={600}
+                                >
+                                  <div>
+                                    <div
+                                      onClick={[Function]}
+                                    >
+                                      <div>
+                                        <ForwardRef(SearchOutlined)>
+                                          <AntdIcon
+                                            icon={
+                                              Object {
+                                                "icon": Object {
+                                                  "attrs": Object {
+                                                    "focusable": "false",
+                                                    "viewBox": "64 64 896 896",
+                                                  },
+                                                  "children": Array [
+                                                    Object {
+                                                      "attrs": Object {
+                                                        "d": "M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z",
+                                                      },
+                                                      "tag": "path",
+                                                    },
+                                                  ],
+                                                  "tag": "svg",
+                                                },
+                                                "name": "search",
+                                                "theme": "outlined",
+                                              }
+                                            }
+                                          >
+                                            <span
+                                              aria-label="search"
+                                              className="anticon anticon-search"
+                                              role="img"
+                                            >
+                                              <IconReact
+                                                icon={
+                                                  Object {
+                                                    "icon": Object {
+                                                      "attrs": Object {
+                                                        "focusable": "false",
+                                                        "viewBox": "64 64 896 896",
+                                                      },
+                                                      "children": Array [
+                                                        Object {
+                                                          "attrs": Object {
+                                                            "d": "M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z",
+                                                          },
+                                                          "tag": "path",
+                                                        },
+                                                      ],
+                                                      "tag": "svg",
+                                                    },
+                                                    "name": "search",
+                                                    "theme": "outlined",
+                                                  }
+                                                }
+                                              >
+                                                <svg
+                                                  aria-hidden="true"
+                                                  data-icon="search"
+                                                  fill="currentColor"
+                                                  focusable="false"
+                                                  height="1em"
+                                                  key="svg-search"
+                                                  viewBox="64 64 896 896"
+                                                  width="1em"
+                                                >
+                                                  <path
+                                                    d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"
+                                                    key="svg-search-svg-0"
+                                                  />
+                                                </svg>
+                                              </IconReact>
+                                            </span>
+                                          </AntdIcon>
+                                        </ForwardRef(SearchOutlined)>
+                                      </div>
+                                    </div>
+                                    <Modal
+                                      cancelText="取消"
+                                      confirmLoading={false}
+                                      okButtonProps={
+                                        Object {
+                                          "loading": false,
+                                        }
+                                      }
+                                      okText="确定选择"
+                                      okType="primary"
+                                      onCancel={[Function]}
+                                      onOk={[Function]}
+                                      title="请选择"
+                                      visible={false}
+                                      width={600}
+                                      wrapClassName="object-picker-modal"
+                                    >
+                                      <Dialog
+                                        cancelText="取消"
+                                        closeIcon={
+                                          <span
+                                            className="ant-modal-close-x"
+                                          >
+                                            <ForwardRef(CloseOutlined)
+                                              className="ant-modal-close-icon"
+                                            />
+                                          </span>
+                                        }
+                                        confirmLoading={false}
+                                        focusTriggerAfterClose={true}
+                                        footer={
+                                          <LocaleReceiver
+                                            componentName="Modal"
+                                            defaultLocale={
+                                              Object {
+                                                "cancelText": "Cancel",
+                                                "justOkText": "OK",
+                                                "okText": "OK",
+                                              }
+                                            }
+                                          >
+                                            [Function]
+                                          </LocaleReceiver>
+                                        }
+                                        maskTransitionName="ant-fade"
+                                        okButtonProps={
+                                          Object {
+                                            "loading": false,
+                                          }
+                                        }
+                                        okText="确定选择"
+                                        okType="primary"
+                                        onCancel={[Function]}
+                                        onClose={[Function]}
+                                        onOk={[Function]}
+                                        prefixCls="ant-modal"
+                                        title="请选择"
+                                        transitionName="ant-zoom"
+                                        visible={false}
+                                        width={600}
+                                        wrapClassName="object-picker-modal"
+                                      >
+                                        <PortalWrapper
+                                          visible={false}
+                                        />
+                                      </Dialog>
+                                    </Modal>
+                                  </div>
+                                </ObjectPicker>
+                              </span>
+                            </span>
+                          </span>
+                        </ClearableLabeledInput>
+                      </Input>
+                    </InputPicker>
+                  </div>
+                </div>
+                <ErrorList
+                  errors={Array []}
+                  onDomErrorVisibleChange={[Function]}
+                >
+                  <CSSMotion
+                    motionAppear={true}
+                    motionDeadline={500}
+                    motionName="ant-show-help"
+                    onLeaveEnd={[Function]}
+                    removeOnLeave={true}
+                    visible={false}
+                  >
+                    <DomWrapper />
+                  </CSSMotion>
+                </ErrorList>
+              </div>
+            </Col>
+          </FormItemInput>
+        </div>
+      </Row>
+    </FormItem>
+  </div>
+</AbstractPickerTest>
+`;

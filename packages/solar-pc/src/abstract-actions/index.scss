@@ -1,0 +1,23 @@
+.abstract-actions {
+  height: 100%;
+
+  .abstract-actions-object,
+  .abstract-actions-list {
+    height: 100%
+  }
+}
+
+.abstract-actions-drawer {
+  .abstract-object-wrap{
+    padding-top:0px;
+  }
+  .abstract-actions-drawer-footer {
+    text-align: center;
+
+    .btn-ok,
+    .btn-cancel {
+      width: 120px;
+      margin-right: 15px;
+    }
+  }
+}

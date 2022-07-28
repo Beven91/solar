@@ -1,0 +1,13 @@
+<view class="index-container">
+  <!-- 页面授权 -->
+  <view class="header">
+    <image class="logo" src="./images/logo.png" mode="aspectFill" />
+    <view class="title">Solar小程序</view>
+  </view>
+  <view class="body">
+    <view class="description">申请获得您的公开信息(昵称，头像等)</view>
+    <button class="btn-aquired" type="primary" open-type="getUserInfo" bindtap="handlePreQueryUser" bindgetuserinfo="handlePostQueryUser">
+      授权
+    </button>
+  </view>
+</view>

@@ -1,0 +1,32 @@
+.home-container {
+  height: 100%;
+  .header {
+    text-align: center;
+    .title {
+      font-size: 32px;
+      margin-top: 12px;
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin: 100px auto 0px auto;
+    }
+  }
+  .body {
+    text-align: center;
+    .welcome {
+      margin: 40px 0px 0px 0px;
+    }
+    .desc{
+      margin-top:80px;
+      font-size:34px;
+      color:#8f8f8f;
+    }
+    .step{
+      width:360px;
+      margin:40px auto 0px auto;
+      font-size:34px;
+      text-align:left;
+    }
+  }
+}

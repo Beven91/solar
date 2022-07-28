@@ -1,0 +1,399 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pagination pagination 1`] = `
+<div
+  className="reverser-scroll order-list pagination-view"
+  onScroll={[Function]}
+>
+  <div
+    className="reverse-header"
+  >
+    <div
+      className="scroll-end-loading"
+    >
+      <svg
+        className="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          xlinkHref="#loading"
+        />
+      </svg>
+      <span
+        className="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+  <div>
+    <div
+      className="row-2"
+    >
+      <div>
+        hello_2
+      </div>
+    </div>
+    <div
+      className="row-1"
+    >
+      <div>
+        hello_1
+      </div>
+    </div>
+    <div
+      className="row-0"
+    >
+      <div>
+        hello_0
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination bottom-to-top 1`] = `
+<div
+  className="reverser-scroll reverse-pagination pagination-view"
+  onScroll={[Function]}
+>
+  <div
+    className="reverse-header"
+  >
+    <div
+      className="scroll-end-loading"
+    >
+      <svg
+        className="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          xlinkHref="#loading"
+        />
+      </svg>
+      <span
+        className="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+  <div>
+    <div
+      className="row-2"
+    >
+      <div>
+        hello_2
+      </div>
+    </div>
+    <div
+      className="row-1"
+    >
+      <div>
+        hello_1
+      </div>
+    </div>
+    <div
+      className="row-0"
+    >
+      <div>
+        hello_0
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination custom scroller 1`] = `
+<div
+  className="order-list pagination-view"
+>
+  <div
+    className="am-list-body"
+  >
+    <div
+      className="list-view-section-body"
+    >
+      <div>
+        hello_0
+      </div>
+      <div>
+        hello_1
+      </div>
+      <div>
+        hello_2
+      </div>
+    </div>
+  </div>
+  <div
+    className="am-list-footer"
+  >
+    <div
+      className="scroll-end-loading"
+    >
+      <svg
+        className="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          xlinkHref="#loading"
+        />
+      </svg>
+      <span
+        className="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination custom scroller 2`] = `
+<div
+  class="order-list pagination-view"
+>
+  <div
+    class="am-list-body"
+  >
+    <div
+      class="list-view-section-body"
+    >
+      <div>
+        hello_0
+      </div>
+      <div>
+        hello_1
+      </div>
+      <div>
+        hello_2
+      </div>
+    </div>
+  </div>
+  <div
+    class="am-list-footer"
+  >
+    <div
+      class="scroll-end-loading"
+    >
+      <svg
+        class="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          href="#loading"
+        />
+      </svg>
+      <span
+        class="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination custom scroller 3`] = `
+<div
+  class="order-list pagination-view"
+>
+  <div
+    class="am-list-body"
+  >
+    <div
+      class="list-view-section-body"
+    >
+      <div>
+        hello_0
+      </div>
+      <div>
+        hello_1
+      </div>
+      <div>
+        hello_2
+      </div>
+      <div>
+        hello_0
+      </div>
+      <div>
+        hello_1
+      </div>
+      <div>
+        hello_2
+      </div>
+    </div>
+  </div>
+  <div
+    class="am-list-footer"
+  >
+    <div
+      class="scroll-end-loading"
+    >
+      <svg
+        class="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          href="#loading"
+        />
+      </svg>
+      <span
+        class="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination increment 1`] = `
+<div
+  className="order-list pagination-view"
+>
+  <div
+    className="am-list-body"
+  >
+    <div
+      className="list-view-section-body"
+    >
+      <div>
+        hello_0
+      </div>
+      <div>
+        hello_1
+      </div>
+      <div>
+        hello_2
+      </div>
+    </div>
+  </div>
+  <div
+    className="am-list-footer"
+  >
+    <div
+      className="scroll-end-loading"
+    >
+      <svg
+        className="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          xlinkHref="#loading"
+        />
+      </svg>
+      <span
+        className="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination increment 2`] = `
+<div
+  className="order-list pagination-view"
+>
+  <div
+    className="am-list-body"
+  >
+    <div
+      className="list-view-section-body"
+    >
+      <div>
+        hello_0
+      </div>
+      <div>
+        hello_1
+      </div>
+      <div>
+        hello_2
+      </div>
+    </div>
+  </div>
+  <div
+    className="am-list-footer"
+  >
+    <div
+      className="scroll-end-loading"
+    >
+      <svg
+        className="loading-icon am-icon am-icon-loading am-icon-xxs"
+      >
+        <use
+          xlinkHref="#loading"
+        />
+      </svg>
+      <span
+        className="loading-text"
+      >
+        加载中，请稍后....
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Pagination pagination.componentWillReceiveProps 1`] = `
+<div
+  class="pagination-view undefined list-empty"
+/>
+`;
+
+exports[`Pagination pagination-revese 1`] = `
+<div
+  className="order-list pagination-view am-list-view-scrollview"
+  style={
+    Object {
+      "WebkitOverflowScrolling": "touch",
+      "overflow": "auto",
+      "position": "relative",
+    }
+  }
+>
+  <div
+    className="am-list-view-scrollview-content am-list"
+    style={
+      Object {
+        "minWidth": "100%",
+        "position": "absolute",
+      }
+    }
+  >
+    <div
+      className="am-list-body"
+    >
+      <div
+        className="list-view-section-body"
+      >
+        <div>
+          hello_0
+        </div>
+        <div>
+          hello_1
+        </div>
+        <div>
+          hello_2
+        </div>
+      </div>
+    </div>
+    <div
+      className="am-list-footer"
+    >
+      <div
+        className="scroll-end-loading"
+      >
+        <svg
+          className="loading-icon am-icon am-icon-loading am-icon-xxs"
+        >
+          <use
+            xlinkHref="#loading"
+          />
+        </svg>
+        <span
+          className="loading-text"
+        >
+          加载中，请稍后....
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

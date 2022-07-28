@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Image no src 1`] = `
+<Image>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="?x-oss-process=image/resize,w_800/format,webp"
+  />
+</Image>
+`;
+
+exports[`Image render default 1`] = `
+<Image
+  src="http://www.ireeder.com/image/a.jpg"
+>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="http://www.ireeder.com/image/a.jpg?x-oss-process=image/resize,w_375/format,webp"
+  />
+</Image>
+`;
+
+exports[`Image render width default url 1`] = `
+<Image
+  defUrl="http://www.ireeder.com/image/a.jpg"
+  src=""
+>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="http://www.ireeder.com/image/a.jpg?x-oss-process=image/resize,w_375/format,webp"
+  />
+</Image>
+`;
+
+exports[`Image render width default url 2`] = `
+<Image
+  defUrl="http://www.ireeder.com/image/a.jpg"
+  src="aliOSSDemoImage"
+>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="aliOSSDemoImage?x-oss-process=image/resize,w_375/format,webp"
+  />
+</Image>
+`;
+
+exports[`Image render width 云服务器 key 1`] = `
+<Image
+  src="aliOSSDemoImage"
+>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="aliOSSDemoImage?x-oss-process=image/resize,w_375/format,webp"
+  />
+</Image>
+`;
+
+exports[`Image support webp 1`] = `
+<Image
+  src="aliOSSDemoImage"
+>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="aliOSSDemoImage?x-oss-process=image/resize,w_800/format,webp"
+  />
+</Image>
+`;
+
+exports[`Image support webp 2`] = `
+<Image
+  src="aliOSSDemoImage"
+>
+  <img
+    className="image-dynamic  "
+    referrerPolicy="no-referrer"
+    src="aliOSSDemoImage?x-oss-process=image/resize,w_800/format,webp"
+  />
+</Image>
+`;

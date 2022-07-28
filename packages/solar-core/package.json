@@ -1,0 +1,54 @@
+{
+  "name": "solar-core",
+  "version": "2.3.3",
+  "description": "solar core",
+  "main": "src/index",
+  "types": "src/index",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "pre-commit": [
+    "test"
+  ],
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "common",
+    "util",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "qs": "^6.5.2",
+    "solar-proxy":"^1.1.9",
+    "whatwg-fetch": "^2.0.4"
+  },
+  "devDependencies": {
+    "solar-jest-mock": "^1.0.0"
+  },
+  "jest": {
+    "testURL": "https://solar.com/",
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": -10
+      }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/index.js",
+      "/node_modules/"
+    ],
+    "moduleNameMapper": {}
+  }
+}

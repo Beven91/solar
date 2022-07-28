@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Crash no message 1`] = `
+<Crash
+  btnText="返回"
+  className=""
+  icon=""
+  message="您还没有登录"
+  onClick={[Function]}
+  title="no-message"
+>
+  <div
+    className="crash-component  "
+  >
+    <img
+      className="logo"
+      src=""
+    />
+    <div
+      className="crash-title"
+    >
+       
+      no-message
+    </div>
+    <div
+      className="crash-description"
+    >
+      您还没有登录
+    </div>
+    <div
+      className="crash-button"
+      onClick={[Function]}
+    >
+       
+      返回
+       
+    </div>
+  </div>
+</Crash>
+`;
+
+exports[`Crash renders default 1`] = `
+<Crash
+  btnText="返回"
+  className=""
+  icon=""
+  message={null}
+  onClick={[Function]}
+  title="页面竟然崩溃了"
+>
+  <div
+    className="crash-component  "
+  >
+    <img
+      className="logo"
+      src=""
+    />
+    <div
+      className="crash-title"
+    >
+       
+      页面竟然崩溃了
+    </div>
+    <div
+      className="crash-button"
+      onClick={[Function]}
+    >
+       
+      返回
+       
+    </div>
+  </div>
+</Crash>
+`;
+
+exports[`Crash renders no button 1`] = `
+<Crash
+  btnText="返回"
+  className=""
+  icon="ASSSDF"
+  message="自定义图片"
+  onClick={null}
+  title="页面竟然崩溃了"
+>
+  <div
+    className="crash-component  "
+  >
+    <img
+      className="logo"
+      src="ASSSDF"
+    />
+    <div
+      className="crash-title"
+    >
+       
+      页面竟然崩溃了
+    </div>
+    <div
+      className="crash-description"
+    >
+      自定义图片
+    </div>
+  </div>
+</Crash>
+`;
+
+exports[`Crash renders not-found 1`] = `
+<Crash
+  btnText="返回"
+  className=""
+  icon=""
+  message="大侠别急，您可点击以返回试试~"
+  onClick={[Function]}
+  title="not-found"
+>
+  <div
+    className="crash-component  "
+  >
+    <img
+      className="logo"
+      src=""
+    />
+    <div
+      className="crash-title"
+    >
+       
+      not-found
+    </div>
+    <div
+      className="crash-description"
+    >
+      大侠别急，您可点击以返回试试~
+    </div>
+    <div
+      className="crash-button"
+      onClick={[Function]}
+    >
+       
+      返回
+       
+    </div>
+  </div>
+</Crash>
+`;
+
+exports[`Crash renders unlogin 1`] = `
+<Crash
+  btnText="返回"
+  className=""
+  icon=""
+  message="您还没有登录"
+  onClick={[Function]}
+  title="unlogin"
+>
+  <div
+    className="crash-component  "
+  >
+    <img
+      className="logo"
+      src=""
+    />
+    <div
+      className="crash-title"
+    >
+       
+      unlogin
+    </div>
+    <div
+      className="crash-description"
+    >
+      您还没有登录
+    </div>
+    <div
+      className="crash-button"
+      onClick={[Function]}
+    >
+       
+      返回
+       
+    </div>
+  </div>
+</Crash>
+`;

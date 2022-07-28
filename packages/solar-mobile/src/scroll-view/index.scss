@@ -1,0 +1,32 @@
+.scroll-view {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  /*重要：在chrome mobile firfox 下如果不设置此参数，会导致iscroll无法工作*/
+  touch-action: none !important;
+  .pagination-view {
+    overflow: visible !important;
+  }
+}
+
+.scroll-view.vertical {
+  height: 100%;
+}
+
+.scroll-view.horizon {
+  .scroll-inner-view {
+    height: 100%;
+    display: inline-block;
+  }
+}
+
+.scroll-view.no-iscroll {
+  height: 100%;
+  /*重要：在chrome mobile firfox 下如果不设置此参数，会导致iscroll无法工作*/
+  touch-action:initial !important;
+  overflow-y: auto;
+  .scroll-inner-view {
+    transform: translate(0px, 0px) translateZ(0px); 
+    position: relative;
+  }
+}

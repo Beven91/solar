@@ -1,0 +1,20 @@
+.pagination-view {
+
+  overflow: hidden !important;
+  overflow-y: auto !important;
+
+  .loading-icon {
+    margin-right: 5px;
+    margin-top: -1px;
+    vertical-align: middle;
+  }
+
+  .scroll-end-loading {
+    text-align: center;
+  }
+
+  .am-list-body {
+    border-top: 0px;
+    border-bottom: 0px;
+  }
+}

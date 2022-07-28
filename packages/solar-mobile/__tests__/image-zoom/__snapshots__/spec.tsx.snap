@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ImageZoom zoom full parameter 1`] = `
+<ImageZoom>
+  <div
+    onClick={[Function]}
+  >
+    <img
+      className="with-zoom"
+      data-zoom="https://static.solar.cn/T16lVbB4J41RCvBVdK.jpg"
+      src="https://static.solar.cn/T16lVbB4J41RCvBVdK.jpg?img=/rs,w_100"
+    />
+  </div>
+</ImageZoom>
+`;
+
+exports[`ImageZoom zoom full parameter 2`] = `
+<body>
+  <div>
+    
+        
+    <div
+      class="image-zoom-container show"
+    >
+      
+          
+      <div>
+        
+            
+        <img
+          class="image"
+          src="https://static.solar.cn/T16lVbB4J41RCvBVdK.jpg"
+        />
+        
+          
+      </div>
+      
+        
+    </div>
+    
+      
+  </div>
+</body>
+`;
+
+exports[`ImageZoom zoom full parameter 3`] = `<body />`;
+
+exports[`ImageZoom zoom img no src 1`] = `
+<ImageZoom>
+  <div
+    onClick={[Function]}
+  >
+    <img
+      className="default"
+    />
+  </div>
+</ImageZoom>
+`;
+
+exports[`ImageZoom zoom img no src 2`] = `<body />`;
+
+exports[`ImageZoom zoom img without data-zoom 1`] = `
+<ImageZoom>
+  <div
+    onClick={[Function]}
+  >
+    <img
+      className="default"
+      src="https://static.solar.cn/T16lVbB4J41RCvBVdK.jpg?img=/rs,w_100"
+    />
+  </div>
+</ImageZoom>
+`;
+
+exports[`ImageZoom zoom img without data-zoom 2`] = `
+<body>
+  <div>
+    
+        
+    <div
+      class="image-zoom-container show"
+    >
+      
+          
+      <div>
+        
+            
+        <img
+          class="image"
+          src="https://static.solar.cn/T16lVbB4J41RCvBVdK.jpg?img=/rs,w_100"
+        />
+        
+          
+      </div>
+      
+        
+    </div>
+    
+      
+  </div>
+</body>
+`;

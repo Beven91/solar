@@ -1,0 +1,29 @@
+{
+	"description": "$projectName$",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.0.4",
+	"appid": "wxd8508b92960f8f56",
+	"projectname": "$projectName$",
+	"miniprogramRoot": "dist/",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": []
+		}
+	}
+}

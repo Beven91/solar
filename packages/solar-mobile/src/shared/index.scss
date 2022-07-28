@@ -1,0 +1,22 @@
+.crash-guid-btn {
+  display: block;
+  width: 100px;
+  margin: 0px auto;
+  border: 1px solid #ff8046;
+  border-radius: 4px;
+  text-align: center;
+  color: #ff8046;
+  font-weight: 700;
+  padding: 3px 0px 7px 0px;
+
+  .back-icon {
+    vertical-align: middle;
+    margin-left: -8px;
+  }
+
+  .back-text {
+    font-size: 14px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
