@@ -142,7 +142,7 @@ function mainQuestions(context) {
         name: 'get',
         message: '请选择单个获取接口',
         when: (answer) => answer.serverHost !== 'local',
-        source: getNearlyListFilter(/get/),
+        source: getNearlyListFilter(/get|detail/),
       },
       {
         type: 'autocomplete',

@@ -5,28 +5,67 @@
 import './index.scss';
 import React from 'react';
 import Context, { ActionsContext } from './context';
+import TableContext, { AbstractTableContext } from '../abstract-table/context';
 import { ActionIfHook, ObjectIfHook, PopupIfHook, ListHook, DrawerIfHook } from './action';
 import { AbstractRow, InitialAction, SubmitAction } from '../interface';
 import { OnActionRoute } from '../abstract-table/types';
+import cellRenders from '../abstract-table/util/cellRenders';
+
+const runtime = {
+  isInitialize: true,
+};
+
+const updateRoute = () => runtime.isInitialize = false;
+
+window.addEventListener('hashchange', updateRoute);
+window.addEventListener('popstate', updateRoute);
+
+export interface ActionRoute {
+  // 当前页面动作路由模板 例如: order/:action/:id
+  path: string
+  // 当前路由对应的参数
+  params: Partial<InitialAction>
+}
+
+export interface ActionHistory {
+  replace(url: string): void
+  push(url: string): void
+  goBack: () => void
+}
 
 export interface AbstractActionsProps<TRow> {
+  // 当前动作
   action: string
+  // 当前自动做
   subAction?: string
+  // 样式类名
   className?: string
+  // 样式
   style?: React.CSSProperties
+  // 当前动作对应的数据
   model?: TRow
+  // 当前动作对应的数据的主键
   primaryKey?: string
   // 提交按钮是否展示loading
   confirmLoading?: boolean
   // 子动作是否提交中
   subConfirmLoading?: boolean
-  routeAction?: InitialAction
+  // 路由历史对象可用来进行动作切换后进行地址替换
+  history?: ActionHistory
+  // 使用路由模式时的路由参数，需配合history一起使用
+  route?: ActionRoute
+  // 当动作切换时触发
   onRoute?: OnActionRoute<TRow>
-  onRouteBack?: () => void
+  // 当取消动作切需要进行路由后退时触发,
+  onRouteBack?: (init?: boolean) => void
+  // 当取消动作时出发
   onCancel?: () => boolean | void
+  // 当取消子动作时出发
   onSubCancel?: () => void
+  // 当提交动作以及子动作时出发
   onSubmit?: (data: SubmitAction<TRow>) => void
-  [propName: string]: any
+  children?: React.ReactNode
+  [x: string]: any
 }
 
 export interface AbstractActionsState {
@@ -35,45 +74,44 @@ export interface AbstractActionsState {
 
 export default class AbstractActions<TRow extends AbstractRow> extends React.Component<AbstractActionsProps<TRow>, AbstractActionsState> {
   // 动作
-  static If = ActionIfHook
+  static If = ActionIfHook;
 
   // 带表单的动作
-  static Object = ObjectIfHook
+  static Object = ObjectIfHook;
 
   // 弹窗类型
-  static Popup = PopupIfHook
+  static Popup = PopupIfHook;
 
   // 列表动作
-  static List = ListHook
+  static List = ListHook;
 
   // Drawer表单
-  static Drawer = DrawerIfHook
+  static Drawer = DrawerIfHook;
 
-  preRouteAction: InitialAction
+  preRouteAction: InitialAction;
 
-  isNeedBack: boolean
+  isNeedBack: boolean;
 
-  containerRef = React.createRef<HTMLDivElement>()
+  containerRef = React.createRef<HTMLDivElement>();
 
-  shouldHideList = false
+  shouldHideList = false;
 
   get actionContext() {
-    const { onCancel, onSubCancel, subAction, onRouteBack, action, onSubmit, model: record, ...props } = this.props;
+    const { onCancel, onSubCancel, subAction, action, onSubmit, model: record, ...props } = this.props;
     return {
       record,
       onCancel: () => {
-        const isRoute = this.preRouteAction && this.preRouteAction.action == action;
         onCancel && onCancel();
-        this.isNeedBack = false;
-        if (isRoute && onRouteBack) {
-          onRouteBack();
+        if (this.isNeedBack) {
+          this.navigateBack();
         }
       },
       onSubmit: (values: TRow) => {
-        const isRoute = this.preRouteAction && this.preRouteAction.action == action;
         onSubmit && onSubmit({ action, model: values });
         subAction && onSubCancel && onSubCancel();
-        this.isNeedBack = !!(isRoute && onRouteBack);
+        if (this.isNeedBack) {
+          this.navigateBack();
+        }
       },
       onSubSubmit: (values: TRow) => {
         onSubmit && onSubmit({ action: subAction, model: values });
@@ -93,33 +131,46 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
     } as ActionsContext<TRow>;
   }
 
-  checkRouteAction() {
-    const { routeAction, onRoute, onRouteBack } = this.props;
-    const preRoute = (this.preRouteAction || {}) as InitialAction;
-    const currentRoute = routeAction || {} as InitialAction;
+  get tableContext() {
+    return {
+      onAction: (action) => {
+        const { onRoute } = this.props;
+        const data = cellRenders.createAction(action);
+        const { route } = this.props;
+        const url = data.create(route.path || '', action);
+        this.isNeedBack = true;
+        runtime.isInitialize = false;
+        this.props?.history?.push(url);
+        onRoute && onRoute(action);
+      },
+    } as AbstractTableContext;
+  }
 
-    if (this.props.action !== preRoute.action && this.isNeedBack) {
-      this.isNeedBack = false;
-      return onRouteBack();
-    }
-
-    if (currentRoute.action !== preRoute.action || currentRoute.id !== preRoute.id) {
-      if (this.isNeedBack) {
-        this.isNeedBack = false;
-        onRouteBack();
-      } else {
-        this.preRouteAction = routeAction;
-        onRoute(routeAction);
-      }
+  navigateBack() {
+    const { onRouteBack, route } = this.props;
+    if (onRouteBack) {
+      onRouteBack(runtime.isInitialize);
+      runtime.isInitialize = false;
+    } else if (runtime.isInitialize) {
+      runtime.isInitialize = false;
+      const empty = { action: '', id: '' };
+      const data = cellRenders.createAction({ action: '', id: '' });
+      const initUrl = data.create(route?.path || '', empty);
+      this.props.history?.replace(initUrl);
+    } else {
+      this.props.history?.goBack();
     }
   }
 
   componentDidMount() {
-    this.checkRouteAction();
+    const { route, onRoute } = this.props;
+    if (route && onRoute) {
+      this.isNeedBack = true;
+      onRoute(route.params as InitialAction);
+    }
   }
 
   componentDidUpdate() {
-    this.checkRouteAction();
     if (!this.containerRef.current) return;
     this.containerRef.current.style.display = this.shouldHideList ? 'none' : 'block';
   }
@@ -130,7 +181,11 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
     return (
       <div className={`abstract-actions ${className || ''}`} style={style}>
         <Context.Provider value={this.actionContext}>
-          {this.props.children}
+          <TableContext.Provider
+            value={this.tableContext}
+          >
+            {this.props.children}
+          </TableContext.Provider>
         </Context.Provider>
       </div>
     );

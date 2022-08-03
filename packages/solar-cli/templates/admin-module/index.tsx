@@ -34,13 +34,13 @@ function $componentName$PageView(props:ModelProps) {
 
   return (
     <AbstractActions
+      route={match}
+      history={history}
       action={action}
       model={record}
       primaryKey={primaryKey}
       className="$className$"
-      routeAction={match.params as any}
       onRoute={props.enterAction}
-      onRouteBack={() => history.goBack()}
       onSubmit={props.onSubmit}
       onCancel={props.onCancel}
     >
@@ -53,7 +53,6 @@ function $componentName$PageView(props:ModelProps) {
           columns={columns}
           buttons={buttons}
           // filters={this.filters}
-          onActionRoute={(action) => history.push(action.create(match.path, match.params))}
           data={props.allRecords}
           searchFields={searchFields}
           onQuery={props.queryAllAsync as any}

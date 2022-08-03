@@ -33,7 +33,7 @@ export default class FilterTabs extends React.Component<FilterTabsProps, FilterT
     filters: [] as FilterTabType[],
     value: null as any,
     onChange: () => '',
-  }
+  };
 
   static getDerivedStateFromProps(props: FilterTabsProps, state: FilterTabsState) {
     if (props.loadFilters != state.loadFilters) {
@@ -60,19 +60,19 @@ export default class FilterTabs extends React.Component<FilterTabsProps, FilterT
     needReload: false,
     filters: [] as FilterTabType[],
     value: '',
-  }
+  };
 
   // tab样式
   tabStyle = {
     margin: '0px',
-  }
+  };
 
   // 切换tab时触发
   onChange = (value: any) => {
     const { onChange } = this.props;
     this.setState({ value });
     onChange && onChange(value);
-  }
+  };
 
   loadFiltersData() {
     this.setState({
@@ -111,7 +111,7 @@ export default class FilterTabs extends React.Component<FilterTabsProps, FilterT
 
   changeActiveTab = (value:string)=>{
     this.setState({ value: value });
-  }
+  };
 
   // 渲染组件
   render() {

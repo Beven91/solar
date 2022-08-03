@@ -61,6 +61,9 @@ module.exports = {
       extensions: ['ts', 'tsx', 'js', 'jsx'],
     }),
     new webpack.ProgressPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.RUNTIME': JSON.stringify('pc'),
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       inject: false,

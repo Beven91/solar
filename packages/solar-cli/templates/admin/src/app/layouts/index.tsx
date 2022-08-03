@@ -4,15 +4,15 @@
  */
 import './index.scss';
 import React, { useCallback, useState } from 'react';
-import { Layout, Avatar, Dropdown, Menu, Breadcrumb } from 'antd';
-import { AbstractMenu } from 'solar-pc';
+import { Layout, Avatar, Dropdown, Menu, PageHeader } from 'antd';
+import { AbstractMenu, CrashProvider } from 'solar-pc';
 import { Profile } from '$projectName$-provider';
-import { UserOutlined, SettingOutlined, LoginOutlined, HomeOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined, LoginOutlined, MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { SelectMenuInfo } from 'solar-pc/src/abstract-menu';
 import menus from './menu';
 import logoIcon from './images/logo.svg';
-import defaultAvatar from './images/avatar.jpg';
 
+const defaultAvatar = logoIcon;
 const { Content, Header, Sider } = Layout;
 
 function NavMenus() {
@@ -26,18 +26,18 @@ function NavMenus() {
       <Menu.Item>
         <a>
           <UserOutlined />
-          个人中心
+           个人中心
         </a>
       </Menu.Item>
       <Menu.Item>
         <a>
           <SettingOutlined />
-          个人设置
+           个人设置
         </a>
       </Menu.Item>
       <Menu.Item onClick={onLogout} className="menu-top-border">
         <LoginOutlined />
-        退出登录
+         退出登录
       </Menu.Item>
     </Menu>
   );
@@ -45,54 +45,61 @@ function NavMenus() {
 
 export default function FluxyLayout(props: React.PropsWithChildren) {
   const [activeMenu, setActiveMenu] = useState<SelectMenuInfo>(null);
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const routes = activeMenu?.paths.map((item) => {
+    return {
+      path: item.href,
+      breadcrumbName: item.name,
+    };
+  });
 
   return (
     <Layout className="solar-layout">
-      <Header className="solar-header">
-        <div className="solar-left">
-          <img src={logoIcon} className="solar-logo" />
+      <Sider
+        theme="dark"
+        width={280}
+        collapsedWidth={104}
+        className={`solar-sider ${collapsed ? 'solar-collapsed' : ''}`}
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+      >
+        <div className="solar-logo">
+          <img src={logoIcon} />
         </div>
-        <div className="solar-right">
-          <Dropdown overlay={<NavMenus />} placement="bottomLeft">
-            <div>
-              <Avatar size={24} src={Profile.avatar || defaultAvatar} />
-              <span className="avatar-name">{Profile.userName}</span>
-            </div>
-          </Dropdown>
-          <sub className="app-version">{process.env.VERSION || ''}</sub>
-        </div>
-      </Header>
+        <AbstractMenu
+          theme="dark"
+          mode="inline"
+          onSelect={setActiveMenu as any}
+          loadMenus={() => menus}
+        />
+      </Sider>
       <Layout className="solar-content-wrapper">
-        <Sider
-          theme="light"
-          width={308}
-          className="solar-sider"
-          collapsible
-          collapsed={collapsed}
-          onCollapse={setCollapsed}
-        >
-          <AbstractMenu
-            theme="light"
-            mode="inline"
-            onSelect={setActiveMenu as any}
-            loadMenus={() => menus}
-          />
-        </Sider>
-        <Content className="solar-content">
-          <Breadcrumb className="layout-bread-crumb">
-            <Breadcrumb.Item href="">
-              <HomeOutlined />
-            </Breadcrumb.Item>
+        <Header className="solar-header">
+          <div className="solar-left">
             {
-              activeMenu?.paths.map((item: any, i: number) => (
-                <Breadcrumb.Item key={i} href={item.href}>
-                  {item.name}
-                </Breadcrumb.Item>
-              ))
+              collapsed ? <MenuUnfoldOutlined onClick={() => setCollapsed(false)} /> : <MenuFoldOutlined onClick={() => setCollapsed(true)} />
             }
-          </Breadcrumb>
-          <div className="solar-inner-content">{props.children}</div>
+          </div>
+          <div className="solar-right">
+            <Dropdown overlay={<NavMenus />} placement="bottomLeft">
+              <div>
+                <Avatar size={24} src={Profile.avatar || defaultAvatar} />
+                <span className="avatar-name">{Profile.userName}</span>
+              </div>
+            </Dropdown>
+            <sub className="app-version">{process.env.VERSION || ''}</sub>
+          </div>
+        </Header>
+        <Content className="solar-content">
+          <PageHeader
+            className="page-header"
+            title={activeMenu?.menu?.name || ''}
+            subTitle={activeMenu?.menu?.desc || ''}
+            breadcrumb={{ routes }}
+          />
+          <CrashProvider>
+            <div className="solar-inner-content">{props.children}</div>
+          </CrashProvider>
         </Content>
       </Layout>
     </Layout >

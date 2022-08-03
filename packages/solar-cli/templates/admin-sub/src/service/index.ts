@@ -1,5 +1,5 @@
 /* GENERATE_IMPORT */
 
-export default {
+export {
   /* GENERATE_EXPORT */
 };

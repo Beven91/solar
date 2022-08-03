@@ -12,6 +12,7 @@ import { AbstractActionItem, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import { Travel } from 'solar-core';
 import FooterActions from './footer';
+import CrashProvider from '../crash-provider';
 
 function NOOP(record: AbstractRow) { }
 
@@ -407,9 +408,11 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
         onFinishFailed={this.onFinishFailed}
         initialValues={record}
       >
-        <AbstractForm.Context.Provider value={this.formContext}>
-          {this.props.children}
-        </AbstractForm.Context.Provider>
+        <CrashProvider>
+          <AbstractForm.Context.Provider value={this.formContext}>
+            {this.props.children}
+          </AbstractForm.Context.Provider>
+        </CrashProvider>
       </Form>
     );
   }

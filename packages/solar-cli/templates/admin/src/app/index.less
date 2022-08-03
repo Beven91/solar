@@ -1,7 +1,7 @@
 @import '~antd/lib/style/themes/default.less';
 @import '~antd/dist/antd.less'; // 引入官方提供的 less 样式入口文件
-// @primary-color: #13B58B; // 全局主色
-// @link-color: #13B58B; // 链接色
+@primary-color: #285af5; // 全局主色
+@link-color: #285af5; // 链接色
 // @background-color-light: #fff;
 // @collapse-header-padding: 23px 0px 12px 0px;
 // @border-color-base: #e9e9e9;
@@ -15,7 +15,8 @@
 
   &-content {
     border-top: none;
-    & > &-box {
+
+    &>&-box {
       padding: 0px;
     }
   }
@@ -26,17 +27,20 @@
     color: #999;
     min-width: 90px;
   }
+
   & &-title {
     font-size: 16px;
     color: #333333;
     line-height: 22px;
     font-weight: normal;
   }
+
   & &-item-content {
     font-size: 14px;
     color: #333333;
     line-height: 20px;
   }
+
   & &-item {
     padding-bottom: 14px;
   }
@@ -48,7 +52,7 @@
 
 .@{tab-prefix-cls} {
   & &-tab {
-    padding:18px 32px 11px 32px;
+    padding: 18px 32px 11px 32px;
     font-size: 16px;
     color: #8E9AB3;
   }
@@ -56,23 +60,27 @@
   &.fill-mode {
     display: flex;
     flex-direction: column;
+
     .@{tab-prefix-cls}-content-holder {
-      flex:1;
-      padding:8px 32px 24px 32px;
+      flex: 1;
+      padding: 8px 32px 24px 32px;
     }
+
     .@{tab-prefix-cls}-content {
       height: 100%;
     }
   }
 }
 
-.ant-table-thead  {
+.ant-table-thead {
   background: #FAFAFA;
   box-shadow: 0 1px 0 0 #E9E9E9;
   border-radius: 4px 4px 0 0;
-  & > tr > th {
+
+  &>tr>th {
     background: transparent;
-    &::before{
+
+    &::before {
       opacity: 0;
     }
   }
@@ -80,11 +88,66 @@
 
 .ant-table-row {
   font-size: 14px;
-  color: rgba(0,0,0,0.65);
+  color: rgba(0, 0, 0, 0.65);
 }
 
 .ant-picker {
-  width:100%;
+  width: 100%;
+}
+
+.solar-layout {
+
+  .solar-sider {
+
+    &.solar-collapsed {
+      .ant-menu-submenu-title .ant-menu-item-icon,
+      .ant-menu-item-icon {
+        line-height: initial;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+
+      .ant-menu-title-content {
+        opacity: 1 !important;
+        line-height: initial;
+        text-align: center;
+        font-size: 12px;
+        margin-left: 0px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        padding: 0px 8px;
+
+        >a {
+          color: #fff;
+        }
+      }
+
+      .ant-menu-submenu > div,
+      .ant-menu-item {
+        &.ant-menu-item-selected {
+          background-color: @primary-color;
+        }
+
+        width: 64px;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        display: flex;
+        padding:10px 0px;
+        padding-left: 0px;
+        box-sizing: border-box;
+        flex-direction: column;
+        margin:0px auto 8px auto;
+      }
+    }
+  }
+}
+
+.abstract-actions-object  {
+  .abstract-object-wrap  {
+    padding-top:40px;
+  }
 }
 
 // @success-color: #52c41a; // 成功色

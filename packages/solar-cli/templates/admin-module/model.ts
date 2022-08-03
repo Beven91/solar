@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { $service$ } from '$serviceModule$';
-import { RematchModelTo } from 'solar-core';
+import { RematchEffectThis, RematchModelTo } from 'solar-core';
 import { AbstractAction, AbstractQueryType, SubmitAction } from 'solar-pc/src/interface';
 
 export interface RecordModel {
@@ -34,29 +34,29 @@ const model = {
   state: modelState,
   effects: {
     // 开始进入操作模式
-    async enterAction(payload: AbstractAction) {
+    async enterAction(this: ModelThis, payload: AbstractAction) {
       if (payload.id) {
         const res = await $service$.$get$(payload.id).showLoading();
-        this.enterActionDone({ model: res.model, action: payload.action });
+        this.enterActionDone({ id: payload.id, model: res.model, action: payload.action });
       } else {
         this.enterActionDone(payload);
       }
     },
     // 离开操作模式
-    async leaveAction(payload: { reload: boolean }, state: any) {
+    async leaveAction(this: ModelThis, payload: { reload: boolean, [x: string]: any }, state: any) {
       if (payload.reload) {
         this.queryAllAsync({ ...state.$namespace$.query });
       }
       this.handleActionSubmitDone(payload);
     },
     // 查询表格信息
-    async queryAllAsync(query: AbstractQueryType) {
+    async queryAllAsync(this: ModelThis, query: AbstractQueryType) {
       this.queryAllLoading();
       const data = await $service$.$query$(query);
       this.queryAllDone({ model: data.model, query });
     },
     // 操作提交
-    async onSubmit(data: SubmitAction<RecordModel>) {
+    async onSubmit(this: ModelThis, data: SubmitAction<RecordModel>) {
       this.confirmLoading();
       switch (data.action) {
         /* GENERATE-SUBMIT */
@@ -65,7 +65,7 @@ const model = {
       }
     },
     // 取消提交
-    onCancel() {
+    onCancel(this: ModelThis) {
       this.handleActionSubmitDone({});
     },
     /* GENERATE-REDUCERS */
@@ -97,7 +97,7 @@ const model = {
       };
     },
     // 查询表格数据完毕
-    queryAllDone(state: ModelState, payload: { query:AbstractQueryType, model:typeof modelState.allRecords }) {
+    queryAllDone(state: ModelState, payload: { query: AbstractQueryType, model: typeof modelState.allRecords }) {
       return {
         ...state,
         reload: false,
@@ -115,9 +115,9 @@ const model = {
       };
     },
     // 重置操作模式
-    handleActionSubmitDone(state: ModelState, payload = {} as any) {
+    handleActionSubmitDone(state: ModelState, payload: { message?: string, [x: string]: any }) {
       // 显示操作完毕反馈消息
-      if (payload.message) {
+      if (payload?.message) {
         message.info(payload.message);
       }
       return {
@@ -132,10 +132,8 @@ const model = {
 
 export default model;
 
-export declare type ModelState = typeof modelState;
+interface ModelThis extends RematchEffectThis<typeof model> { }
 
-declare type ReduxProps = RematchModelTo<typeof model>;
+export type ModelState = typeof modelState;
 
-export declare interface ModelProps extends ReduxProps {
-
-}
+export type ModelProps = RematchModelTo<typeof model>;

@@ -49,13 +49,19 @@ export interface AbstractEditColumnType<TRow extends AbstractRow> extends Abstra
   formProps?: Omit<AbstractFormItemType<TRow>, 'name' | 'title' | 'render' | 'initialValue'>
 }
 
-interface AbstractBaseButton<TRow> extends Omit<ButtonProps, 'disabled'> {
+interface AbstractBaseButton<TRow> extends Omit<ButtonProps, 'disabled' | 'role'> {
   // 按钮标题
   title: string,
   // 按钮动作名称，在没有指定click情况下，使用action点击后会触发表格的全局onAction事件
   action?: string
   // 是否需要出现确认提示 如果需要确定 可以设置如下: confirm:'您确定要删除?'
   confirm?: string,
+  /**
+   * 按钮角色控制，用于配合AbstractPermission组件使用
+   * 如果用户没有指定的角色则按钮不出现。
+   * 例如: admin,applyer
+   */
+  roles?: string
   // 控制改按钮是否可见
   visible?: (row: TRow, index: number) => boolean | boolean
   /**
@@ -151,7 +157,7 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
 }
 
 
-export {
+export type {
   AbstractSFields,
   AbstractColumns,
 };

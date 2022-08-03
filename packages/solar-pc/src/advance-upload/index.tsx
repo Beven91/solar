@@ -180,7 +180,10 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
           item.url = key;
           context.onSuccess(item, null);
         })
-        .catch(context.onError);
+        .catch((ex) => {
+          console.error(ex);
+          context.onError(ex);
+        });
     }
   };
 

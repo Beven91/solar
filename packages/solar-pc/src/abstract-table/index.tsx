@@ -82,15 +82,15 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
 
   tabsRef = React.createRef<TabFilters>();
 
-  searchRef = React.createRef<AbstractSearch>()
+  searchRef = React.createRef<AbstractSearch>();
 
-  nativeQuery: PlainObject
+  nativeQuery: PlainObject;
 
-  sorts: PlainObject
+  sorts: PlainObject;
 
-  query: PlainObject
+  query: PlainObject;
 
-  onContextAction: OnActionRoute<TRow>
+  onContextAction: OnActionRoute<TRow>;
 
   // 构造函数
   constructor(props: AbstractTableProps<TRow>) {
@@ -225,7 +225,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
     } else if (this.onContextAction) {
       this.onContextAction(action);
     }
-  }
+  };
 
   // 行选中操作
   getRowSelection = memoize((select: SelectMode, rowKey: any, selectedRows: TRow[]) => {
@@ -339,7 +339,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
 
   changeActiveTab = (tab: string) => {
     this.tabsRef.current?.changeActiveTab(tab);
-  }
+  };
 
   // 处理tab搜索
   applyTabQueryFilter = () => {
@@ -381,7 +381,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
     this.setState({ pageNum: e.current, pageSize: e.pageSize, sort: order }, () => {
       this.handleQuery();
     });
-  }
+  };
 
   // 分页，排序
   handleQuery() {

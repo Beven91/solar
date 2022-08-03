@@ -86,6 +86,9 @@ module.exports = {
       filename: 'index.html',
       template: path.resolve('build/template/index.html'),
     }),
+    new webpack.DefinePlugin({
+      'process.env.RUNTIME': JSON.stringify('pc'),
+    }),
     new ChromeMainifestPlugin({
       manifestPath: 'manifest.json',
       domain: domain,

@@ -8,6 +8,8 @@ import { Button, Popconfirm, Row, Col } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
 import renders from '../util/cellRenders';
+import AbstractPermission from '../../abstract-permission';
+import { PermissionContextModel } from '../../abstract-permission/context';
 
 const Noop = (a: any) => a;
 
@@ -26,7 +28,7 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
     buttons: [] as AbstractButton<AbstractRow>[],
     selectedRows: [] as AbstractRow[],
     renderTopBar: () => '',
-  }
+  };
 
   onClick(row: TRow | TRow[], rowId: any, e: any, button: AbstractButton<TRow>) {
     const click = button.click || Noop;
@@ -123,14 +125,18 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
   }
 
   // 根据类型渲染按钮
-  renderButton = (button: AbstractButton<TRow>, index: number) => {
+  renderButton = (button: AbstractButton<TRow>, index: number, context: PermissionContextModel) => {
+    if (button.roles && !context.hasPermission(button.roles)) {
+      // 如果没有权限
+      return null;
+    }
     if (button.confirm) {
       return this.renderConfirm(button, index);
     } else if (button.href) {
       return this.renderLinkButton(button, index);
     }
     return this.renderNormal(button, index);
-  }
+  };
 
   // 渲染组件
   render() {
@@ -143,7 +149,15 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
         <Col span={24} style={{ textAlign: 'right' }}>
           <div className="table-operators">
             {renderTopBar()}
-            {!buttons ? null : buttons.map(this.renderButton)}
+            {
+              <AbstractPermission.Consumer>
+                {
+                  (context) => {
+                    return !buttons ? null : buttons.map((btn, index) => this.renderButton(btn, index, context));
+                  }
+                }
+              </AbstractPermission.Consumer>
+            }
           </div>
         </Col>
       </Row>

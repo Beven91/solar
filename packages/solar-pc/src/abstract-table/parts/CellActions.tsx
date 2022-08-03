@@ -9,6 +9,8 @@ import { Popconfirm, Tooltip } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
 import renders from '../util/cellRenders';
+import AbstractPermission from '../../abstract-permission';
+import { PermissionContextModel } from '../../abstract-permission/context';
 
 const Noop = (a: any) => a;
 
@@ -31,7 +33,7 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
     buttons: [] as AbstractButton<AbstractRow>[],
     row: null as any,
     rowId: null as any,
-  }
+  };
 
   // 判断是否可点击
   isEnable(button: AbstractButton<TRow>, row: TRow) {
@@ -125,7 +127,11 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
   }
 
   // 渲染tooltip
-  renderTooltip(button: AbstractButton<TRow>, index: number) {
+  renderTooltip(button: AbstractButton<TRow>, index: number, context: PermissionContextModel) {
+    if (button.roles && !context.hasPermission(button.roles)) {
+      // 如果没有权限
+      return;
+    }
     const children = this.renderButton(button, index);
     if (children && button.tip) {
       return (
@@ -146,7 +152,13 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
     const { buttons = [], style } = this.props;
     return (
       <div className="table-operators" style={style}>
-        {buttons.map((button, i) => this.renderTooltip(button, i))}
+        <AbstractPermission.Consumer>
+          {
+            (context) => {
+              return buttons.map((button, i) => this.renderTooltip(button, i, context));
+            }
+          }
+        </AbstractPermission.Consumer>
       </div>
     );
   }

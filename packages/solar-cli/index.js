@@ -9,12 +9,10 @@ inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'
 const commands = [
   { name: 'H5项目', type: 'mobile', value: 'mobile' },
   { name: '创建后台应用', type: 'admin', value: 'admin' },
-  { name: '创建主应用', type: 'admin', value: 'admin-main' },
-  { name: '创建子应用', type: 'admin', value: 'admin-sub' },
+  { name: '创建后台主应用', type: 'admin', value: 'admin-main' },
+  { name: '创建后台子应用', type: 'admin', value: 'admin-sub' },
   { name: '创建Chrome扩展', type: 'browser', value: 'chrome' },
   { name: '创建一个Admin页面模块', type: 'admin', value: 'admin-module' },
-  { name: '创建一个小程序项目', type: 'wxapp', value: 'wxapp' },
-  { name: '创建一个CMS模块', type: 'cms', value: 'cms' },
   { name: '创建一个Service', type: 'api', value: 'service' },
   { name: '创建一个Mock数据', type: 'api', value: 'mock' },
 ];
@@ -28,11 +26,9 @@ function mainQuestions() {
       message: '请选择平台(' + pgk.version + ')',
       choices: [
         { name: '接口', value: 'api' },
-        { name: '移动端', value: 'mobile' },
+        // { name: '移动端', value: 'mobile' },
         { name: '后台', value: 'admin' },
         { name: '浏览器', value: 'browser' },
-        { name: '小程序', value: 'wxapp' },
-        { name: 'CMS', value: 'cms' },
       ],
     },
     {

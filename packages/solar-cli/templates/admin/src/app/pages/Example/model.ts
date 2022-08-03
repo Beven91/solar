@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { RematchModelTo } from 'solar-core';
+import { RematchEffectThis, RematchModelTo } from 'solar-core';
 import { AbstractAction, AbstractQueryType, SubmitAction } from 'solar-pc/src/interface';
 
 const modelState = {
@@ -29,11 +29,11 @@ const model = {
   state: modelState,
   effects: {
     // 开始进入操作模式
-    async enterAction(this: ModelProps, req: AbstractAction) {
+    async enterAction(this: ModelThis, req: AbstractAction) {
       this.enterActionDone(req);
     },
     // 查询表格信息
-    async queryAllAsync(query: AbstractQueryType) {
+    async queryAllAsync(this: ModelThis, query: AbstractQueryType) {
       this.queryAllDone({
         model: {
           count: 0,
@@ -42,7 +42,7 @@ const model = {
       });
     },
     // 操作提交
-    async onSubmit(data: SubmitAction<RecordModel>) {
+    async onSubmit(this: ModelThis, data: SubmitAction<RecordModel>) {
       this.setState({ confirmLoading: true });
       switch (data.action) {
         case 'add':
@@ -56,27 +56,27 @@ const model = {
       }
     },
     // 取消提交
-    onCancel() {
+    onCancel(this: ModelThis) {
       this.handleActionSubmitDone({});
     },
     // 新增操作提交
-    async addRecordAsync() {
+    async addRecordAsync(this: ModelThis) {
       this.handleActionSubmitDone({ message: '新增成功', reload: true });
     },
     // 项目完成报告
-    async projectCompleteAsync() {
+    async projectCompleteAsync(this: ModelThis) {
       this.handleActionSubmitDone({ message: '报告成功', reload: true });
     },
   },
   reducers: {
-    setState(state:ModelState, payload:Partial<ModelState>) {
+    setState(state: ModelState, payload: Partial<ModelState>) {
       return {
         ...state,
         ...payload,
       };
     },
     // 查询表格数据完毕
-    queryAllDone(state: ModelState, payload: { model:any }) {
+    queryAllDone(state: ModelState, payload: { model: any }) {
       return {
         ...state,
         reload: false,
@@ -93,9 +93,9 @@ const model = {
       };
     },
     // 重置操作模式
-    handleActionSubmitDone(state: ModelState, payload = {} as any) {
+    handleActionSubmitDone(state: ModelState, payload: Record<string, any>) {
       // 显示操作完毕反馈消息
-      if (payload.message) {
+      if (payload?.message) {
         message.info(payload.message);
       }
       return {
@@ -111,12 +111,10 @@ const model = {
 
 export default model;
 
-export declare type RecordModel = typeof modelState.model;
+export type RecordModel = typeof modelState.model;
 
-export declare type ModelState = typeof modelState;
+export type ModelState = typeof modelState;
 
-declare type ReduxProps = RematchModelTo<typeof model>
+export type ModelProps = RematchModelTo<typeof model>
 
-export declare interface ModelProps extends ReduxProps {
-
-}
+interface ModelThis extends RematchEffectThis<typeof model> { }

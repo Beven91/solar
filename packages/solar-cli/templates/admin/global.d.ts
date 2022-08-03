@@ -14,7 +14,7 @@ declare module '@loadable/component' {
 
 interface ApiResponse<T = any> {
   success: boolean
-  code: number
-  message: string
-  data: T
+  errorCode: number
+  errorMsg: string
+  result: T
 }

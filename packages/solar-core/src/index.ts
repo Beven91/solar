@@ -17,7 +17,7 @@ import BizError from './biz-error';
 import redux from './redux';
 import Travel from './travel';
 import SystemRegistration from './system-registration';
-import type { RematchModelTo } from './redux';
+export type { RematchModelTo, RematchThis } from './redux';
 
 export {
   Network,
@@ -39,5 +39,4 @@ export {
   redux,
   Travel,
   SystemRegistration,
-  RematchModelTo,
 };

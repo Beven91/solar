@@ -42,7 +42,7 @@ function createAction<TRow>(action: AbstractAction<TRow>) {
     path = path === '/' ? '/:action?/:id?' : path;
     Object.keys(res).forEach((k) => {
       const v = res[k];
-      path = path.replace(`:${k}?`, v).replace(`:${k}`, v);
+      path = path.replace(`:${k}?`, v).replace(`:${k}`, v).replace(/\/\//g, '/');
     });
     return path;
   };

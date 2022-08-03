@@ -1,9 +1,6 @@
 import React, { } from 'react';
 import { AbstractTable, AbstractColumns } from 'solar-pc';
 import { AbstractQueryType } from 'solar-pc/src/interface';
-import image1 from './images/surface.png';
-import image2 from './images/mac.png';
-import image3 from './images/thinkpad.png';
 
 interface ActivityModel {
   id: number
@@ -19,9 +16,9 @@ const SkuStatus = [
 ];
 
 const demoRows = [
-  { id: 1, name: 'Surface Book3', price: 17800, status: 1, picture: image1 },
-  { id: 2, name: 'Mac Book Pro3', price: 20000, status: 2, picture: image2 },
-  { id: 3, name: 'Thinkpad', price: 10000, status: 3, picture: image3 },
+  { id: 1, name: 'Surface Book3', price: 17800, status: 1, picture: 'doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg' },
+  { id: 2, name: 'Mac Book Pro3', price: 20000, status: 2, picture: 'doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg' },
+  { id: 3, name: 'Thinkpad', price: 10000, status: 3, picture: 'doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg' },
 ];
 
 export default function App() {

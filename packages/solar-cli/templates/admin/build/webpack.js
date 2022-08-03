@@ -78,6 +78,7 @@ module.exports = {
     new webpack.ProgressPlugin(),
     new webpack.DefinePlugin({
       'process.env.VERSION': JSON.stringify(pkg.version),
+      'process.env.RUNTIME': JSON.stringify('pc'),
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',

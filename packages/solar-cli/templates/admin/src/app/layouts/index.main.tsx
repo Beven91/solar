@@ -4,10 +4,10 @@
  */
 import './index.scss';
 import React from 'react';
-import { Layout, Avatar, Dropdown, Menu, Spin, Breadcrumb } from 'antd';
-import { AbstractMenu, Exception } from 'solar-pc';
+import { Layout, Avatar, Dropdown, Menu, Spin, PageHeader } from 'antd';
+import { AbstractMenu, Exception, CrashProvider } from 'solar-pc';
 import { Profile } from '$projectName$-provider';
-import { UserOutlined, SettingOutlined, LoginOutlined, ApiOutlined, HomeOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined, LoginOutlined, ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { SelectMenuInfo } from 'solar-pc/src/abstract-menu';
 import config from '$projectName$-configs';
 import { SystemRegistration } from 'solar-core';
@@ -37,7 +37,7 @@ export default class DawnLayout extends React.Component<any, LayoutState> {
     mode: 'ok',
   };
 
-  subRootRef = React.createRef<HTMLDivElement>()
+  subRootRef = React.createRef<HTMLDivElement>();
 
   handleLoginOut = () => {
     Profile.exit();
@@ -80,7 +80,7 @@ export default class DawnLayout extends React.Component<any, LayoutState> {
       SystemRegistration.exitRunnings();
     }
     this.setState({ activeMenu: data });
-  }
+  };
 
   readyMenus = () => {
     const mainAppDebugger = this.mainAppDebugger;
@@ -103,7 +103,7 @@ export default class DawnLayout extends React.Component<any, LayoutState> {
       },
       ...menus,
     ];
-  }
+  };
 
   overlayMenus = (
     <Menu style={{ width: 140 }}>
@@ -123,64 +123,62 @@ export default class DawnLayout extends React.Component<any, LayoutState> {
         <LoginOutlined />退出登录
       </Menu.Item>
     </Menu>
-  )
+  );
 
-  renderBreadcrumb() {
-    const { activeMenu } = this.state;
-    if (!activeMenu) return null;
-    return (
-      <Breadcrumb className="layout-bread-crumb">
-        <Breadcrumb.Item href="">
-          <HomeOutlined />
-        </Breadcrumb.Item>
-        {
-          activeMenu.paths.map((item: any, i: number) => (
-            <Breadcrumb.Item key={i} href={item.href}>
-              {item.name}
-            </Breadcrumb.Item>
-          ))
-        }
-      </Breadcrumb>
-    );
-  }
-
-  // 渲染母版组件
-  render() {
-    const { collapsed, mode } = this.state;
+  render2() {
+    const { collapsed, activeMenu, mode } = this.state;
+    const routes = activeMenu?.paths.map((item) => {
+      return {
+        path: item.href,
+        breadcrumbName: item.name,
+      };
+    });
     return (
       <Layout className="solar-layout">
-        <Header className="solar-header">
-          <div className="solar-left">
-            <img src={logoIcon} className="solar-logo" />
+        <Sider
+          theme="dark"
+          width={280}
+          collapsedWidth={104}
+          className={`solar-sider ${collapsed ? 'solar-collapsed' : ''}`}
+          collapsed={collapsed}
+          onCollapse={this.onCollapse}
+        >
+          <div className="solar-logo">
+            <img src={logoIcon} />
           </div>
-          <div className="solar-right">
-            <Dropdown overlay={this.overlayMenus} placement="bottomLeft">
-              <div>
-                <Avatar size={24} src={Profile.avatar || defaultAvatar} />
-                <span className="avatar-name">{Profile.userName}</span>
-              </div>
-            </Dropdown>
-            <sub className="app-version">{process.env.VERSION || ''}</sub>
-          </div>
-        </Header>
+          <AbstractMenu
+            theme="dark"
+            mode="inline"
+            onSelect={this.readyChildApp}
+            loadMenus={this.readyMenus}
+          />
+        </Sider>
         <Layout className="solar-content-wrapper">
-          <Sider
-            theme="light"
-            width={308}
-            className="solar-sider"
-            collapsible
-            collapsed={collapsed}
-            onCollapse={this.onCollapse}
-          >
-            <AbstractMenu
-              theme="light"
-              mode="inline"
-              onSelect={this.readyChildApp}
-              loadMenus={this.readyMenus}
-            />
-          </Sider>
+          <Header className="solar-header">
+            <div className="solar-left">
+              {
+                collapsed ?
+                  <MenuUnfoldOutlined onClick={() => this.onCollapse(false)} /> :
+                  <MenuFoldOutlined onClick={() => this.onCollapse(true)} />
+              }
+            </div>
+            <div className="solar-right">
+              <Dropdown overlay={this.overlayMenus} placement="bottomLeft">
+                <div>
+                  <Avatar size={24} src={Profile.avatar || defaultAvatar} />
+                  <span className="avatar-name">{Profile.userName}</span>
+                </div>
+              </Dropdown>
+              <sub className="app-version">{process.env.VERSION || ''}</sub>
+            </div>
+          </Header>
           <Content className="solar-content">
-            {this.renderBreadcrumb()}
+            <PageHeader
+              className="page-header"
+              title={activeMenu?.menu?.name || ''}
+              subTitle={activeMenu?.menu?.desc || ''}
+              breadcrumb={{ routes }}
+            />
             <Exception
               hidden={mode !== 'error'}
               type="500"
@@ -190,7 +188,9 @@ export default class DawnLayout extends React.Component<any, LayoutState> {
               desc="您可以点击重新试试"
             />
             <Spin className="system-spinning" spinning={mode === 'loading'} />
-            <div ref={this.subRootRef} className="solar-inner-content">{this.props.children}</div>
+            <CrashProvider>
+              <div ref={this.subRootRef} className="solar-inner-content">{this.props.children}</div>
+            </CrashProvider>
           </Content>
         </Layout>
       </Layout >

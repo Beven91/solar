@@ -198,7 +198,7 @@ class Compiler {
         semi: true,
         filepath: file,
         singleQuote: true,
-        jsxSingleQuote: true,
+        jsxSingleQuote: false,
         jsxBracketSameLine: false,
         printWidth: 120,
         trailingComma: 'all',
