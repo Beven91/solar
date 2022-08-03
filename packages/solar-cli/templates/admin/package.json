@@ -78,8 +78,8 @@
     "react-redux": "^8.0.2",
     "@rematch/core": "^2.2.0",
     "@loadable/component": "^5.7.0",
-    "solar-core": "^1.0.15",
-    "solar-pc": "^1.0.1"
+    "solar-core": "^2.3.4",
+    "solar-pc": "^3.1.49"
   },
   "solar": {
     "prefix": "$projectName$",
