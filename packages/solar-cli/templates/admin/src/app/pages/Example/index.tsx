@@ -53,14 +53,14 @@ function ExamplePageView(props:ModelProps) {
 
   return (
     <AbstractActions
+      route={match}
+      history={history}
       action={action}
       model={model}
       primaryKey={primaryKey}
       confirmLoading={props.confirmLoading}
       className="example-module"
-      routeAction={match.params as any}
       onRoute={props.enterAction}
-      onRouteBack={() => history.goBack()}
       onSubmit={props.onSubmit}
       onCancel={props.onCancel}
     >
