@@ -60,7 +60,7 @@ module.exports = {
   },
   entry: {
     mainApp: [
-      isProduction ? null : 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
+      isProduction ? null : 'webpack-hot-middleware/client',
       'core-js/stable',
       './src/$projectName$/index.dll.ts',
       './src/$projectName$/index.tsx',

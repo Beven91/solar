@@ -44,7 +44,7 @@ module.exports = {
   },
   entry: {
     index: [
-      isProduction ? null : 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
+      isProduction ? null : 'webpack-hot-middleware/client',
       'core-js/stable',
       './src/$projectName$/index.tsx',
     ].filter((v) => v),

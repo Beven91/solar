@@ -46,7 +46,7 @@ module.exports = {
   },
   entry: {
     app: [
-      isProduction ? null : 'webpack-hot-middleware/client?path=' + hmr + '&timeout=20000&reload=true',
+      isProduction ? null : 'webpack-hot-middleware/client?path=' + hmr,
       './src/$projectName$/index.tsx',
     ].filter(function(v) {
       return v;
