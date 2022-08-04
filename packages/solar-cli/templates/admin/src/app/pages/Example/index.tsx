@@ -73,7 +73,6 @@ function ExamplePageView(props:ModelProps) {
           columns={columns}
           buttons={buttons}
           filters={filters}
-          onActionRoute={(action) => history.push(action.create(match.path))}
           onQuery={props.queryAllAsync}
           data={props.allRecords}
           searchFields={searchFields}
