@@ -4,8 +4,8 @@
  */
 import './index.scss';
 import React, { useCallback, useState } from 'react';
-import { Layout, Avatar, Dropdown, Menu, PageHeader } from 'antd';
-import { AbstractMenu, CrashProvider } from 'solar-pc';
+import { Layout, Avatar, Dropdown, Menu } from 'antd';
+import { AbstractMenu, CrashProvider, OverridePageHeader } from 'solar-pc';
 import { Profile } from '$projectName$-provider';
 import { UserOutlined, SettingOutlined, LoginOutlined, MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { SelectMenuInfo } from 'solar-pc/src/abstract-menu';
@@ -26,18 +26,18 @@ function NavMenus() {
       <Menu.Item>
         <a>
           <UserOutlined />
-           个人中心
+          个人中心
         </a>
       </Menu.Item>
       <Menu.Item>
         <a>
           <SettingOutlined />
-           个人设置
+          个人设置
         </a>
       </Menu.Item>
       <Menu.Item onClick={onLogout} className="menu-top-border">
         <LoginOutlined />
-         退出登录
+        退出登录
       </Menu.Item>
     </Menu>
   );
@@ -91,15 +91,17 @@ export default function FluxyLayout(props: React.PropsWithChildren) {
           </div>
         </Header>
         <Content className="solar-content">
-          <PageHeader
-            className="page-header"
-            title={activeMenu?.menu?.name || ''}
-            subTitle={activeMenu?.menu?.desc || ''}
-            breadcrumb={{ routes }}
-          />
-          <CrashProvider>
-            <div className="solar-inner-content">{props.children}</div>
-          </CrashProvider>
+          <OverridePageHeader.Container>
+            <OverridePageHeader.PageHeader
+              className="page-header"
+              title={activeMenu?.menu?.name || ''}
+              subTitle={activeMenu?.menu?.desc || ''}
+              breadcrumb={{ routes }}
+            />
+            <CrashProvider>
+              <div className="solar-inner-content">{props.children}</div>
+            </CrashProvider>
+          </OverridePageHeader.Container>
         </Content>
       </Layout>
     </Layout >

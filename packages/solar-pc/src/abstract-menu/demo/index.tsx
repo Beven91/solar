@@ -1,5 +1,6 @@
 import React from 'react';
 import { AbstractMenu } from 'solar-pc';
+import { AbstractMenuType } from '../../interface';
 
 export default function App() {
   const initSysMenus = () => {
@@ -36,7 +37,7 @@ export default function App() {
           },
         ],
       },
-    ]);
+    ] as AbstractMenuType[]);
   };
 
   return (

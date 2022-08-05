@@ -21,6 +21,8 @@ import OptionsPicker from './src/options-picker';
 import CodeHighlight from './src/code-highlight';
 import PortalSystem from './src/portal-system';
 import XlsxPicker from './src/xlsx-picker';
+import OverridePageHeader from './src/override-page-header';
+
 export type {
   AbstractConfig, PageQueryData, AbstractGroups, AbstractRules, AbstractSFields, SubmitAction,
   AbstractColumns, AbstractButtons,
@@ -58,4 +60,5 @@ export {
   CodeHighlight,
   PortalSystem,
   XlsxPicker,
+  OverridePageHeader,
 };

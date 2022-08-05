@@ -10,8 +10,6 @@ export interface RecordModel {
 const modelState = {
   // 主键
   primaryKey: '$primaryKey$',
-  // 当前页面标题
-  title: '样例页',
   // 当前操作动作 默认动作有:  add ,edit ,remove
   action: '',
   // 是否重新加载表格数据

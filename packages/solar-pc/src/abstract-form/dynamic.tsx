@@ -56,7 +56,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     span: 4,
     formItemLayout: null as any,
     isReadOnly: false,
-  }
+  };
 
   // 是否为只读模式
   get isReadOnly() {

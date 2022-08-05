@@ -260,6 +260,7 @@ export interface AbstractMenuType {
   target?: string
   icon?: any,
   system?: string
+  virtual?: boolean
   parent?: AbstractMenuType
   root?: AbstractMenuType
   children?: AbstractMenuType[],

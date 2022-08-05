@@ -4,8 +4,8 @@
  */
 import './index.scss';
 import React from 'react';
-import { Layout, Avatar, Dropdown, Menu, Spin, PageHeader } from 'antd';
-import { AbstractMenu, Exception, CrashProvider } from 'solar-pc';
+import { Layout, Avatar, Dropdown, Menu, Spin } from 'antd';
+import { AbstractMenu, Exception, CrashProvider, OverridePageHeader } from 'solar-pc';
 import { Profile } from '$projectName$-provider';
 import { UserOutlined, SettingOutlined, LoginOutlined, ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { SelectMenuInfo } from 'solar-pc/src/abstract-menu';
@@ -173,24 +173,26 @@ export default class DawnLayout extends React.Component<any, LayoutState> {
             </div>
           </Header>
           <Content className="solar-content">
-            <PageHeader
-              className="page-header"
-              title={activeMenu?.menu?.name || ''}
-              subTitle={activeMenu?.menu?.desc || ''}
-              breadcrumb={{ routes }}
-            />
-            <Exception
-              hidden={mode !== 'error'}
-              type="500"
-              onClick={() => this.readyChildApp(this.state.retryMenu)}
-              btnText="重试"
-              title="加载子应用失败"
-              desc="您可以点击重新试试"
-            />
-            <Spin className="system-spinning" spinning={mode === 'loading'} />
-            <CrashProvider>
-              <div ref={this.subRootRef} className="solar-inner-content">{this.props.children}</div>
-            </CrashProvider>
+            <OverridePageHeader.Container>
+              <OverridePageHeader.PageHeader
+                className="page-header"
+                title={activeMenu?.menu?.name || ''}
+                subTitle={activeMenu?.menu?.desc || ''}
+                breadcrumb={{ routes }}
+              />
+              <Exception
+                hidden={mode !== 'error'}
+                type="500"
+                onClick={() => this.readyChildApp(this.state.retryMenu)}
+                btnText="重试"
+                title="加载子应用失败"
+                desc="您可以点击重新试试"
+              />
+              <Spin className="system-spinning" spinning={mode === 'loading'} />
+              <CrashProvider>
+                <div ref={this.subRootRef} className="solar-inner-content">{this.props.children}</div>
+              </CrashProvider>
+            </OverridePageHeader.Container>
           </Content>
         </Layout>
       </Layout >

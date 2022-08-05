@@ -81,27 +81,27 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
   }
 
   // 产生更新的原因
-  updateReason: UpdateReason = 'none'
+  updateReason: UpdateReason = 'none';
 
   // 产生更新的数据
-  triggerRows: TRow[]
+  triggerRows: TRow[];
 
   // 是否需要填充行表单
-  needFillRowForms = false
+  needFillRowForms = false;
 
-  id = 0
+  id = 0;
 
-  tableRef = React.createRef<AbstractTable<TRow>>()
+  tableRef = React.createRef<AbstractTable<TRow>>();
 
-  throttleId: any
+  throttleId: any;
 
   cacheRowsRefs = {} as {
     [propName: string]: {
       [propName: string]: React.RefObject<React.Component>
     }
-  }
+  };
 
-  formRef = React.createRef<FormInstance>()
+  formRef = React.createRef<FormInstance>();
 
   get locale() {
     return {
@@ -158,7 +158,7 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
       this.formRef.current.setFieldsValue({ rows: data.models });
       return data;
     }
-  }
+  };
 
   getCellRef(rowIndex: number, cell: string, creatable = true) {
     // const pageNum = Math.max(this.tableRef.current.state.pageNum, 1);
@@ -222,7 +222,7 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
       });
       this.triggerChange([...originalRows], 'input');
     }, 200);
-  }
+  };
 
   triggerChange(rows: TRow[], reason: UpdateReason) {
     const { onChange } = this.props;
@@ -288,6 +288,9 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
 
   // 按钮
   get buttons() {
+    if (this.props.disabled) {
+      return [];
+    }
     return [
       ...this.defaultButtons,
       ...(this.props.buttons || []), ,
@@ -313,8 +316,8 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
 
   // 渲染新增行内容
   renderAddButton() {
-    const { addButton, addVisible } = this.props;
-    if (addVisible && addVisible(this.rows) == false) {
+    const { addButton, addVisible, disabled } = this.props;
+    if (disabled || addVisible && addVisible(this.rows) == false) {
       return '';
     }
     return (

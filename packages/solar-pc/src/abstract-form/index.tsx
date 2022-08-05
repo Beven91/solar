@@ -38,7 +38,7 @@ export default class AbstractForm<TRow extends AbstractRow> extends React.Compon
   static Context = FormContext;
 
   // 使用一个隔离的抽象表单组
-  static ISolation = ISolation
+  static ISolation = ISolation;
 
   /**
    * 注册指定组件的propValueName
