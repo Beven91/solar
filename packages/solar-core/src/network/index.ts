@@ -55,6 +55,7 @@ export default class Network {
         }
       }
     }
+    UseQuery.setHooks(options.hooks);
     return this;
   }
 

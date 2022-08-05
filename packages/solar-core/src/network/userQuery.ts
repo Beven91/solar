@@ -11,7 +11,7 @@ export type GenerateHooks<T> = {
   [P in keyof T]: T[P] extends (...args: any[]) => AttachResponse<infer M, any> ? (...args: Parameters<T[P]>) => HookResponse<M> : T[P]
 }
 
-const hooks: NetworkReactHooks = {} as NetworkReactHooks;
+let hooks: NetworkReactHooks = {} as NetworkReactHooks;
 
 const proxyToHook = (handler: Function, deps: any[]) => {
   return (...args: any[]) => {
@@ -28,19 +28,24 @@ const proxyToHook = (handler: Function, deps: any[]) => {
         });
     };
 
-    useEffect(initQuery, deps);
+    useEffect(initQuery, deps || []);
     return state;
   };
 };
 
 export default class UseQuery<T extends Network> {
-  [x: string]: (...args: any[]) => HookResponse<any>
+  [x: string | symbol]: (...args: any[]) => HookResponse<any>
+
+  static setHooks(options: NetworkReactHooks) {
+    hooks = options;
+  }
 
   constructor(instance: T, deps: any[]) {
-    const allKeys = Object.keys(instance.constructor.prototype);
+    const allKeys = Reflect.ownKeys(instance.constructor.prototype);
     allKeys.forEach((key) => {
-      const handler = (instance as any)[key];
-      if (typeof handler == 'function') {
+      let handler = (instance as any)[key];
+      if (typeof handler == 'function' && key !== 'constructor') {
+        handler = handler.bind(instance);
         this[key] = proxyToHook(handler, deps);
       }
     });
