@@ -10,6 +10,7 @@ import stringify from 'qs/lib/stringify';
 import Tunnel from '../tunnel/index';
 import RequestContext from './context';
 import BizError from '../biz-error';
+import UseQuery, { GenerateHooks } from './userQuery';
 import { HttpMethods, RHttpHeaders, NetworkBaseOptions, ChainResponses, SharedResponse } from './types';
 import { NetworkEventHandler, NetworkEvents, NetworkOptions, Promiseable } from './types';
 
@@ -115,6 +116,13 @@ export default class Network {
       return query;
     }, {} as any);
     return stringify(query);
+  }
+
+  /**
+   * 构造一个Hooks查询对象
+   */
+  useQuery(deps?:any[]) {
+    return new UseQuery(this, deps) as GenerateHooks<typeof this>;
   }
 
   /**

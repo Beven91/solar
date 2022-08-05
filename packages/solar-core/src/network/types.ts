@@ -5,11 +5,16 @@ export type NetworkEvents = 'start' | 'end' | 'response' | 'error' | 'try' | 'au
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
+export interface NetworkReactHooks {
+  useEffect: (handler: Function, deps: any[]) => any
+  useState: any
+}
+
 export interface NetworkBaseOptions {
   // 请求基础地址，值为空，则为相对路径
   base?: string,
   // 设置所有请求超时时间 当值>0 会开启超时检测
-  timeout?:number
+  timeout?: number
   // 给每个请求额外添加的请求参数
   data?: object,
   // 统一指定请求内容类型，默认:application/x-www-form-urlencoded
@@ -18,7 +23,8 @@ export interface NetworkBaseOptions {
   mock?: boolean
   // 第二条mock通道
   mock2?: string
-
+  // 配置hooks
+  hooks?: NetworkReactHooks
 }
 
 type cancelLoading = () => void;
@@ -55,8 +61,8 @@ export type IsSharedFnction = (req: RequestContext) => boolean
 
 export interface SharedResponse {
   response: Promise<any>
-  sharer:AttachResponse<any, any>
+  sharer: AttachResponse<any, any>
   // 是否持久化
-  persistent:boolean
+  persistent: boolean
   isShared: IsSharedFnction
 }
