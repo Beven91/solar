@@ -1,6 +1,6 @@
 {
   "name":"solar-proxy",
-  "version": "1.2.15",
+  "version": "2.0.0",
   "main": "dist/proxy",
   "types": "src/proxy",
   "scripts": {
