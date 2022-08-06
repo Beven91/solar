@@ -26,7 +26,7 @@
     "babel-loader": "^8.2.5",
     "babel-plugin-refer-import": "^1.7.7",
     "solar-types": "^1.1.1",
-    "solar-proxy": "^1.2.14",
+    "solar-proxy": "^2.0.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-hot-middleware": "^2.25.6",
     "@types/wechat-miniprogram": "^3.1.0",

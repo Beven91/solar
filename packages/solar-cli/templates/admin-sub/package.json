@@ -24,7 +24,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.1",
     "solar-types": "^1.1.1",
-    "solar-proxy": "^1.0.0",
+    "solar-proxy": "^2.0.0",
     "@types/webpack": "^4.41.25",
     "@types/webpack-dev-middleware": "^3.7.2",
     "@types/webpack-hot-middleware": "^2.25.3",

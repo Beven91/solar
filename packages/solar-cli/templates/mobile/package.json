@@ -29,7 +29,7 @@
     "node-web-mvc": "^2.12.3",
     "@babel/plugin-proposal-decorators": "^7.18.2",
     "solar-types": "^1.1.1",
-    "solar-proxy": "^1.2.14",
+    "solar-proxy": "^2.0.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-hot-middleware": "^2.25.6",
     "@types/webpack-env": "^1.17.0",
