@@ -48,7 +48,7 @@ export default class Network {
         Network.on('start', (data, context: any) => {
           context.url = context.url.replace(Options.base, '');
           // 通知代理服务器，本次请求目标服务器
-          context.headers['proxy-api'] = Options.base;
+          context.headers['x-proxy-api'] = Options.base;
         });
         if (Options.mock2) {
           document.cookie = `cookie-env-api=${Options.mock2};path=/`;
