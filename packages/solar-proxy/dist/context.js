@@ -59,7 +59,7 @@ var ApplicationContext = /** @class */ (function () {
         var rule = {};
         for (var i in parameters) {
             if (i) {
-                rule[i] = { required: i + "\u53C2\u6570\u5FC5\u987B\u63D0\u4F9B" };
+                rule[i] = { required: "".concat(i, "\u53C2\u6570\u5FC5\u987B\u63D0\u4F9B") };
             }
         }
         return rule;

@@ -29,7 +29,7 @@ var AgentProxy = /** @class */ (function () {
         this.templateUrl = baseUri;
         this.options = options;
         var protocol = req.connection.encrypted ? 'https' : 'http';
-        var info = new URL(req.url, protocol + "://" + req.headers.host);
+        var info = new URL(req.url, "".concat(protocol, "://").concat(req.headers.host));
         this.path = info.pathname;
         this.protocol = info.protocol;
         try {
@@ -188,7 +188,7 @@ var AgentProxy = /** @class */ (function () {
         // const finalUrl = /^\//.test(baseUrl) ? baseUrl : '/' + baseUrl;
         baseUrl = /\/$/.test(baseUrl) ? baseUrl : baseUrl + '/';
         mRequest.url = mRequest.originalUrl = baseUrl + pathname + querys;
-        console.log("Agent: Proxy Remote -> " + request.url);
+        console.log("Agent: Proxy Remote -> ".concat(request.url));
         proxy.web(request, response, {}, function (ex) { return next(ex); });
         var file = this.idModule + '.js';
         var exists = fs_1.default.existsSync(file);
@@ -227,7 +227,7 @@ var AgentProxy = /** @class */ (function () {
             var dir = path_1.default.dirname(file);
             var chunks = [];
             chunks.push('module.exports = function() { ');
-            chunks.push(" return " + data + ";  ");
+            chunks.push(" return ".concat(data, ";  "));
             chunks.push('};');
             chunks.push('module.exports.__Off = true;');
             if (fs_1.default.existsSync(file) && ((_b = this.options) === null || _b === void 0 ? void 0 : _b.mockBackup) == true) {
@@ -270,7 +270,7 @@ function default_1(baseUri) {
 exports.default = default_1;
 ;
 function createResolverProxy(options) {
-    options = options || { api: 'proxy-api', env: 'cookie-env-api', mode: 'mock' };
+    options = options || { api: 'x-proxy-api', env: 'cookie-env-api', mode: 'mock' };
     options.mode = options.onlyProxy ? 'proxy' : options.mode || 'mock';
     return function (request, response, next) {
         var api = request.headers[options.api];
