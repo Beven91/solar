@@ -61,23 +61,23 @@ interface AgentProxyOptions {
  * 本地mock服务器
  */
 class AgentProxy {
-  private readonly request: IncomingMessage
+  private readonly request: IncomingMessage;
 
-  private readonly response: ServerResponse
+  private readonly response: ServerResponse;
 
-  private readonly next: Function
+  private readonly next: Function;
 
-  private onceBaseUrl: string | boolean
+  private onceBaseUrl: string | boolean;
 
-  private templateUrl: BaseURL
+  private templateUrl: BaseURL;
 
-  private path: string
+  private path: string;
 
-  private protocol: string
+  private protocol: string;
 
-  private makeMock: boolean
+  private makeMock: boolean;
 
-  private options: AgentProxyOptions
+  private options: AgentProxyOptions;
 
   constructor(req: IncomingMessage, resp: ServerResponse, next: Function, baseUri: BaseURL, options: AgentProxyOptions) {
     this.request = req;
@@ -322,7 +322,7 @@ export default function(baseUri: BaseURL) {
 };
 
 export function createResolverProxy(options?: AgentProxyOptions) {
-  options = options || { api: 'proxy-api', env: 'cookie-env-api', mode: 'mock' };
+  options = options || { api: 'x-proxy-api', env: 'cookie-env-api', mode: 'mock' };
   options.mode = options.onlyProxy ? 'proxy' : options.mode || 'mock';
   return (request: any, response: any, next: Function) => {
     const api = request.headers[options.api];
