@@ -2,21 +2,35 @@ import type Network from './index';
 import type { AttachResponse } from './index';
 import { NetworkReactHooks } from './types';
 
-interface HookResponse<T> {
+export interface HooksResponse<T> {
+  /**
+   * 当前hooks状态
+   * loading: 当前接口正在请求中
+   * error: 当前接口请求结果异常
+   * ok: 当前接口请求结果正常
+   */
   status: 'loading' | 'error' | 'ok'
+  // 强制重新发起接口请求
+  refresh: () => void
+  // 当前接口返回结果
   response: T
 }
 
 export type GenerateHooks<T> = {
-  [P in keyof T]: T[P] extends (...args: any[]) => AttachResponse<infer M, any> ? (...args: Parameters<T[P]>) => HookResponse<M> : T[P]
+  [P in keyof T]: T[P] extends (...args: any[]) => AttachResponse<infer M, any> ? (...args: Parameters<T[P]>) => HooksResponse<M> : T[P]
 }
 
 let hooks: NetworkReactHooks = {} as NetworkReactHooks;
 
-const proxyToHook = (handler: Function, deps: any[]) => {
+// 代理请求函数
+const proxyToHook = (handler: Function, deps:any[]) => {
   return (...args: any[]) => {
     const { useEffect, useState } = hooks;
-    const [state, setState] = useState({ status: 'loading', response: null });
+    const [state, setState] = useState({
+      response: null,
+      status: 'loading',
+    });
+
     const initQuery = () => {
       Promise
         .resolve(handler(...args))
@@ -27,20 +41,22 @@ const proxyToHook = (handler: Function, deps: any[]) => {
           setState({ status: 'error' });
         });
     };
-
-    useEffect(initQuery, deps || []);
-    return state;
+    useEffect(initQuery, deps || args || []);
+    return {
+      ...state,
+      refresh: () => initQuery(),
+    };
   };
 };
 
 export default class UseQuery<T extends Network> {
-  [x: string | symbol]: (...args: any[]) => HookResponse<any>
+  [x: string | symbol]: (...args: any[]) => HooksResponse<any>
 
   static setHooks(options: NetworkReactHooks) {
     hooks = options;
   }
 
-  constructor(instance: T, deps: any[]) {
+  constructor(instance: T, deps:any[]) {
     const allKeys = Reflect.ownKeys(instance.constructor.prototype);
     allKeys.forEach((key) => {
       let handler = (instance as any)[key];
