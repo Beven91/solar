@@ -43,12 +43,15 @@ export default class Network {
       if (Options.mock) {
         // 开启mock服务
         Network.on('options', (context) => {
-          context.base = '';
+          context.base = typeof Options.mock == 'string' ? Options.mock : '';
         });
         Network.on('start', (data, context: any) => {
-          context.url = context.url.replace(Options.base, '');
+          const segments = Options.base?.replace('//', '@').split('/');
+          const origin = segments?.shift()?.replace('@', '//');
+          const pathname = segments?.join('/');
+          context.url = context.url.indexOf(Options.base) > -1 ? context.url.replace(Options.base, pathname) : pathname + context.url;
           // 通知代理服务器，本次请求目标服务器
-          context.headers['x-proxy-api'] = Options.base;
+          context.headers['x-proxy-api'] = origin;
         });
         if (Options.mock2) {
           document.cookie = `cookie-env-api=${Options.mock2};path=/`;
