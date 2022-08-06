@@ -10,7 +10,7 @@ import stringify from 'qs/lib/stringify';
 import Tunnel from '../tunnel/index';
 import RequestContext from './context';
 import BizError from '../biz-error';
-import UseQuery, { GenerateHooks } from './userQuery';
+import UseQuery, { GenerateHooks } from './useQuery';
 import { HttpMethods, RHttpHeaders, NetworkBaseOptions, ChainResponses, SharedResponse } from './types';
 import { NetworkEventHandler, NetworkEvents, NetworkOptions, Promiseable } from './types';
 
