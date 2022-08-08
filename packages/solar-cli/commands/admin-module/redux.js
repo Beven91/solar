@@ -107,7 +107,7 @@ function generateCommonReducer(space, name, method, item, serviceName, namespace
   return `${space}// ${desc}
     async ${name}(this: ModelThis, data: RecordModel) {
       await ${serviceName}.${method.name}(data).showLoading();
-      this.leaveAction({ message: '${message}', reload: true });
+      this.leaveAction({ message: '${message}' });
     }`;
 }
 

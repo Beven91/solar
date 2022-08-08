@@ -28,7 +28,7 @@ function $componentName$PageView(props:ModelProps) {
     // { title: '删除', target: 'cell', click: props.removeRecordAsync, confirm: '您确定要删除改项' },
   ];
 
-  const { record, loading, primaryKey, action } = props;
+  const { record, loading, idKey, action } = props;
   const history = useHistory();
   const match = useRouteMatch();
 
@@ -38,18 +38,19 @@ function $componentName$PageView(props:ModelProps) {
       history={history}
       action={action}
       model={record}
-      primaryKey={primaryKey}
+      primaryKey={idKey}
       className="$className$"
       onRoute={props.enterAction}
       onSubmit={props.onSubmit}
       onCancel={props.onCancel}
+      confirmLoading={props.confirmLoading}
     >
       <AbstractActions.List>
         <AbstractTable
           sort="code"
           order="descend"
           loading={loading}
-          rowKey={primaryKey}
+          rowKey={idKey}
           columns={columns}
           buttons={buttons}
           // filters={this.filters}

@@ -49,7 +49,7 @@ function ExamplePageView(props:ModelProps) {
 
   const history = useHistory();
   const match = useRouteMatch();
-  const { model, primaryKey, action } = props;
+  const { model, idKey, action } = props;
 
   return (
     <AbstractActions
@@ -57,16 +57,16 @@ function ExamplePageView(props:ModelProps) {
       history={history}
       action={action}
       model={model}
-      primaryKey={primaryKey}
-      confirmLoading={props.confirmLoading}
+      primaryKey={idKey}
       className="example-module"
       onRoute={props.enterAction}
       onSubmit={props.onSubmit}
       onCancel={props.onCancel}
+      confirmLoading={props.confirmLoading}
     >
       <AbstractActions.List>
         <AbstractTable
-          rowKey={primaryKey}
+          rowKey={idKey}
           sort="code"
           order="descend"
           className="action-out-container"

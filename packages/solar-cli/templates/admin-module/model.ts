@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { $service$ } from '$serviceModule$';
-import { RematchEffectThis, RematchModelTo } from 'solar-core';
+import { RematchThis, RematchModelTo } from 'solar-core';
 import { AbstractAction, AbstractQueryType, SubmitAction } from 'solar-pc/src/interface';
 
 export interface RecordModel {
@@ -9,11 +9,11 @@ export interface RecordModel {
 
 const modelState = {
   // 主键
-  primaryKey: '$primaryKey$',
+  idKey: '$primaryKey$',
   // 当前操作动作 默认动作有:  add ,edit ,remove
   action: '',
-  // 是否重新加载表格数据
-  reload: false,
+  // 缓存的查询条件，用于刷新数据使用
+  query: {},
   // 是否显示loading
   confirmLoading: false,
   // 表格加载loading
@@ -31,40 +31,42 @@ const model = {
   name: '$namespace$',
   state: modelState,
   effects: {
-    // 开始进入操作模式
+    // 查询表格信息
+    async queryAllAsync(this: ModelThis, query: AbstractQueryType) {
+      this.setState({ loading: true });
+      const response = await $service$.$query$(query);
+      this.setState({ query, loading: false, allRecords: response.model || {} });
+    },
+    // 进入动作
     async enterAction(this: ModelThis, payload: AbstractAction) {
       if (payload.id) {
         const res = await $service$.$get$(payload.id).showLoading();
-        this.enterActionDone({ id: payload.id, model: res.model, action: payload.action });
-      } else {
-        this.enterActionDone(payload);
+        payload.model = res.model;
       }
+      this.setState({ action: payload.action, record: payload.model || {} });
     },
-    // 离开操作模式
-    async leaveAction(this: ModelThis, payload: { reload: boolean, [x: string]: any }, state: any) {
-      if (payload.reload) {
-        this.queryAllAsync({ ...state.$namespace$.query });
+    // 离开动作
+    async leaveAction(this: ModelThis, payload: { reload?: boolean, message: string }, state: any) {
+      if (payload.reload !== false) {
+        this.queryAllAsync({ ...state[model.name].query });
       }
-      this.handleActionSubmitDone(payload);
+      if (payload.message) {
+        message.info(payload.message);
+      }
+      this.setState({ action: '', record: {}, confirmLoading: false });
     },
-    // 查询表格信息
-    async queryAllAsync(this: ModelThis, query: AbstractQueryType) {
-      this.queryAllLoading();
-      const data = await $service$.$query$(query);
-      this.queryAllDone({ model: data.model, query });
-    },
-    // 操作提交
+    // 提交动作
     async onSubmit(this: ModelThis, data: SubmitAction<RecordModel>) {
-      this.confirmLoading();
+      this.setState({ confirmLoading: true });
       switch (data.action) {
         /* GENERATE-SUBMIT */
         default:
           break;
       }
     },
-    // 取消提交
+    // 取消动作
     onCancel(this: ModelThis) {
-      this.handleActionSubmitDone({});
+      this.setState({ action: '', record: {}, confirmLoading: false });
     },
     /* GENERATE-REDUCERS */
   },
@@ -81,56 +83,15 @@ const model = {
           return { ...state };
       }
     },
-    confirmLoading(state: ModelState): ModelState {
-      return {
-        ...state,
-        confirmLoading: true,
-      };
-    },
-    // 查询中
-    queryAllLoading(state: ModelState) {
-      return {
-        ...state,
-        loading: true,
-      };
-    },
-    // 查询表格数据完毕
-    queryAllDone(state: ModelState, payload: { query: AbstractQueryType, model: typeof modelState.allRecords }) {
-      return {
-        ...state,
-        reload: false,
-        query: payload.query,
-        loading: false,
-        allRecords: payload.model || {},
-      };
-    },
-    // 进入动作模式完毕
-    enterActionDone(state: ModelState, payload: AbstractAction) {
-      return {
-        ...state,
-        record: payload.model || {},
-        action: payload.action,
-      };
-    },
-    // 重置操作模式
-    handleActionSubmitDone(state: ModelState, payload: { message?: string, [x: string]: any }) {
-      // 显示操作完毕反馈消息
-      if (payload?.message) {
-        message.info(payload.message);
-      }
-      return {
-        ...state,
-        record: {},
-        confirmLoading: false,
-        action: '',
-      };
+    setState(state: ModelState, payload: Partial<ModelState>) {
+      return { ...state, ...payload };
     },
   },
 };
 
 export default model;
 
-interface ModelThis extends RematchEffectThis<typeof model> { }
+interface ModelThis extends RematchThis<typeof model> { }
 
 export type ModelState = typeof modelState;
 
