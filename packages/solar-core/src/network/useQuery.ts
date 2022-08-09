@@ -17,7 +17,7 @@ export interface HooksResponse<T> {
 }
 
 export type GenerateHooks<T> = {
-  [P in keyof T]: T[P] extends (...args: any[]) => AttachResponse<infer M, any> ? (...args: Parameters<T[P]>) => HooksResponse<M> : T[P]
+  [P in keyof T]: T[P] extends (...args: any[]) => AttachResponse<infer M, any> ? (...args: Parameters<T[P]>) => HooksResponse<M> : T[P] extends (...args:any[])=> Promise<infer M> ? (...args:Parameters<T[P]>)=> HooksResponse<M>: T[P]
 }
 
 let hooks: NetworkReactHooks = {} as NetworkReactHooks;

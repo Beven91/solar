@@ -34,7 +34,7 @@ export default function App() {
   return (
     <AbstractPermission
       failRender={() => <ApplyPermission /> }
-      getPermission={queryPermissions}
+      initPermission={queryPermissions}
     >
       <AbstractPermission.Permission roles="admin">
         <Button style={{ margin: '0 10px' }}>管理员可见</Button>

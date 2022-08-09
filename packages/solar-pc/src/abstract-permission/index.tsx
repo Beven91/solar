@@ -2,13 +2,13 @@
  * @module AbstractPermission
  * @description 权限上下文组件
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import Permission from './permission';
 import PermissionContext, { PermissionContextModel, PermissionUser } from './context';
 
 export interface AbstractPermissionProps {
   // 自定义获取权限信息，注意：该函数仅在初始化时调用一次。
-  getPermission?: () => Promise<PermissionUser> | PermissionUser
+  initPermission?: () => Promise<PermissionUser> | PermissionUser
   // 没有权限时的自定义内容渲染
   failRender?: () => React.ReactElement
   // 如果private-route 没有权限是的自定义渲染内容
@@ -32,7 +32,7 @@ export default class AbstractPermission extends React.Component<React.PropsWithC
 
   constructor(props: AbstractPermissionProps) {
     super(props);
-    this.state.loading = !!props.getPermission;
+    this.state.loading = !!props.initPermission;
   }
 
   get permissionContext() {
@@ -55,12 +55,30 @@ export default class AbstractPermission extends React.Component<React.PropsWithC
     user: null as PermissionUser,
   };
 
+
+  /**
+   * 创建一个带授权验证的组件
+   * @param Component
+   * @returns
+   */
+  static createPermissionView<T>(Component: React.FC | React.ComponentClass, isRoute = false) {
+    return function PermissionWrapView({ roles, ...props }: T & { roles: string }) {
+      const context = useContext(PermissionContext);
+      const failRender = isRoute ? context.failRotueRender : context.failRender;
+      return (
+        <AbstractPermission.Permission failRender={failRender} roles={roles} >
+          {<Component {...props} />}
+        </AbstractPermission.Permission>
+      );
+    };
+  }
+
   loadPermissions() {
-    const { getPermission } = this.props;
-    if (getPermission) {
+    const { initPermission } = this.props;
+    if (initPermission) {
       this.setState({ loading: true });
       Promise
-        .resolve(getPermission())
+        .resolve(initPermission())
         .then((user: PermissionUser) => this.setState({ loading: false, user }))
         .catch(() => this.setState({ loading: false }));
     }

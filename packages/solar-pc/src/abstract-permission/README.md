@@ -1,6 +1,6 @@
 # AbstractPermission
 
-权限控制组件，可用于角色操作权限控制。
+权限控制组件，可用于角色权限控制。
 
 ### 代码演示
 
@@ -13,5 +13,11 @@
 <AppCodebox 
   src="src/abstract-permission/demo/index.view" 
   title="自定义无权限视图" 
+  desc="" 
+/>
+
+<AppCodebox 
+  src="src/abstract-permission/demo/index.wrap" 
+  title="通过createPermissionView可以创建一个使用Permission包裹的组件。" 
   desc="" 
 />
