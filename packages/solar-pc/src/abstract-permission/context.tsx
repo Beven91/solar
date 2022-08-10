@@ -19,12 +19,13 @@ export interface PermissionUser {
 }
 
 export interface PermissionContextModel {
-  user:PermissionUser
-  loading:boolean
-  failRotueRender?:()=> React.ReactElement
-  failRender?:()=> React.ReactElement
-  refresh:()=> void
-  updateUser:(user:PermissionUser)=> void
+  user: PermissionUser
+  loading: boolean
+  failRotueRender?: () => React.ReactElement
+  failRender?: () => React.ReactElement
+  refresh: () => void
+  hasPermission: (...roles: string[]) => boolean
+  updateUser: (user: PermissionUser) => void
 }
 
 export default React.createContext<PermissionContextModel>({} as PermissionContextModel);

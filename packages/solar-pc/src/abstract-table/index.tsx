@@ -420,6 +420,8 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       loading,
       select,
       autoHeight,
+      searchBoxCls,
+      buttonBoxCls,
       ...others
     } = this.props;
     const { scroll, selectedRows, dataSource } = this.state;
@@ -441,12 +443,14 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
               >
                 {children && children}
                 <AbstractSearch
+                  className={searchBoxCls}
                   ref={this.searchRef}
                   fields={searchFields}
                   initialValues={this.props.searchInitialValues}
                   onQuery={this.handleSearch}
                 >
                   <TopActions
+                    className={buttonBoxCls}
                     onAction={this.onAction}
                     buttons={topActions}
                     renderTopBar={renderTopBar}

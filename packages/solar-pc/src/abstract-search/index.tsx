@@ -13,6 +13,8 @@ import AdvancePicker from '../advance-picker';
 import AbstractForm from '../abstract-form';
 
 export interface AbstractSearchProps<TRow> {
+  // 样式类名
+  className?: string
   // 默认查询条件
   initialValues?: TRow
   // 需要配置的搜索项
@@ -184,7 +186,7 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
     return (
       <div className="abstract-search-form abstract-form">
         <Form
-          className="abstract-search-form-container"
+          className={`abstract-search-form-container ${this.props.className || ''}`}
           ref={this.formRef}
           initialValues={this.props.initialValues}
           onValuesChange={this.handleInputChanged}

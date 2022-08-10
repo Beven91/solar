@@ -14,6 +14,8 @@ import { PermissionContextModel } from '../../abstract-permission/context';
 const Noop = (a: any) => a;
 
 export interface TopActionsProps<TRow> {
+  // 容器样式类名
+  className?: string
   // 操作按钮 具体内容查看 Types.button类型定义
   buttons: AbstractButton<TRow>[]
   // 选中的行数据
@@ -145,7 +147,7 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
       return renderTopBar();
     }
     return (
-      <Row className="search-tool-bar">
+      <Row className={`search-tool-bar ${this.props.className}`}>
         <Col span={24} style={{ textAlign: 'right' }}>
           <div className="table-operators">
             {renderTopBar()}

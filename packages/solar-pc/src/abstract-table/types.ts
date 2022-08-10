@@ -140,6 +140,10 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   autoHeight?: boolean
   // onQuery参数模式 scope ： 分页，排序等参数与查询参数分开， mix:则表示分页与查询参数混合再一起
   paramMode?: 'scope' | 'mix'
+  // 搜索容器样式名
+  searchBoxCls?: string
+  // 操作按钮容器样式名
+  buttonBoxCls?: string
   dropdownPrefixCls?: string;
   pagination?: false | TablePaginationConfig
   loading?: boolean | SpinProps
