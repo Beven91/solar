@@ -20,7 +20,7 @@ export interface NetworkBaseOptions {
   // 统一指定请求内容类型，默认:application/x-www-form-urlencoded
   contentType?: string
   // 是否开启mock服务
-  mock?: boolean
+  mock?: boolean | string
   // 第二条mock通道
   mock2?: string
   // 配置hooks

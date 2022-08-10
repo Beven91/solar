@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import { notification, message } from 'antd';
 import { Network, Config, BizError } from 'solar-core';
@@ -44,7 +44,7 @@ Network.on('response', (data, context) => {
 const rootId = chrome.env === 'content-script' ? 'chrome-extension-content-root' : 'chrome-extension-root';
 
 // 启动React应用
-ReactDOM.render(<App />, document.getElementById(rootId));
+createRoot(document.getElementById(rootId)).render(<App />);
 
 if (module.hot) {
   module.hot.accept();
