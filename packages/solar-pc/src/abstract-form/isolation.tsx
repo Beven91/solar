@@ -13,8 +13,8 @@ import { AbstractRow } from '../interface';
 import { FormInstance } from 'antd';
 
 export interface ISolationHookProps<TRow extends AbstractRow> extends AbstractFormProps<TRow> {
-  onChange: (values: TRow) => void
-  value: TRow
+  onChange?: (values: TRow) => void
+  value?: TRow
 }
 
 export interface ISolationHookState<TRow> {
@@ -36,16 +36,16 @@ export default class ISolation<TRow = AbstractRow> extends React.Component<ISola
   state:ISolationHookState<TRow> = {
     needUpdate: false,
     value: null,
-  }
+  };
 
-  formRef = React.createRef<FormInstance>()
+  formRef = React.createRef<FormInstance>();
 
   onChange = (changedValues: TRow, values: TRow) => {
     const { onChange } = this.props;
     const model = { ...values, ...changedValues };
     this.setState({ value: model, needUpdate: false });
     onChange && onChange(model);
-  }
+  };
 
   componentDidUpdate() {
     if (this.state.needUpdate && this.formRef.current) {
