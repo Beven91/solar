@@ -14,6 +14,7 @@ export interface ActionsContext<TRow = AbstractRow> {
   onSubmit?: (record: TRow) => void
   onSubCancel?: () => void
   onSubSubmit?: (data: TRow) => void
+  onValuesChange?: (values: TRow, prevValues: TRow) => void
   listRef?: React.RefObject<HTMLDivElement>
 }
 

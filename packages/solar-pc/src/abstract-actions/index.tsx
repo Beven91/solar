@@ -64,6 +64,8 @@ export interface AbstractActionsProps<TRow> {
    onSubCancel?: () => void
    // 当提交动作以及子动作时出发
    onSubmit?: (data: SubmitAction<TRow>) => void
+   // 当有值发生改变时触发,优先级低于具体Action的同名属性
+   onValuesChange?: (action: string, values: TRow, prevValues: TRow) => void
    children?: React.ReactNode
    [x: string]: any
  }
@@ -116,6 +118,12 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
         onSubCancel && onSubCancel();
       },
       ...props,
+      onValuesChange: (changedValues: TRow, previous: TRow) => {
+        const { onValuesChange } = this.props;
+        if (onValuesChange) {
+          onValuesChange(action, changedValues, previous);
+        }
+      },
       listRef: this.containerRef,
       subConfirmLoading: this.props.subConfirmLoading,
       confirmLoading: this.props.confirmLoading,
@@ -130,10 +138,9 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
   get tableContext() {
     return {
       onAction: (action) => {
-        const { onRoute } = this.props;
+        const { onRoute, route } = this.props;
         const data = cellRenders.createAction(action);
-        const { route } = this.props;
-        const url = data.create(route.path || '', action);
+        const url = data.create(route.path || '', { ...(route.params || {}), ...action });
         this.isNeedBack = true;
         runtime.isInitialize = false;
         this.props?.history?.push(url);
