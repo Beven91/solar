@@ -30,6 +30,10 @@ const registrations:InputRegistrations = {
 };
 
 export default class InputFactory {
+  static getAllRegistrations() {
+    return Object.keys(registrations).map((name)=> registrations[name]);
+  }
+
   /**
    * 获取指定表单元数据信息
    * @param registration
