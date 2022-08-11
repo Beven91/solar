@@ -142,6 +142,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   paramMode?: 'scope' | 'mix'
   // 搜索容器样式名
   searchBoxCls?: string
+  // 搜搜容器按钮容器样式名
+  searchBoxActionCls?: string
   // 操作按钮容器样式名
   buttonBoxCls?: string
   dropdownPrefixCls?: string;

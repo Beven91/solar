@@ -18,27 +18,27 @@ import { AbstractTableProps, AbstractButton, SelectMode, OnActionRoute, Abstract
 import { AbstractSField, AbstractQueryType, PlainObject, AbstractResponseModel } from '../interface';
 import { AbstractRows, AbstractRow, AbstractAction, AbstractFilters, FilterTabType } from '../interface';
 
-interface SortInfo {
-  field: string
-  order: string
-}
+ interface SortInfo {
+   field: string
+   order: string
+ }
 
 export interface AbstractTableState<TRow> {
-  loading: boolean
-  activeTab: FilterTabType
-  sort: SortInfo
-  scroll: {
-    x?: number | true | string;
-    y?: number | string;
-  },
-  prevPageSize?: number
-  selectedRows: TRow[],
-  propsSelectedRows: TRow[]
-  pageSize: number
-  pageNum: number
-  dataSource?: AbstractResponseModel<TRow>
-  prevData?: any
-}
+   loading: boolean
+   activeTab: FilterTabType
+   sort: SortInfo
+   scroll: {
+     x?: number | true | string;
+     y?: number | string;
+   },
+   prevPageSize?: number
+   selectedRows: TRow[],
+   propsSelectedRows: TRow[]
+   pageSize: number
+   pageNum: number
+   dataSource?: AbstractResponseModel<TRow>
+   prevData?: any
+ }
 
 export default class AbstractTable<TRow extends AbstractRow> extends React.Component<AbstractTableProps<TRow>, AbstractTableState<TRow>> {
   // 默认属性值
@@ -422,6 +422,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       autoHeight,
       searchBoxCls,
       buttonBoxCls,
+      searchBoxActionCls,
       ...others
     } = this.props;
     const { scroll, selectedRows, dataSource } = this.state;
@@ -443,9 +444,10 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
               >
                 {children && children}
                 <AbstractSearch
-                  className={searchBoxCls}
                   ref={this.searchRef}
                   fields={searchFields}
+                  className={searchBoxCls}
+                  actionsCls={searchBoxActionCls}
                   initialValues={this.props.searchInitialValues}
                   onQuery={this.handleSearch}
                 >

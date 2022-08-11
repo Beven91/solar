@@ -14,15 +14,15 @@ import { PermissionContextModel } from '../../abstract-permission/context';
 const Noop = (a: any) => a;
 
 export interface TopActionsProps<TRow> {
-  // 容器样式类名
-  className?: string
-  // 操作按钮 具体内容查看 Types.button类型定义
-  buttons: AbstractButton<TRow>[]
-  // 选中的行数据
-  selectedRows: TRow[]
-  renderTopBar?: () => ReactNode
-  onAction: OnActionRoute<TRow>
-}
+   // 容器样式名
+   className?: string
+   // 操作按钮 具体内容查看 Types.button类型定义
+   buttons: AbstractButton<TRow>[]
+   // 选中的行数据
+   selectedRows: TRow[]
+   renderTopBar?: () => ReactNode
+   onAction: OnActionRoute<TRow>
+ }
 
 export default class TopActions<TRow = AbstractRow> extends React.Component<TopActionsProps<TRow>> {
   // 默认属性
@@ -147,9 +147,9 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
       return renderTopBar();
     }
     return (
-      <Row className={`search-tool-bar ${this.props.className}`}>
+      <Row className={'search-tool-bar abstract-table-top-actions'}>
         <Col span={24} style={{ textAlign: 'right' }}>
-          <div className="table-operators">
+          <div className={`table-operators ${this.props.className || ''}`}>
             {renderTopBar()}
             {
               <AbstractPermission.Consumer>
