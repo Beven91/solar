@@ -1,6 +1,6 @@
 import { AbstractAction, AbstractRow, PlainObject } from '../../interface';
 import { AbstractColumnType } from '../types';
-import Formatters from './formatters';
+import Formatters, { enums } from './formatters';
 
 // 获取列render
 export function getRender<TRow>(column: AbstractColumnType<TRow>) {
@@ -10,9 +10,9 @@ export function getRender<TRow>(column: AbstractColumnType<TRow>) {
   if (column.render) {
     return column.render;
   } else if (column.enums) {
-    return Formatters.enums(column.enums);
-  } else if (Formatters[formatName]) {
-    return (v: any, row: TRow) => Formatters[formatName](v, row, column);
+    return enums(column.enums);
+  } else if (formatName) {
+    return (v: any, row: TRow) => Formatters.call(formatName, v, { row, column, options: formatData[1] || {} });
   }
   return (a: any) => {
     // 空类型值渲染

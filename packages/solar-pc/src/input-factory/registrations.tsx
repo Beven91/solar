@@ -112,7 +112,7 @@ export default [
     name: 'options',
     component: OptionsPicker,
     options: [
-      { title: '数据源', name: 'optionsKey', render: <OptionsPicker labelName="title" valueName="name" optionsKey="index" /> },
+      { title: '数据源', name: 'optionsKey', render: <OptionsPicker optionsKey="@index" /> },
     ],
   },
   {

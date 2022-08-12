@@ -27,6 +27,8 @@ export interface AbstractFormatters {
   privateImage: any
 }
 
+type AbstractFormatterConfig = [string, any];
+
 export interface AbstractColumnType<TRow extends AbstractRow> extends ColumnType<TRow> {
   // 列属性名
   name: string
@@ -38,7 +40,7 @@ export interface AbstractColumnType<TRow extends AbstractRow> extends ColumnType
   // 配置规则:  fk:['username',queryUserById]   queryUserById().then((data)=> data['username'] )
   fk?: ForeignKey
   // 使用默认格式化工具 参见 formatter.js
-  format?: keyof AbstractFormatters
+  format?: keyof AbstractFormatters | AbstractFormatterConfig
   // 排序字段名
   sort?: string
 }
