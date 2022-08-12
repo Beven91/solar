@@ -6,7 +6,7 @@
 import { Image } from 'antd';
 import moment from 'moment';
 import React from 'react';
-import { Oss } from 'fluxy-core';
+import { Oss } from 'solar-core';
 import { AbstractRow } from '../../interface';
 import { AbstractColumnType } from '../types';
 import Registrations, { RegistrationBase } from '../../input-factory/Registration';
@@ -74,10 +74,6 @@ function image(src: string) {
   return <Image className="cell-image" src={src} />;
 }
 
-function privateImage(src: string) {
-  src = Oss.getPrivateUrl(src);
-  return <Image className="cell-image" src={src} />;
-}
 
 // 外键数据查看
 function fk(value: any, ctx: FormatContext) {
@@ -135,7 +131,6 @@ formatters.register(
     { name: 'money', format: money },
     { name: 'image', format: image },
     { name: 'fk', format: fk },
-    { name: 'privateImage', format: privateImage },
   ]
 );
 
