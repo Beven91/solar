@@ -21,9 +21,9 @@ export interface IconPickerState {
 export default class IconPicker extends React.Component<IconPickerProps, IconPickerState> {
   state:IconPickerState = {
     url: '',
-  }
+  };
 
-  inputRef = React.createRef<any>()
+  inputRef = React.createRef<any>();
 
   renderIconViewer() {
     const url = this.state.url || this.props.value;
@@ -50,7 +50,7 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
   onChange = (e:ChangeEvent<HTMLInputElement>)=>{
     const { onChange } = this.props;
     onChange && onChange(e.target.value);
-  }
+  };
 
   render() {
     return (

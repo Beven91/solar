@@ -8,7 +8,8 @@ export default function App() {
 
   return (
     <IconPicker
-      value="icon-facebook"
+      mode="full"
+      value="iconfont icon-twitter"
       onChange={onChange}
       url="https://at.alicdn.com/t/font_8d5l8fzk5b87iudi.css"
     />

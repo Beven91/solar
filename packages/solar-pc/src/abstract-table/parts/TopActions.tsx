@@ -14,15 +14,15 @@ import { PermissionContextModel } from '../../abstract-permission/context';
 const Noop = (a: any) => a;
 
 export interface TopActionsProps<TRow> {
-   // 容器样式名
-   className?: string
-   // 操作按钮 具体内容查看 Types.button类型定义
-   buttons: AbstractButton<TRow>[]
-   // 选中的行数据
-   selectedRows: TRow[]
-   renderTopBar?: () => ReactNode
-   onAction: OnActionRoute<TRow>
- }
+  // 容器样式名
+  className?: string
+  // 操作按钮 具体内容查看 Types.button类型定义
+  buttons: AbstractButton<TRow>[]
+  // 选中的行数据
+  selectedRows: TRow[]
+  renderTopBar?: () => ReactNode
+  onAction: OnActionRoute<TRow>
+}
 
 export default class TopActions<TRow = AbstractRow> extends React.Component<TopActionsProps<TRow>> {
   // 默认属性
@@ -66,28 +66,31 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
   }
 
   // 渲染单个按钮
-  renderNormal(button: AbstractButton<TRow>, i: number, confirm?: boolean) {
+  renderNormal(button: AbstractButton<TRow>, i: number) {
     const { selectedRows } = this.props;
-    const single = (button.select === 'single' || !button.select);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+    const { select, tip, action, render, icon, visible, title, click, confirm, type, ...props } = button;
+    const single = (select === 'single' || !select);
     const buttonClick = confirm ? null : (e: any) => this.onClick(single ? selectedRows[0] : selectedRows, '', e, button);
     const disabled = this.isDisabled(button, selectedRows);
-    if (button.render) {
+    if (render) {
       return (
         <span key={`table-button-operat-${i}`}>
-          {button.render()}
+          {render()}
         </span>
       );
     }
     return (
       <Button
+        {...props}
         className="operator"
-        icon={button.icon}
+        icon={icon}
         key={`table-button-operat-${i}`}
-        type={button.type || 'primary'}
+        type={type || 'primary'}
         onClick={buttonClick}
         disabled={disabled}
       >
-        {button.title}
+        {title}
       </Button>
     );
   }
@@ -121,7 +124,7 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
         title={confirm}
         onConfirm={buttonClick}
       >
-        {this.renderNormal(button, index, true)}
+        {this.renderNormal(button, index)}
       </Popconfirm>
     );
   }

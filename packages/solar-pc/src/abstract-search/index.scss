@@ -20,12 +20,13 @@
 
   .abstract-form-item-col{
     padding-bottom:12px;
-    max-width:400px;
+    min-width:300px;
   }
 
   .search-buttons {
     position: static;
     text-align: left;
+    min-width: 200px;
 
     .ant-form-item-children {
       white-space: nowrap;

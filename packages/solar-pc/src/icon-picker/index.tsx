@@ -7,26 +7,37 @@ import IconInput from './IconInput';
 
 export interface IconPickerProps {
   // 字体图标url
-  url:string
+  url: string
   // 当前选择的图标
-  value?:string
+  value?: string
+  /**
+   * 选择模式
+   * normal: 选择的value为icon的图标名
+   * full: 选择的value为 图标名 +空格 +  字体名
+   */
+  mode?: 'normal' | 'full'
   // 当选择改变时触发
-  onChange?:(icon:string)=>void
+  onChange?: (icon: string) => void
   // 自定义渲染选中图标
-  renderIcon?:(icon:string, family:string) => React.ReactElement
+  renderIcon?: (icon: string, family: string) => React.ReactElement
   // 是否禁用
-  disabled?:boolean
+  disabled?: boolean
 }
 
 export interface IconPickerState {
-  icon:string
-  valueIcon:string
-  visible:boolean
-  fontFamily:string
+  icon: string
+  valueIcon: string
+  visible: boolean
+  fontFamily: string
 }
 
 export default class IconPicker extends React.Component<IconPickerProps, IconPickerState> {
-  static getDerivedStateFromProps(props:IconPickerProps, state:IconPickerState) {
+  static defaultProps:IconPickerProps = {
+    mode: 'normal',
+    url: '',
+  };
+
+  static getDerivedStateFromProps(props: IconPickerProps, state: IconPickerState) {
     if (props.value !== state.valueIcon) {
       return {
         valueIcon: props.value,
@@ -36,24 +47,25 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
     return null;
   }
 
-  static Input = IconInput
+  static Input = IconInput;
 
-  state:IconPickerState = {
+  state: IconPickerState = {
     icon: '',
     valueIcon: '',
     visible: false,
     fontFamily: '',
-  }
+  };
 
-  onVisibleChange = (visible:boolean)=>{
+  onVisibleChange = (visible: boolean) => {
     this.setState({ visible });
-  }
+  };
 
-  onCheckedIcon = (icon:string)=>{
+  onCheckedIcon = (icon: string) => {
+    const value = this.props.mode == 'full' ? `${this.state.fontFamily} ${icon}` : icon;
     const { onChange } = this.props;
-    onChange && onChange(icon);
+    onChange && onChange(value);
     this.setState({ visible: false, icon: icon });
-  }
+  };
 
   renderCheckedIcon() {
     const { renderIcon } = this.props;
@@ -66,11 +78,14 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
   }
 
   renderIconViewer() {
+    const { icon } = this.state;
+    const { mode } = this.props;
+    const value = mode == 'full' ? (icon || '').split(' ').pop() : icon;
     return (
       <RemoteIconView
-        onLoad={(fontFamily)=>this.setState({ fontFamily: fontFamily })}
+        onLoad={(fontFamily) => this.setState({ fontFamily: fontFamily })}
         url={this.props.url}
-        checkedIcon={this.state.icon}
+        checkedIcon={value}
         onClick={this.onCheckedIcon}
       />
     );

@@ -8,7 +8,7 @@
   console="true"
   src="src/abstract-search/demo/index" 
   title="基本用法" 
-  desc="通过配置，来生成一个搜索表单集。" 
+  desc="通过配置，来生成一个搜索表单集" 
 />
 
 <AppCodebox 

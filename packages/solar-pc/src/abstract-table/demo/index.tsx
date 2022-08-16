@@ -9,9 +9,9 @@ interface ActivityModel {
 }
 
 const demoRows = [
-  { name: 'Surface Book3', price: 17800 },
-  { name: 'Mac Book Pro3', price: 20000 },
-  { name: 'Thinkpad', price: 10000 },
+  { id: 1, name: 'Surface Book3', price: 17800 },
+  { id: 2, name: 'Mac Book Pro3', price: 20000 },
+  { id: 3, name: 'Thinkpad', price: 10000 },
 ];
 
 export default function App() {
@@ -42,6 +42,7 @@ export default function App() {
       style={{ height: 360 }}
     >
       <AbstractTable
+        rowKey="id"
         columns={columns}
         buttons={buttons}
         onQuery={onQuery}

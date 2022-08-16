@@ -5,7 +5,7 @@
  *       表格操作列视图,用于渲染操作列中的按钮
  */
 import React from 'react';
-import { Popconfirm, Tooltip } from 'antd';
+import { Popconfirm, Button, Tooltip } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
 import renders from '../util/cellRenders';
@@ -62,20 +62,9 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
   // 渲染单个按钮
   renderNormal(button: AbstractButton<TRow>, i: number, confirm?: boolean) {
     const { row, rowId } = this.props;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+    const { icon, render, tip, action, type, select, visible, click, disabled, title, ...props } = button;
     const buttonClick = confirm ? null : (e: any) => this.onClick(row, rowId, e, button);
-    const render = button.render;
-    const icon = button.icon;
-    if (icon && !button.title && !button.render) {
-      return (
-        <span
-          className="cell-operator"
-          key={`cell-button-operator-${i}`}
-          onClick={buttonClick}
-        >
-          {icon}
-        </span>
-      );
-    }
     if (typeof render === 'function') {
       return (
         <span
@@ -88,15 +77,18 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
       );
     }
     return (
-      <a
+      <Button
+        {...props}
+        icon={icon}
         className="cell-operator"
         href={'href' in button ? button.href : undefined}
         target={button.target || undefined}
         key={`cell-button-operator-${i}`}
         onClick={buttonClick}
+        type={type || 'link'}
       >
-        {button.title}
-      </a>
+        {title}
+      </Button>
     );
   }
 

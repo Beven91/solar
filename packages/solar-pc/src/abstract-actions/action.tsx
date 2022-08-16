@@ -174,12 +174,12 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                   }
                 </div>
               }
+              placement={placement || 'right'}
               {...(drawer || {})}
               width={width || 800}
               style={style}
               className={`${className} abstract-actions-drawer`}
               title={props.title || ''}
-              placement={placement || 'right'}
               visible={visible}
               onClose={useContext?.onCancel}
             >

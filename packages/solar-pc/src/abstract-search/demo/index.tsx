@@ -11,7 +11,6 @@ export default function App() {
   return (
     <AbstractSearch
       fields={fields}
-      actionStyle="newline"
       onClean={()=>console.log('清空查询')}
       onQuery={(query) => console.log('search', query)}
     />

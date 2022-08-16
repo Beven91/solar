@@ -42,13 +42,13 @@ export default class RemoteIconView extends React.Component<RemoteIconViewProps,
   }
 
   // 当前字体样式名
-  fontFamily:string
+  fontFamily:string;
 
   state:RemoteIconViewState = {
     url: '',
     loading: false,
     icons: [] as Array<string>,
-  }
+  };
 
   /**
    * 记载字体文件
@@ -98,7 +98,7 @@ export default class RemoteIconView extends React.Component<RemoteIconViewProps,
   handleClick = (icon:string)=>{
     const { onClick } = this.props;
     onClick && onClick(icon);
-  }
+  };
 
   renderIcon(icon:string) {
     const { checkedIcon, showName } = this.props;

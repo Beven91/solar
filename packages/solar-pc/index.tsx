@@ -22,6 +22,7 @@ import CodeHighlight from './src/code-highlight';
 import PortalSystem from './src/portal-system';
 import XlsxPicker from './src/xlsx-picker';
 import OverridePageHeader from './src/override-page-header';
+import AbstractIcon from './src/abstract-icon';
 
 export type {
   AbstractConfig, PageQueryData, AbstractGroups, AbstractRules, AbstractSFields, SubmitAction,
@@ -61,4 +62,5 @@ export {
   PortalSystem,
   XlsxPicker,
   OverridePageHeader,
+  AbstractIcon,
 };

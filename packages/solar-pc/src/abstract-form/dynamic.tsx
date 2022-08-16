@@ -15,27 +15,27 @@ import {
 } from '../interface';
 
 export interface DynamicProps<TRow> {
-  // 是否使用外包裹
-  wrapper?: boolean
-  // 数据
-  model: TRow
-  // 表单配置
-  groups: AbstractGroups<TRow>
-  // 统一表单布局配置
-  formItemLayout?: AbstractFormLayout
-  // 校验规则
-  rules?: AbstractRules
-  // 是否为查看模式
-  isReadOnly?: boolean
-  // antd的form对象
-  form: React.RefObject<FormInstance>
-  // 表单组展示模式
-  groupStyle?: FormGroupStyle
-  // 表单值发生改变时间
-  onValuesChange?: onValuesChangeHandler
-  // 拼接在表单控件后的字元素
-  formChildren?: React.ReactNode
-}
+   // 是否使用外包裹
+   wrapper?: boolean
+   // 数据
+   model: TRow
+   // 表单配置
+   groups: AbstractGroups<TRow>
+   // 统一表单布局配置
+   formItemLayout?: AbstractFormLayout
+   // 校验规则
+   rules?: AbstractRules
+   // 是否为查看模式
+   isReadOnly?: boolean
+   // antd的form对象
+   form: React.RefObject<FormInstance>
+   // 表单组展示模式
+   groupStyle?: FormGroupStyle
+   // 表单值发生改变时间
+   onValuesChange?: onValuesChangeHandler
+   // 拼接在表单控件后的字元素
+   formChildren?: React.ReactNode
+ }
 
 const defaultFormItemLayout = {
   labelCol: {
@@ -66,7 +66,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   // 渲染分组
   renderGroup(groupItem: AbstractFormGroupItemType<TRow>, index: number) {
     const { group, items, span } = groupItem;
-    if (!group) {
+    if (!('group' in groupItem)) {
       return this.renderFormItem(groupItem as any);
     }
     const className = index === 0 ? 'first-group' : '';
@@ -145,7 +145,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     }
     return (
       <div className={`abstract-form ${this.isReadOnly ? 'readonly' : ''}`}>
-        <Row gutter={24}>
+        <Row gutter={8}>
           {node}
           {this.props.formChildren}
         </Row>
