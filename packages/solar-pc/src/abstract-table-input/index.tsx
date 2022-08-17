@@ -1,7 +1,6 @@
 /**
- * @name AbstractTable
- * @description
- *      后台系统，抽象列表页组件，包括：搜索条件，操作按钮，表格组件
+ * @name AbstractTableInput
+ * @description 表格输入控件
  */
 import './index.scss';
 import React from 'react';
@@ -14,40 +13,42 @@ import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, Abstrac
 import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 
-type UpdateReason = 'input' | 'row' | 'none'
+ type UpdateReason = 'input' | 'row' | 'none'
 
 export interface AbstractTableInputProps<TRow extends AbstractRow> extends AbstractTableProps<TRow> {
-  // 列配置信息
-  columns: AbstractEditColumnType<TRow>[]
-  // 返回的分页数据
-  value?: TRow[]
-  // 输入内容发生改变
-  onChange?: (rows: TRow[]) => void
-  // 保存指定行数据，仅在mode=row时能出发
-  onSave: (row: TRow) => Promise<any>
-  /**
-   * 编辑模式
-   * all: 所有行同时可以编辑
-   * row: 点击指定行的按钮进入编辑状态
-   */
-  mode: 'all' | 'row',
-  // 校验规则
-  rules?: AbstractRules
-  // 自定义创建行对象
-  createRow?: (rowKey: string, columns: AbstractColumnType<TRow>[], index: number) => TRow
-  // 新增按钮文案
-  addButton?: React.ReactNode
-  // 是否禁用
-  disabled?: boolean
-  // 新增按钮是否可见
-  addVisible: (rows: TRow[]) => boolean
-  // 删除按钮是否可见
-  removeVisible: (row: TRow) => boolean
-}
+   // 列配置信息
+   columns: AbstractEditColumnType<TRow>[]
+   // 返回的分页数据
+   value?: TRow[]
+   // 输入内容发生改变
+   onChange?: (rows: TRow[]) => void
+   // 保存指定行数据，仅在mode=row时能出发
+   onSave: (row: TRow) => Promise<any>
+   /**
+    * 编辑模式
+    * all: 所有行同时可以编辑
+    * row: 点击指定行的按钮进入编辑状态
+    */
+   mode: 'all' | 'row',
+   // 校验规则
+   rules?: AbstractRules
+   // 自定义创建行对象
+   createRow?: (rowKey: string, columns: AbstractColumnType<TRow>[], index: number) => TRow
+   // 新增按钮文案
+   addButton?: React.ReactNode
+   // 是否禁用
+   disabled?: boolean
+   // 新增按钮是否可见
+   addVisible: (rows: TRow[]) => boolean
+   // 删除按钮是否可见
+   removeVisible: (row: TRow) => boolean
+   // 是否显示操作列
+   hideOperation?: boolean
+ }
 
-interface AbstractTableInputState<TRow> {
-  editRow: TRow
-}
+ interface AbstractTableInputState<TRow> {
+   editRow: TRow
+ }
 
 const components = {
   body: {
@@ -96,10 +97,10 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
   throttleId: any;
 
   cacheRowsRefs = {} as {
-    [propName: string]: {
-      [propName: string]: React.RefObject<React.Component>
-    }
-  };
+     [propName: string]: {
+       [propName: string]: React.RefObject<React.Component>
+     }
+   };
 
   formRef = React.createRef<FormInstance>();
 
@@ -288,7 +289,7 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
 
   // 按钮
   get buttons() {
-    if (this.props.disabled) {
+    if (this.props.disabled || this.props.hideOperation) {
       return [];
     }
     return [
