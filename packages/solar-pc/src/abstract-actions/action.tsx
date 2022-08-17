@@ -12,34 +12,35 @@ import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
 import FooterActions from '../abstract-object/footer';
 
- interface ActionProps {
-   action?: string
-   subAction?: string
-   use?: React.ComponentType<any>
-   children?: React.ReactElement | React.ReactNode
-   className?: string
-   style?: React.CSSProperties
- }
+interface ActionProps {
+  action?: string
+  subAction?: string
+  use?: React.ComponentType<any>
+  children?: React.ReactElement | React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}
 
 export interface ListActionProps {
-   className?: string
-   children?: React.ReactElement | React.ReactNode
-   style?: React.CSSProperties
- }
+  className?: string
+  children?: React.ReactElement | React.ReactNode
+  style?: React.CSSProperties
+}
 
 export interface ObjectActionProps<TRow> extends ActionProps, BaseObjectProps<TRow> {
-   oClassName?: string
-   onSubmit?: (data: SubmitAction<TRow>) => void
- }
+  oClassName?: string
+  onSubmit?: (data: SubmitAction<TRow>) => void
+}
 
 export interface DrawerActionProps<TRow> extends ObjectActionProps<TRow> {
-   drawer?: DrawerProps
-   placement?: 'top' | 'right' | 'bottom' | 'left'
- }
+  drawer?: DrawerProps
+  placement?: 'top' | 'right' | 'bottom' | 'left'
+}
 
 const getMatchContext = (context: ActionsContext, props: ActionProps) => {
   const { onSubCancel, onSubSubmit, onSubmit, onCancel, action, subAction, ...others } = context;
   if (props.action && action === props.action) {
+    context.onMatch(action);
     return {
       ...others,
       action: action,
@@ -176,8 +177,8 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
               }
               placement={placement || 'right'}
               {...(drawer || {})}
-              width={width || 800}
               style={style}
+              width={width || 800}
               className={`${className} abstract-actions-drawer`}
               title={props.title || ''}
               visible={visible}
