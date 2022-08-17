@@ -24,6 +24,14 @@
 />
 
 
+<AppCodebox 
+  console="true"
+  src="src/abstract-form/demo/index.isolation" 
+  title="嵌套表单" 
+  desc="通过AbstractForm.ISolation来构建一个嵌套的AbstractForm" 
+/>
+
+
 ```props
 ```
 

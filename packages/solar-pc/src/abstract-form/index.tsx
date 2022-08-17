@@ -29,6 +29,8 @@ export interface AbstractFormProps<TRow> {
   isReadOnly?: boolean
   // 表单组展示模式
   groupStyle?: FormGroupStyle
+  // 默认跨列数
+  span?: number
   // 拼接在表单控件后的字元素
   formChildren?: React.ReactNode
 }

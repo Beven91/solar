@@ -11,6 +11,7 @@ import FormContext from './context';
 import { AbstractFormProps } from './index';
 import { AbstractRow } from '../interface';
 import { FormInstance } from 'antd';
+import deepmerge from './deepmerge';
 
 export interface ISolationHookProps<TRow extends AbstractRow> extends AbstractFormProps<TRow> {
   onChange?: (values: TRow) => void
@@ -42,7 +43,7 @@ export default class ISolation<TRow = AbstractRow> extends React.Component<ISola
 
   onChange = (changedValues: TRow, values: TRow) => {
     const { onChange } = this.props;
-    const model = { ...values, ...changedValues };
+    const model = deepmerge({ ...values }, changedValues) as TRow;
     this.setState({ value: model, needUpdate: false });
     onChange && onChange(model);
   };

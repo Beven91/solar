@@ -41,6 +41,7 @@ export default function App() {
     { title: '最大值', initialValue: 200, name: 'max', render: <InputNumber />, extra: '带初始值' },
     { title: '活动编号', name: 'activityId', extra: '默认为文本输入框' },
     { title: '用户名称', name: 'user.name', extra: '多级属性例如: user.name' },
+    { title: '用户年龄', name: 'user.age', extra: '多级属性例如: user.age' },
     { title: '优惠券类型', name: 'couponType', render: <AdvancePicker data={COUPONS_TYPES} /> },
     {
       title: '优惠券ID',

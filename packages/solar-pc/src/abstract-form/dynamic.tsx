@@ -15,27 +15,29 @@ import {
 } from '../interface';
 
 export interface DynamicProps<TRow> {
-   // 是否使用外包裹
-   wrapper?: boolean
-   // 数据
-   model: TRow
-   // 表单配置
-   groups: AbstractGroups<TRow>
-   // 统一表单布局配置
-   formItemLayout?: AbstractFormLayout
-   // 校验规则
-   rules?: AbstractRules
-   // 是否为查看模式
-   isReadOnly?: boolean
-   // antd的form对象
-   form: React.RefObject<FormInstance>
-   // 表单组展示模式
-   groupStyle?: FormGroupStyle
-   // 表单值发生改变时间
-   onValuesChange?: onValuesChangeHandler
-   // 拼接在表单控件后的字元素
-   formChildren?: React.ReactNode
- }
+  // 是否使用外包裹
+  wrapper?: boolean
+  // 数据
+  model: TRow
+  // 默认跨列数
+  span?:number
+  // 表单配置
+  groups: AbstractGroups<TRow>
+  // 统一表单布局配置
+  formItemLayout?: AbstractFormLayout
+  // 校验规则
+  rules?: AbstractRules
+  // 是否为查看模式
+  isReadOnly?: boolean
+  // antd的form对象
+  form: React.RefObject<FormInstance>
+  // 表单组展示模式
+  groupStyle?: FormGroupStyle
+  // 表单值发生改变时间
+  onValuesChange?: onValuesChangeHandler
+  // 拼接在表单控件后的字元素
+  formChildren?: React.ReactNode
+}
 
 const defaultFormItemLayout = {
   labelCol: {
@@ -53,7 +55,6 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     rules: {},
     model: {},
     wrapper: true,
-    span: 4,
     formItemLayout: null as any,
     isReadOnly: false,
   };
@@ -67,7 +68,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   renderGroup(groupItem: AbstractFormGroupItemType<TRow>, index: number) {
     const { group, items, span } = groupItem;
     if (!('group' in groupItem)) {
-      return this.renderFormItem(groupItem as any);
+      return this.renderFormItem(groupItem as any, this.props.span);
     }
     const className = index === 0 ? 'first-group' : '';
     return (
@@ -82,7 +83,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
           className={className}
         >
           <Row gutter={24}>
-            {items.map((item) => this.renderFormItem(item, span, groupItem.layout))}
+            {items.map((item) => this.renderFormItem(item, span || this.props.span, groupItem.layout))}
           </Row>
         </FormGroup>
       </Col>

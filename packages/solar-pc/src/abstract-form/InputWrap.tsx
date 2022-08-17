@@ -24,7 +24,7 @@ interface ConverterInfo {
 }
 
 export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow>> {
-  valuePropName = 'value'
+  valuePropName = 'value';
 
   get converter(): ConverterInfo {
     const { item } = this.props;
@@ -102,7 +102,7 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
     if (onValuesChange) {
       onValuesChange(prevValues, this.model);
     }
-  }
+  };
 
   // 获取表单的值属性名
   renderPropValueName(input: ReactElement) {

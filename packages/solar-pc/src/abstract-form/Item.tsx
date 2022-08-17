@@ -74,7 +74,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
     item: {},
     model: {},
     rules: [] as Rule[],
-  }
+  };
 
   static getDerivedStateFromProps(nextProps: AbstractItemProps<AbstractRow>, state: AbstractItemState) {
     const { item } = nextProps;
@@ -109,13 +109,13 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
     disabledFunction: null as any,
     disabled: false,
     forceUpdate: false,
-  }
+  };
 
-  private timerId: any
+  private timerId: any;
 
-  inputWrapRef = React.createRef<InputWrap<TRow>>()
+  inputWrapRef = React.createRef<InputWrap<TRow>>();
 
-  formatUpdate = false
+  formatUpdate = false;
 
   getValue(name: string[], curValues: TRow) {
     let value = curValues;
@@ -172,7 +172,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
     if (formatUpdate) {
       return true;
     }
-  }
+  };
 
   normalize = (value: TRow, prevValue: TRow, prevValues: TRow) => {
     const item = this.props.item;
@@ -191,7 +191,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
       return item.normalize(value, prevValue, prevValue);
     }
     return value;
-  }
+  };
 
   normalizeKey(item: AbstractFormItemType<TRow>) {
     return item.name instanceof Array ? item.name : (item.name || '').split('.');
