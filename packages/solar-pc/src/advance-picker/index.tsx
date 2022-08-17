@@ -25,6 +25,12 @@ export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
    * 可以设置本地检索  'local'(推荐本地模式 在接口数据小于100条时使用此模式)
    */
   type?: 'remote' | 'local' | 'none'
+  /**
+   * 值模式
+   * normal: 选择的值为字段值
+   * object: 选择的值为选择的对象
+   */
+  valueMode?: 'normal' | 'object'
   // 自定义数据获取，支持接口请求。
   api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
   // 本地数据源
@@ -75,6 +81,7 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     query: {},
     onChange: () => '',
     disabled: false,
+    valueMode: 'normal',
     valueName: 'value',
     labelName: 'label',
     type: 'remote',
@@ -111,9 +118,24 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     };
   }
 
+  get nativeValue() {
+    const { value, valueName } = this.props;
+    switch (this.props.valueMode) {
+      case 'object':
+        if (value instanceof Array) {
+          return value.map((item) => item[valueName].toString());
+        } else if (value && typeof value == 'object') {
+          return value[valueName];
+        }
+        return value;
+      default:
+        return value;
+    }
+  }
 
   get value() {
-    const { value, joinChar } = this.props;
+    const { joinChar } = this.props;
+    const value = this.nativeValue;
     if (!this.props.mode) {
       return value ? value.toString() : value;
     }
@@ -147,19 +169,38 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     }
   }
 
+  findOrigin(value: any) {
+    const { rows } = this.state;
+    const { valueName, labelName } = this.props;
+    const row = rows.find((r) => r.value.toString() === value);
+    return row?.original || { [valueName]: value, [labelName]: value };
+  }
+
+  createValue(value: SelectValue) {
+    const isArray = value instanceof Array;
+    switch (this.props.valueMode) {
+      case 'object':
+        return isArray ? value.map((v) => this.findOrigin(v)) : this.findOrigin(value);
+      case 'normal':
+        return value;
+    }
+  }
+
   // 处理选择项
   handleChange = (value: SelectValue) => {
     this.searching = true;
     const { rows } = this.state;
+    const nativeValue = this.createValue(value);
     const { onChange, joinChar, mode } = this.props;
     if (mode) {
-      value = joinChar ? (value as []).join(joinChar) : value;
-      return onChange && onChange(value, {});
+      const v = joinChar ? (nativeValue as []).join(joinChar) : nativeValue;
+      return onChange && onChange(v, {});
+    }
+    if (this.props.valueMode == 'object') {
+      return onChange && onChange(nativeValue, { original: nativeValue });
     }
     const row = rows.find((r) => r.value.toString() === value) || { originalValue: undefined as any };
-    if (typeof onChange === 'function') {
-      onChange(row.originalValue, row);
-    }
+    onChange && onChange(row.originalValue, row);
   };
 
   // 远程搜索数据
@@ -236,7 +277,8 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
   // 渲染
   render() {
     const { loading, rows = [], hasMore } = this.state;
-    const { format, type, allOption, className, api, labelName, valueName, ...props } = this.props;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+    const { valueMode, format, type, allOption, className, api, labelName, valueName, ...props } = this.props;
     // 如果时设置data 则表示一定时本地检索
     const realType = !api && this.props.data ? 'local' : type;
     const handleRemote = realType === 'remote' ? this.handleRemote : NOOP;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AdvancePicker, PageQueryData } from 'solar-pc';
 
 const data = [
@@ -20,9 +20,18 @@ const queryAllRecords = (query: PageQueryData) => {
 };
 
 export default function App() {
+  const [value, setValue] = useState(1);
+
   return (
     <div style={{ width: 300 }}>
-      <AdvancePicker api={queryAllRecords} />
+      <AdvancePicker
+        value={value}
+        api={queryAllRecords}
+        onChange={(v) => {
+          setValue(v);
+          console.log(v);
+        }}
+      />
     </div>
   );
 }

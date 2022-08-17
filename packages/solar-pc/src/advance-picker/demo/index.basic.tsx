@@ -10,7 +10,7 @@ const data = [
 export default function App() {
   return (
     <div style={{ width: 300 }}>
-      <AdvancePicker data={data} />
+      <AdvancePicker data={data} onChange={(v) => console.log(v)} />
     </div>
   );
 }
