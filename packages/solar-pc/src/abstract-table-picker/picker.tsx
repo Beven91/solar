@@ -128,7 +128,7 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
   };
 
   // 点击区域打开选择窗口
-  open = () => {
+  handleOnClick = () => {
     this.setState({ visible: true });
   };
 
@@ -152,7 +152,7 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
     const filters = props.select == 'single' ? undefined : this.filters;
     return (
       <div>
-        <div onClick={this.open}>
+        <div onClick={this.handleOnClick}>
           {this.renderButton(children)}
         </div>
         <Modal

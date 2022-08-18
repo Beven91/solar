@@ -32,7 +32,7 @@ export default function App() {
   ];
 
   const onChange = (values: ActivityModel[]) => {
-    console.log('选择商品:\n', values);
+    console.log('changed rows', values);
     setRows([...values]);
   };
 

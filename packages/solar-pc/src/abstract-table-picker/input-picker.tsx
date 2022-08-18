@@ -13,9 +13,14 @@ export interface InputPickerProps<TRow> extends AbstractTableProps<TRow> {
   // 弹窗标题
   title: string
   // 选择数据发生改变事件
-  onChange?: (value: string, row: TRow) => void
+  onChange?: (value: string | TRow, row: TRow) => void
   // 自定义placeholder
   placeholder?: string
+  /**
+   * normal: 使用对应的字段值
+   * object: 使用选择的对象
+   */
+  valueMode: 'normal' | 'object'
   // 值字段
   valueField?: string
   // 当前选中的数据
@@ -33,31 +38,54 @@ export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends
   static defaultProps = {
     placeholder: '',
     valueField: 'id',
+    valueMode: 'normal',
   };
 
-  picker = React.createRef<Picker>();
+  get nativeValue() {
+    switch (this.props.valueMode) {
+      case 'object':
+        return (this.props.value || {})[this.props.valueField];
+      case 'normal':
+        return this.props.value;
+    }
+  }
+
+  get nativeObject() {
+    const { valueField, value } = this.props;
+    switch (this.props.valueMode) {
+      case 'object':
+        return value || {};
+      default:
+        return {
+          [valueField]: value,
+        };
+    }
+  }
 
   // 选择改变
   handleSelectOnchange = (rows: TRow[]) => {
     const item = (rows[0] || {}) as TRow;
     const { onChange, valueField } = this.props;
     const v = item[valueField];
-    onChange && onChange(v, item);
+    switch (this.props.valueMode) {
+      case 'object':
+        onChange && onChange(item, item);
+        break;
+      default:
+        onChange && onChange(v, item);
+    }
   };
 
   // 选择选择按钮
   renderAfter() {
     const { valueField, ...props } = this.props;
     const selected = [
-      {
-        [valueField]: props.value,
-      },
+      this.nativeObject,
     ];
     return (
       <Picker
         {...props}
         select="single"
-        ref={this.picker}
         onChange={this.handleSelectOnchange}
         value={selected}
         rowKey={valueField || props.rowKey}
@@ -69,14 +97,14 @@ export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends
 
   // 渲染组件
   render() {
-    const { placeholder, defaultValue, className, value, style } = this.props;
+    const { placeholder, defaultValue, className, style } = this.props;
     return (
       <Input
         style={style}
-        value={value}
+        value={this.nativeValue}
         defaultValue={defaultValue}
         placeholder={placeholder}
-        onKeyUp={() => this.picker.current.open()}
+        readOnly={this.props.valueMode == 'object'}
         className={`${className || ''} abstract-picker-input`}
         addonAfter={this.renderAfter()}
       />
