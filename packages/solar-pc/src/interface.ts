@@ -7,8 +7,7 @@ import { DataNode } from 'rc-tree/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 
-
-export type FormGroupStyle = 'normal' | 'gap'
+export type FormGroupStyle = 'normal' | 'gap' | 'tabs'
 
 export interface OptionObject {
   label?: string,
@@ -68,7 +67,7 @@ export type EnumsDataType = PlainObject | Array<RVRow>
 
 export type RenderType<TRow> = ReactElement | ((record: TRow) => ReactElement);
 
-export type OptionsApiRequest = [ApiRequest, string, string, ]
+export type OptionsApiRequest = [ApiRequest, string, string]
 
 export type AbstractValueConverter = 'moment' | string | [string, ...any]
 
@@ -83,6 +82,8 @@ export interface AbstractFormItemType<TRow> {
   initialValue?: any
   // 自定义表单组件 可以为一个jsx对象或者一个函数自定义渲染 默认为Input组件
   render?: RenderType<TRow>
+  // 自定义一个占用整行的表单组件
+  render2?: RenderType<TRow>
   // 指定表单是否可见,在不可见情况下，不会收集该字段
   visible?: boolean | ((record: TRow) => boolean)
   // 自定义值格式化 未指定时，会使用record[item.name]
@@ -254,13 +255,20 @@ export type AbstractEColumns<TRow> = AbstractEditColumnType<TRow>[]
 export type AbstractButtons<TRow> = AbstractButton<TRow>[]
 
 export interface AbstractMenuType {
+  // 菜单名称
   name: string
+  // 菜单唯一key
   key: string
-  href: string
+  // 菜单跳转地址
+  href?: string
+  // 跳转a标签的target
   target?: string
+  // 菜单图标
   icon?: any,
+  // 菜单对应的子系统名称
   system?: string
-  virtual?: boolean
+  // 当前菜单是否为虚拟菜单,虚拟菜单不会展示，仅用于层级关联。
+  virtual?: boolean,
   parent?: AbstractMenuType
   root?: AbstractMenuType
   children?: AbstractMenuType[],

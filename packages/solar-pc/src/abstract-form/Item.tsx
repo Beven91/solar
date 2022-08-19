@@ -52,6 +52,7 @@ export interface AbstractItemProps<TRow> {
   style?: React.CSSProperties
   // 表单值发生改变时间
   onValuesChange?: onValuesChangeHandler
+  autoFocusAt?: string
 }
 
 export interface AbstractItemState {
@@ -78,7 +79,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
 
   static getDerivedStateFromProps(nextProps: AbstractItemProps<AbstractRow>, state: AbstractItemState) {
     const { item } = nextProps;
-    const getRecord = ()=> {
+    const getRecord = () => {
       const { model, form } = nextProps;
       const formRef = form || { current: null };
       const values = formRef.current ? formRef.current.getFieldsValue() : {};
@@ -219,13 +220,15 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
 
   // 渲染
   renderItem() {
-    const { layout, item, rules, model: record } = this.props;
+    const { layout, item, rules, autoFocusAt, model: record } = this.props;
     const initialValue = item.initialValue;
     const visible = this.state.visible;
     const visibleCls = this.state.visible ? 'visible' : 'hidden';
     const name = this.normalizeKey(item);
     const items = this.useInitialValue(record, name) ? { initialValue } : {};
     const shouldUpdate = item.dependencies ? undefined : this.shouldUpdate;
+    const title = item.render2 ? '' : item.title || '';
+    const type = item.render2 ? 'input-full' : '';
     return (
       <ConfigConsumer.Consumer>
         {
@@ -234,18 +237,19 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
               shouldUpdate={shouldUpdate}
               {...layout}
               {...items}
-              label={item.title || ''}
+              label={title}
               name={name}
               rules={visible ? rules : null}
               extra={item.extra || null}
               dependencies={item.dependencies}
               normalize={this.normalize}
-              className={`${visibleCls} abstract-form-item abstract-input-${item.name} ${item.className || ''}`}
+              className={`${visibleCls} abstract-form-item abstract-input-${item.name} ${type} ${item.className || ''}`}
               hasFeedback={item.hasFeedback}
             >
               {
                 <InputWrap
                   item={item}
+                  autoFocus={autoFocusAt && autoFocusAt == item.name}
                   ref={this.inputWrapRef}
                   onValuesChange={this.props.onValuesChange}
                   valueFormatter={context.valueFormatter}

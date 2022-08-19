@@ -10,28 +10,28 @@ import { AbstractTableProps } from '../abstract-table/types';
 import { AbstractRow } from '../interface';
 
 export interface InputPickerProps<TRow> extends AbstractTableProps<TRow> {
-  // 弹窗标题
-  title: string
-  // 选择数据发生改变事件
-  onChange?: (value: string | TRow, row: TRow) => void
-  // 自定义placeholder
-  placeholder?: string
-  /**
-   * normal: 使用对应的字段值
-   * object: 使用选择的对象
-   */
-  valueMode: 'normal' | 'object'
-  // 值字段
-  valueField?: string
-  // 当前选中的数据
-  value?: any
-  // 默认值
-  defaultValue?: string
-  // 弹窗宽度
-  width?: number
-  // 弹窗高度
-  height?: number
-}
+   // 弹窗标题
+   title: string
+   // 选择数据发生改变事件
+   onChange?: (value: string | TRow, row: TRow) => void
+   // 自定义placeholder
+   placeholder?: string
+   /**
+    * normal: 使用对应的字段值
+    * object: 使用选择的对象
+    */
+   valueMode: 'normal' | 'object'
+   // 值字段
+   valueField?: string
+   // 当前选中的数据
+   value?: any
+   // 默认值
+   defaultValue?: string
+   // 弹窗宽度
+   width?: number
+   // 弹窗高度
+   height?: number
+ }
 
 export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends React.PureComponent<InputPickerProps<TRow>> {
   // 默认属性值
@@ -90,7 +90,7 @@ export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends
         value={selected}
         rowKey={valueField || props.rowKey}
       >
-        <SearchOutlined />
+        <SearchOutlined className="object-picker-icon" />
       </Picker>
     );
   }

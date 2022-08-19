@@ -16,6 +16,7 @@ export interface InputWrapProps<TRow extends AbstractRow> {
   onChange?: (...params: Array<any>) => any
   // 表单值发生改变时间
   onValuesChange?: onValuesChangeHandler
+  autoFocus?: boolean
 }
 
 interface ConverterInfo {
@@ -25,6 +26,8 @@ interface ConverterInfo {
 
 export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow>> {
   valuePropName = 'value';
+
+  containerRef = React.createRef<HTMLDivElement>();
 
   get converter(): ConverterInfo {
     const { item } = this.props;
@@ -82,7 +85,7 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
     return value;
   }
 
-  wrappedOnChange(component:JSX.Element, ...params:any[]) {
+  wrappedOnChange(component: JSX.Element, ...params: any[]) {
     const onChange = component.props.onChange;
     onChange && onChange(...params);
     this.onChange.call(this, ...params);
@@ -104,6 +107,16 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
     }
   };
 
+  componentDidMount() {
+    const container = this.containerRef.current;
+    if (this.props.autoFocus && container) {
+      const input = container.querySelector('input') || container.querySelector('textarea');
+      setTimeout(()=>{
+        input?.focus();
+      }, 300);
+    }
+  }
+
   // 获取表单的值属性名
   renderPropValueName(input: ReactElement) {
     const type = input.type as AbstractInputComponent;
@@ -112,7 +125,7 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
 
   // 根据类型创建对应的表单
   renderFormInput(item: AbstractFormItemType<TRow>, initialValue: any) {
-    const { render } = item;
+    const render = item.render || item.render2;
     if (typeof render === 'function') {
       return render(this.formValues);
     } else if (render) {
@@ -136,14 +149,18 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
     const initialValue = item.initialValue;
     const component = this.renderFormInput(item, initialValue);
     const valuePropName = this.valuePropName = this.renderPropValueName(component);
-    const input = React.cloneElement(component, {
+    const options = {
       [valuePropName]: this.setInput(),
       disabled: component.props.disabled || isReadOnly,
       placeholer: component.props.placeholer || item.placeholder,
-      onChange: (...params:any[])=>this.wrappedOnChange(component, ...params),
-    });
+      onChange: (...params: any[]) => this.wrappedOnChange(component, ...params),
+    };
+    if (item.render2) {
+      options.title = item.title;
+    }
+    const input = React.cloneElement(component, options);
     return (
-      <div id={id}>
+      <div ref={this.containerRef} id={id}>
         {input}
       </div>
     );

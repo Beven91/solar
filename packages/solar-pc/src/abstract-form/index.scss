@@ -8,6 +8,10 @@
 .abstract-form {
   overflow-x: hidden;
 
+  .abstract-form-item.input-full {
+    margin-bottom: 0px;
+  }
+
   .abstract-form-item-col.hidden,
   .abstract-form-item.hidden {
     display: none !important;
@@ -21,6 +25,10 @@
     .ant-calendar-picker {
       width: 100%;
     }
+  }
+
+  .tabs-group-form-inner {
+    padding-top: 10px;
   }
 
   .abstract-form-item.has-after>.ant-form-item-control-wrapper>.ant-form-item-control>.ant-form-item-children {

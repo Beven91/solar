@@ -16,7 +16,7 @@ export default function createPromiseAsync(suffix = 'Success', failSuffix = 'Err
         effects[key] = function(...params: any[]) {
           const promise = handler.call(this, ...params);
           // dispatch(`${name}Loading`, params);
-          Promise.resolve(promise).then(
+          return Promise.resolve(promise).then(
             // 成功
             (payload) => dispatch({ type: `${name}${suffix}`, payload }),
             // 失败
@@ -40,6 +40,7 @@ export default function createPromiseAsync(suffix = 'Success', failSuffix = 'Err
                 // 单个action fail
                 dispatch({ type: `${name}${failSuffix}`, payload: ex });
               }
+              return Promise.reject(ex);
             }
           );
         };

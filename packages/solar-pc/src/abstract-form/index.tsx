@@ -31,8 +31,16 @@ export interface AbstractFormProps<TRow> {
   groupStyle?: FormGroupStyle
   // 默认跨列数
   span?: number
+  // 让指定表单获取焦点，仅在初始化时有效
+  autoFocus?: string
   // 拼接在表单控件后的字元素
   formChildren?: React.ReactNode
+  // 如果分组风格为tabs其对应的tabs类型
+  tabType?: 'line' | 'card'
+  // 如果分组风格为tabs其对应的tabs位置
+  tabPosition?: 'top' | 'left' | 'bottom' | 'right'
+  // 如果分组风格为tabs其对应的tabs间隔
+  tabBarGutter?: number
 }
 
 export default class AbstractForm<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<AbstractFormProps<TRow>>> {

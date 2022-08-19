@@ -97,7 +97,7 @@ export default function App() {
       onFinish={(values) => console.log(values)}
       ref={formRef}
     >
-      <AbstractForm groups={groups} rules={rules} form={formRef} />
+      <AbstractForm autoFocus="activityId" groups={groups} rules={rules} form={formRef} />
       <div style={{ textAlign: 'center' }}>
         <Button type="primary" htmlType="submit" >提交</Button>
       </div>
