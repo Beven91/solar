@@ -1,7 +1,10 @@
 import { Switch, Checkbox, Radio } from 'antd';
 import moment from 'moment';
+import Registrations from '../input-factory/Registration';
 
 export interface ValueConverter {
+  name: string
+  title?: string
   /**
    * 将控件的value转换成fieldValue
    */
@@ -14,11 +17,7 @@ export interface ValueConverter {
 
 }
 
-interface ValueConverterRegistry {
-  [propName: string]: ValueConverter
-}
-
-const converters = {} as ValueConverterRegistry;
+export const ConverterRegistry = new Registrations<ValueConverter>();
 
 function register(component: any, name: string): any {
   if (component instanceof Array) {
@@ -27,23 +26,14 @@ function register(component: any, name: string): any {
   component.valuePropName = name;
 }
 
-function registerConverter(name: string, converter: ValueConverter) {
-  // if (converters[name]) {
-  //   throw new Error(`【ValueConverter】：已存在相同名称的转换器:${name}`)
-  // }
-  converters[name] = converter;
-}
-
-function getConverter(name: string) {
-  return converters[name];
-}
 
 register(Switch, 'checked');
 register(Checkbox, 'checked');
 register(Radio, 'checked');
 
 // 注册转换器
-registerConverter('moment', {
+ConverterRegistry.register({
+  name: 'moment',
   getValue: (v: any, fmt = 'YYYY-MM-DD HH:mm:ss') => {
     return v ? v.format(fmt) : null;
   },
@@ -54,6 +44,7 @@ registerConverter('moment', {
 
 export default {
   register,
-  getConverter,
-  registerConverter,
+  getConverter(name: string) {
+    return ConverterRegistry.getRegistration(name);
+  },
 };

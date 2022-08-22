@@ -5,7 +5,7 @@
 import './index.scss';
 import React from 'react';
 import Dynamic from './dynamic';
-import register, { ValueConverter } from './register';
+import register, { ConverterRegistry, ValueConverter } from './register';
 import { AbstractGroups, AbstractFormLayout, AbstractRules as AbstractRules, FormGroupStyle, onValuesChangeHandler, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import FormContext from './context';
@@ -60,7 +60,10 @@ export default class AbstractForm<TRow extends AbstractRow> extends React.Compon
   }
 
   static registerConverter(name: string, converter: ValueConverter) {
-    register.registerConverter(name, converter);
+    ConverterRegistry.register({
+      ...converter,
+      name,
+    });
   }
 
   // 渲染
