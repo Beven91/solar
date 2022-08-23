@@ -3,27 +3,28 @@
  * @description 底部操作按钮
  */
 import React from 'react';
-import { Button } from 'antd';
+import { Button, ButtonProps } from 'antd';
 import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
 import { AbstractActionItem, AbstractRow } from '../interface';
-import { AbstractObjectProps } from '.';
 
-interface FooterActionsProps<TRow> extends Pick<AbstractObjectProps<TRow>, 'cancelText' | 'okText' | 'isReadOnly'> {
-  okLoading: boolean
-  isReadOnly: boolean
-  showCancel: boolean
-  showOk: boolean
-  handleCancel: () => void
-  handleSubmit: () => void
-  formValues: TRow
-  okEnable?: (values: TRow) => boolean
-  actions: AbstractActionItem<TRow>[]
-}
+ interface FooterActionsProps<TRow> {
+   okLoading: boolean
+   isReadOnly: boolean
+   showCancel: boolean
+   showOk: boolean
+   btnSubmit?: ButtonProps
+   btnCancel?: ButtonProps
+   handleCancel: () => void
+   handleSubmit: () => void
+   formValues: TRow
+   okEnable?: (values: TRow) => boolean
+   actions: AbstractActionItem<TRow>[]
+ }
 
-interface FooterActionsState<TRow> {
-  propsFormValues?: TRow
-  formValues?: TRow
-}
+ interface FooterActionsState<TRow> {
+   propsFormValues?: TRow
+   formValues?: TRow
+ }
 
 export default class FooterActions<TRow> extends React.Component<FooterActionsProps<TRow>, FooterActionsState<TRow>> {
   static getDerivedStateFromProps(props: FooterActionsProps<AbstractRow>, state: FooterActionsState<AbstractRow>) {
@@ -37,30 +38,35 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
   }
 
   state: FooterActionsState<TRow> = {
-  }
+  };
 
   refresh(values: TRow) {
     this.setState({ formValues: values });
   }
 
+  useValue(value:string, dv:string) {
+    return value === null || value == undefined ? dv : value;
+  }
+
   render() {
     const { okLoading, isReadOnly, handleSubmit, handleCancel, showCancel, okEnable, showOk } = this.props;
-    const { cancelText, okText, actions } = this.props;
+    const { btnSubmit, btnCancel, actions } = this.props;
     const { formValues } = this.state;
     const showOkBtn = !(isReadOnly || !showOk);
     const isOkEnable = () => okEnable ? okEnable(formValues || {} as TRow) : true;
     return (
       <div className="object-view-footer">
-        <div>
+        <div style={{ display: 'inline-block' }}>
           {
             showCancel && (
               <Button
                 className="btn-back"
                 size="large"
                 onClick={handleCancel}
+                icon={btnCancel?.icon || <MenuFoldOutlined />}
+                {...(btnCancel || {})}
               >
-                <MenuFoldOutlined />
-                {cancelText || '返回'}
+                {this.useValue(btnCancel?.title, '返回')}
               </Button>
             )
           }
@@ -72,9 +78,10 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
               disabled={!isOkEnable()}
               onClick={handleSubmit}
               size="large"
+              icon={btnSubmit?.icon || <SaveFilled />}
+              {...(btnSubmit || {})}
             >
-              <SaveFilled />
-              {okText || '确定'}
+              {this.useValue(btnSubmit?.title, '确定')}
             </Button>
           )}
           {

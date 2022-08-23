@@ -6,41 +6,45 @@
 import './index.scss';
 import React, { PropsWithChildren } from 'react';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Col, Form, Input } from 'antd';
+import { Button, ButtonProps, Col, Form, Input } from 'antd';
 import { AbstractQueryType, PlainObject, AbstractSField, RecordModel, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import AdvancePicker from '../advance-picker';
 import AbstractForm from '../abstract-form';
 
 export interface AbstractSearchProps<TRow> {
-  // 容器样式名
-  className?: string
-  // 搜搜按钮容器样式
-  actionsCls?: string
-  // 默认查询条件
-  initialValues?: TRow
-  // 需要配置的搜索项
-  fields: Array<AbstractSField>
-  // 搜索调用的方法
-  onQuery: (query: AbstractQueryType) => void
-  // 每一个搜索项内部的标题和录入框的span配置
-  span?: number,
-  // 按钮是否换行展示
-  // 默认：inline
-  actionStyle?: 'inline' | 'newline'
-  // 清空
-  onClean?: () => void,
-}
+   // 容器样式名
+   className?: string
+   // 搜搜按钮容器样式
+   actionsCls?: string
+   // 默认查询条件
+   initialValues?: TRow
+   // 需要配置的搜索项
+   fields: Array<AbstractSField>
+   // 搜索调用的方法
+   onQuery: (query: AbstractQueryType) => void
+   // 查询按钮配置
+   btnQuery?: ButtonProps
+   // 取消按钮配置
+   btnCancel?: ButtonProps
+   // 每一个搜索项内部的标题和录入框的span配置
+   span?: number,
+   // 按钮是否换行展示
+   // 默认：inline
+   actionStyle?: 'inline' | 'newline'
+   // 清空
+   onClean?: () => void,
+ }
 
 export interface AbstractSearchState {
-}
+ }
 
 const FormItem = Form.Item;
 
 export default class AbstractSearch<TRow = AbstractRow> extends React.Component<PropsWithChildren<AbstractSearchProps<TRow>>, AbstractSearchState> {
-  static defaultProps:AbstractSearchProps<any> = {
+  static defaultProps: AbstractSearchProps<any> = {
     span: 8,
-    onQuery: ()=>{},
+    onQuery: () => { },
     fields: [],
   };
 
@@ -104,8 +108,8 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
   }
 
   /**
-   * 过滤为空的选项
-   */
+    * 过滤为空的选项
+    */
   renderQuery(query: PlainObject) {
     return Object.keys(query).reduce((newQuery: PlainObject, k) => {
       let v = query[k];
@@ -147,16 +151,30 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
     }
   };
 
+  useValue(value:string, dv:string) {
+    return value === null || value == undefined ? dv : value;
+  }
+
   // 渲染搜索按钮
   renderSearchActions() {
     return (
       <FormItem >
         <div className={this.props.actionsCls}>
-          <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-          查询
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<SearchOutlined />}
+            {...(this.props.btnQuery || {})}
+          >
+            {this.useValue(this.props.btnQuery?.title, '查询')}
           </Button>
-          <Button style={{ marginLeft: 8 }} icon={<DeleteOutlined />} onClick={this.handleReset}>
-          清空
+          <Button
+            style={{ marginLeft: 8 }}
+            icon={<DeleteOutlined />}
+            onClick={this.handleReset}
+            {...(this.props.btnCancel || {})}
+          >
+            {this.useValue(this.props.btnCancel?.title, '清空')}
           </Button>
         </div>
       </FormItem>

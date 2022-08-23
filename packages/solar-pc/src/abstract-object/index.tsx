@@ -5,7 +5,7 @@
  */
 import './index.scss';
 import React from 'react';
-import { Modal, Form } from 'antd';
+import { Modal, Form, ButtonProps } from 'antd';
 import AbstractForm from '../abstract-form';
 import AbstractChildForm from './ChildForm';
 import { AbstractActionItem, AbstractRow } from '../interface';
@@ -19,65 +19,65 @@ function NOOP(record: AbstractRow) { }
 let formIdIndex = 0;
 
 export interface BaseObjectProps<TRow> {
-  // 编辑页类型
-  type?: 'modal' | 'normal';
-  // 弹窗标题
-  title?: string;
-  // 取消操作
-  onCancel?: () => boolean | void;
-  // 弹窗宽度
-  width?: number;
-  // 是否显示底部操作按钮
-  footer?: boolean;
-  // 确定按钮文本
-  okText?: string;
-  // 取消按钮文本
-  cancelText?: string;
-  // 是否滚动到第一个错误的位置
-  scrollToFirstError?: boolean;
-  // 主键字段
-  primaryKey?: string;
-  // 样式名
-  className?: string;
-  // 自定义actions
-  footActions?: AbstractActionItem<TRow>[];
-  // 是否为只读模式
-  isReadOnly?: boolean;
-  // 是否提交按钮显示loading
-  loading?: boolean
-  // 一个函数用于判定【确定】按钮是否可用
-  okEnable?: (values: TRow) => boolean
-  // 按钮显示情况
-  showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
-  // 当有值发生改变时
-  onValuesChange?: (values: TRow, prevValues: TRow) => void
-}
+   // 编辑页类型
+   type?: 'modal' | 'normal';
+   // 弹窗标题
+   title?: string;
+   // 取消操作
+   onCancel?: () => boolean | void;
+   // 弹窗宽度
+   width?: number;
+   // 是否显示底部操作按钮
+   footer?: boolean;
+   // 确定按钮属性配置
+   btnSubmit?:ButtonProps
+   // 取消按钮配置
+   btnCancel?: ButtonProps
+   // 是否滚动到第一个错误的位置
+   scrollToFirstError?: boolean;
+   // 主键字段
+   primaryKey?: string;
+   // 样式名
+   className?: string;
+   // 自定义actions
+   footActions?: AbstractActionItem<TRow>[];
+   // 是否为只读模式
+   isReadOnly?: boolean;
+   // 是否提交按钮显示loading
+   loading?: boolean
+   // 一个函数用于判定【确定】按钮是否可用
+   okEnable?: (values: TRow) => boolean
+   // 按钮显示情况
+   showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
+   // 当有值发生改变时
+   onValuesChange?: (values: TRow, prevValues: TRow) => void
+ }
 
 export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
-  /**
-   * 当前对象所属动作
-   * 例如: add,update,view等任意字符串
-   * 注意: 当action为view时等同于设置了isReadOnly
-   */
-  action: string;
-  // 当前编辑的数据
-  record: TRow;
-  // 提交操作
-  onSubmit?: (record: TRow) => void;
-}
+   /**
+    * 当前对象所属动作
+    * 例如: add,update,view等任意字符串
+    * 注意: 当action为view时等同于设置了isReadOnly
+    */
+   action: string;
+   // 当前编辑的数据
+   record: TRow;
+   // 提交操作
+   onSubmit?: (record: TRow) => void;
+ }
 
 export interface AbstractObjectState<TRow> {
-  modalDestory?: boolean;
-  visible?: boolean;
-  prevMode?: string;
-  values: TRow;
-  needFillValues: boolean;
-}
+   modalDestory?: boolean;
+   visible?: boolean;
+   prevMode?: string;
+   values: TRow;
+   needFillValues: boolean;
+ }
 
 export default class AbstractObject<TRow = AbstractRow> extends React.Component<
-  React.PropsWithChildren<AbstractObjectProps<TRow>>,
-  AbstractObjectState<TRow>
-> {
+   React.PropsWithChildren<AbstractObjectProps<TRow>>,
+   AbstractObjectState<TRow>
+ > {
   static getDerivedStateFromProps(
     props: AbstractObjectProps<AbstractRow>,
     state: AbstractObjectState<AbstractRow>
@@ -103,8 +103,6 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     width: null as any,
     footer: true,
     record: null as any,
-    okText: '确定',
-    cancelText: '',
     title: '',
     type: 'normal',
     primaryKey: 'id',
@@ -169,6 +167,7 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
       // 取消
       handleCancel: this.handleCancel,
       record: this.props.record || {},
+      model: this.props.record || {},
     };
   }
 
@@ -349,13 +348,13 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
 
   // 渲染底部
   renderFooter() {
-    const { cancelText, okText, footActions, footer } = this.props;
+    const { btnSubmit, btnCancel, footActions, footer } = this.props;
     if (!this.state.visible || !footer) return null;
     return (
       <FooterActions
         ref={this.actionsRef}
-        cancelText={cancelText}
-        okText={okText}
+        btnCancel={btnCancel}
+        btnSubmit={btnSubmit}
         formValues={this.props.record}
         showCancel={this.showCancel}
         showOk={this.showOk}
@@ -399,21 +398,21 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
   renderContext() {
     const record = this.props.record || {};
     return (
-      <Form
-        key={this.props.action}
-        name={this.formId}
-        ref={this.formRef}
-        onValuesChange={this.onValuesChange}
-        onFinish={this.onFinish}
-        onFinishFailed={this.onFinishFailed}
-        initialValues={record}
-      >
-        <CrashProvider>
+      <CrashProvider errorProps={{ hideActions: true }} >
+        <Form
+          key={this.props.action}
+          name={this.formId}
+          ref={this.formRef}
+          onValuesChange={this.onValuesChange}
+          onFinish={this.onFinish}
+          onFinishFailed={this.onFinishFailed}
+          initialValues={record}
+        >
           <AbstractForm.Context.Provider value={this.formContext}>
             {this.props.children}
           </AbstractForm.Context.Provider>
-        </CrashProvider>
-      </Form>
+        </Form>
+      </CrashProvider>
     );
   }
 

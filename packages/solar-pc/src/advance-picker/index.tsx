@@ -15,56 +15,56 @@ const NOOP = (a: any) => a;
 
 const network = new Network();
 
-type ModelRows = OptionObject[]
+ type ModelRows = OptionObject[]
 
 export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
-  /**
-   * remote:  远程检索 默认值 ，
-   * local 本地检索
-   * none 无检索模式
-   * 可以设置本地检索  'local'(推荐本地模式 在接口数据小于100条时使用此模式)
-   */
-  type?: 'remote' | 'local' | 'none'
-  /**
-   * 值模式
-   * normal: 选择的值为字段值
-   * object: 选择的值为选择的对象
-   */
-  valueMode?: 'normal' | 'object'
-  // 自定义数据获取，支持接口请求。
-  api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
-  // 本地数据源
-  data?: ModelRows
-  // 默认查询参数
-  query?: PlainObject
-  // 值字段
-  valueName?: string
-  // 名称字段
-  labelName?: string
-  // 是否多选时通过join链接，从而达到返回一个字符串形式
-  joinChar?: string
-  // 当选择值改变时
-  onChange?: (value: any, row: PlainObject) => void,
-  // 是否默认生成 【全部】 选项
-  allOption?: boolean
-  // 格式化返回值
-  format?: (response: any) => AbstractResponseModel,
-  // 是否禁用
-  disabled?: boolean
-}
+   /**
+    * remote:  远程检索 默认值 ，
+    * local 本地检索
+    * none 无检索模式
+    * 可以设置本地检索  'local'(推荐本地模式 在接口数据小于100条时使用此模式)
+    */
+   type?: 'remote' | 'local' | 'none'
+   /**
+    * 值模式
+    * normal: 选择的值为字段值
+    * object: 选择的值为选择的对象
+    */
+   valueMode?: 'normal' | 'object'
+   // 自定义数据获取，支持接口请求。
+   api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
+   // 本地数据源
+   data?: ModelRows
+   // 默认查询参数
+   query?: PlainObject
+   // 值字段
+   valueName?: string
+   // 名称字段
+   labelName?: string
+   // 是否多选时通过join链接，从而达到返回一个字符串形式
+   joinChar?: string
+   // 当选择值改变时
+   onChange?: (value: any, row: PlainObject) => void,
+   // 是否默认生成 【全部】 选项
+   allOption?: boolean
+   // 格式化返回值
+   format?: (response: any) => AbstractResponseModel,
+   // 是否禁用
+   disabled?: boolean
+ }
 
 export interface AdvancePickerState {
-  // 搜索条件
-  value: SelectValue
-  // 是否正在加载中
-  loading: boolean
-  // 当前页码值
-  page: number
-  // 是否还有更多数据
-  hasMore: boolean
-  // 当前数据
-  rows: ModelRows
-}
+   // 搜索条件
+   value: SelectValue
+   // 是否正在加载中
+   loading: boolean
+   // 当前页码值
+   page: number
+   // 是否还有更多数据
+   hasMore: boolean
+   // 当前数据
+   rows: ModelRows
+ }
 
 export default class AdvancePicker extends React.Component<AdvancePickerProps<SelectValue>, AdvancePickerState> {
   // 组件属性定义
@@ -123,9 +123,9 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     switch (this.props.valueMode) {
       case 'object':
         if (value instanceof Array) {
-          return value.map((item) => item[valueName].toString());
+          return value.map((item: any) => item[valueName].toString());
         } else if (value && typeof value == 'object') {
-          return value[valueName];
+          return (value as any)[valueName];
         }
         return value;
       default:
@@ -147,6 +147,12 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
 
   componentDidMount() {
     this.loadAsync();
+  }
+
+  componentDidUpdate(prevProps: Readonly<AdvancePickerProps<SelectValue>>, prevState: Readonly<AdvancePickerState>, snapshot?: any): void {
+    if (prevProps.data !== this.props.data) {
+      this.loadAsync();
+    }
   }
 
   // 如果是第一次进行，则加载一次数据

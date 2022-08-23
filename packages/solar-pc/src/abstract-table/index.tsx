@@ -251,6 +251,12 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
     this.handleResize();
   }
 
+  componentDidUpdate(prevProps: Readonly<AbstractTableProps<TRow>>, prevState: Readonly<AbstractTableState<TRow>>, snapshot?: any): void {
+    if (prevProps.filters?.active !== this.props.filters?.active) {
+      this.tabsRef.current?.changeActiveTab(this.props.filters?.active);
+    }
+  }
+
   // 组件销毁
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
@@ -335,10 +341,6 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       delete this.query[activeTab.field];
     }
     this.setState({ activeTab: tab }, () => this.handleQuery());
-  };
-
-  changeActiveTab = (tab: string) => {
-    this.tabsRef.current?.changeActiveTab(tab);
   };
 
   // 处理tab搜索
@@ -448,8 +450,8 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
                   fields={searchFields}
                   className={searchBoxCls}
                   actionsCls={searchBoxActionCls}
-                  initialValues={this.props.searchInitialValues}
                   onQuery={this.handleSearch}
+                  {...(this.props.searchOptions || {})}
                 >
                   <TopActions
                     className={buttonBoxCls}

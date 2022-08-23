@@ -29,6 +29,8 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
 
   containerRef = React.createRef<HTMLDivElement>();
 
+  isCreated = false;
+
   get converter(): ConverterInfo {
     const { item } = this.props;
     const record = this.model;
@@ -49,7 +51,7 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
 
   get formValues() {
     const { record } = this.props;
-    if (this.props.form.current) {
+    if (this.isCreated && this.props.form.current) {
       return this.props.form.current.getFieldsValue();
     }
     return record;
@@ -108,6 +110,7 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
   };
 
   componentDidMount() {
+    this.isCreated = true;
     const container = this.containerRef.current;
     if (this.props.autoFocus && container) {
       const input = container.querySelector('input') || container.querySelector('textarea');

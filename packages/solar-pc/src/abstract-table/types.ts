@@ -6,6 +6,7 @@ import { AbstractQueryType, EnumsDataType, PlainObject, AbstractRow, AbstractRes
 import { GetPopupContainer, GetRowKey, SortOrder, TableLocale, TablePaginationConfig, TableRowSelection } from 'antd/lib/table/interface';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { SpinProps } from 'antd/lib/spin';
+import { AbstractSearchProps } from '../abstract-search';
 
 export type ForeignRequest = (row: PlainObject) => Promise<PlainObject>
 
@@ -103,6 +104,15 @@ export type AbstractButton<TRow> = AbstractNormalButton<TRow> | AbstractSingleBu
 
 export type OnActionRoute<TRow> = (action: AbstractAction<TRow>, button?: AbstractButton<TRow>) => void
 
+export interface TableSearchOptions {
+  // 搜索项默认值设定
+  initialValues?: PlainObject
+  // 查询按钮配置
+  btnQuery?: ButtonProps
+  // 取消按钮配置
+  btnCancel?: ButtonProps
+}
+
 export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTableProps<TRow>, 'title' | 'dataSource' | 'transformColumns' | 'internalHooks' | 'internalRefs' | 'data' | 'columns' | 'scroll' | 'emptyText'> {
   // 表格列配置 可以参照Antd Table组件的column配置
   columns: AbstractColumns<TRow>
@@ -142,6 +152,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   autoHeight?: boolean
   // onQuery参数模式 scope ： 分页，排序等参数与查询参数分开， mix:则表示分页与查询参数混合再一起
   paramMode?: 'scope' | 'mix'
+  // 查询容器配置
+  searchOptions?: Partial<AbstractSearchProps<TRow>>
   // 搜索容器样式名
   searchBoxCls?: string
   // 搜搜容器按钮容器样式名
@@ -160,8 +172,7 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
     scrollToFirstRowOnChange?: boolean;
   };
   sortDirections?: SortOrder[]
-  showSorterTooltip?: boolean;
-  searchInitialValues?: PlainObject
+  showSorterTooltip?: boolean
 }
 
 
