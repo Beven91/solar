@@ -12,30 +12,30 @@ import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
 import FooterActions from '../abstract-object/footer';
 
- interface ActionProps {
-   action?: string
-   subAction?: string
-   use?: React.ComponentType<any>
-   children?: React.ReactElement | React.ReactNode
-   className?: string
-   style?: React.CSSProperties
- }
+interface ActionProps {
+  action?: string
+  subAction?: string
+  use?: React.ComponentType<any>
+  children?: React.ReactElement | React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}
 
 export interface ListActionProps {
-   className?: string
-   children?: React.ReactElement | React.ReactNode
-   style?: React.CSSProperties
- }
+  className?: string
+  children?: React.ReactElement | React.ReactNode
+  style?: React.CSSProperties
+}
 
 export interface ObjectActionProps<TRow> extends ActionProps, BaseObjectProps<TRow> {
-   oClassName?: string
-   onSubmit?: (data: SubmitAction<TRow>) => void
- }
+  oClassName?: string
+  onSubmit?: (data: SubmitAction<TRow>) => void
+}
 
 export interface DrawerActionProps<TRow> extends ObjectActionProps<TRow> {
-   drawer?: DrawerProps
-   placement?: 'top' | 'right' | 'bottom' | 'left'
- }
+  drawer?: DrawerProps
+  placement?: 'top' | 'right' | 'bottom' | 'left'
+}
 
 const getMatchContext = (context: ActionsContext, props: ActionProps) => {
   const { onSubCancel, onSubSubmit, onSubmit, onCancel, action, subAction, ...others } = context;
@@ -47,6 +47,7 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
       loading: context.confirmLoading,
       onSubmit: onSubmit,
       onCancel: onCancel,
+      isSubAction: false,
     };
   } else if (props.subAction && subAction == props.subAction) {
     return {
@@ -55,6 +56,7 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
       loading: context.subConfirmLoading,
       onSubmit: onSubSubmit,
       onCancel: onSubCancel,
+      isSubAction: true,
     };
   }
 };
@@ -70,7 +72,7 @@ export function ActionIfHook(props: ActionProps) {
           if (!useContext) return null;
           return (
             <div className={`abstract-actions-if ${useContext.action} ${className || ''}`} style={style}>
-              {ActionInternal ? <ActionInternal {...(useContext || {})} /> : children}
+              {ActionInternal ? <ActionInternal {...props} {...(useContext || {})} /> : children}
             </div>
           );
         }
@@ -88,11 +90,12 @@ export function ObjectIfHook<TRow = AbstractRow>(props: ObjectActionProps<TRow>)
         (context) => {
           const useContext = getMatchContext(context, props);
           if (!useContext) return null;
-          if (props.type !='modal') {
-            context.shouldHiddenList(true);
+          if (props.type != 'modal') {
+            context.shouldHiddenList(true, useContext.isSubAction);
           }
+          const markCls = useContext.isSubAction ? 'sub-action' : 'action-current';
           return (
-            <div className={`${oClassName || 'abstract-actions-object'} ${className} ${useContext.action}`} style={style}>
+            <div className={`${oClassName || 'abstract-actions-object'} ${className || ''} ${useContext.action} ${markCls}`} style={style}>
               <AbstractObject
                 type={props.type}
                 {...useContext}
@@ -101,7 +104,7 @@ export function ObjectIfHook<TRow = AbstractRow>(props: ObjectActionProps<TRow>)
               >
                 <AbstractForm.Context.Consumer>
                   {
-                    (formContext) => ActionInternal ? <ActionInternal {...useContext} {...formContext} /> : children
+                    (formContext) => ActionInternal ? <ActionInternal {...props} {...useContext} {...formContext} /> : children
                   }
                 </AbstractForm.Context.Consumer>
               </AbstractObject>
@@ -140,7 +143,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
             const { onSubmit } = useContext;
             onSubmit && onSubmit(values);
           };
-          const onValuesChange = (changedValues:TRow, allValues:TRow)=>{
+          const onValuesChange = (changedValues: TRow, allValues: TRow) => {
             const onValuesChange = props.onValuesChange || useContext.onValuesChange;
             onValuesChange && onValuesChange(changedValues, allValues);
             if (actionsRef.current) {
@@ -165,7 +168,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                         showCancel={showCancel}
                         showOk={showOk}
                         okEnable={props.okEnable}
-                        isReadOnly={ props.action === 'view' || props.isReadOnly}
+                        isReadOnly={props.action === 'view' || props.isReadOnly}
                         handleCancel={handleCancel}
                         handleSubmit={handleSubmit}
                         okLoading={useContext.loading}
@@ -198,7 +201,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                   >
                     <AbstractForm.Context.Consumer>
                       {
-                        (formContext) => ActionInternal ? <ActionInternal {...useContext} {...formContext} /> : children
+                        (formContext) => ActionInternal ? <ActionInternal {...props} {...useContext} {...formContext} /> : children
                       }
                     </AbstractForm.Context.Consumer>
                   </AbstractObject>
@@ -217,11 +220,11 @@ export function ListHook(props: ListActionProps) {
   return (
     <Context.Consumer>
       {
-        (context) =>{
+        (context) => {
           context.action = context.action == '' ? 'list' : context.action;
           const useContext = getMatchContext(context, { action: 'list', ...props });
           if (useContext) {
-            context.shouldHiddenList(false);
+            context.shouldHiddenList(false, false);
           }
           return (
             <div ref={context.listRef} className={`abstract-actions-list ${className || ''}`} style={style}>

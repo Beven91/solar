@@ -74,7 +74,7 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
       return renderIcon(icon, fontFamily);
     }
     const iconView = icon ? <div className={`${fontFamily} ${icon} icon-picker-icon`}></div> : <PlusOutlined />;
-    return <Button shape="circle" size="large" type="primary" icon={iconView} ></Button>;
+    return <Button shape="circle" type="primary" icon={iconView} ></Button>;
   }
 
   renderIconViewer() {

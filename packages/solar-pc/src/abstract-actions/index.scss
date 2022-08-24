@@ -5,6 +5,16 @@
   .abstract-actions-list {
     height: 100%
   }
+
+  &.sub-covered {
+    .abstract-actions-object.action-current {
+      opacity: 0;
+    }
+  }
+
+  .abstract-actions-object.sub-action {
+    transform: translateY(-100%);
+  }
 }
 
 .abstract-actions-drawer {
@@ -21,3 +31,4 @@
     }
   }
 }
+

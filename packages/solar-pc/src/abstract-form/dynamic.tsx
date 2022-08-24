@@ -206,6 +206,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     const itemRules = rules[name];
     const colOption = {
       span: item.span || span || 24,
+      offset: item.offset,
       className: num <= 3 ? 'three' : 'than-three',
     };
     return (

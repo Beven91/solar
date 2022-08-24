@@ -3,7 +3,7 @@ import ConfigProvider from '../abstract-provider';
 import AdvancePicker, { AdvancePickerProps } from '../advance-picker';
 import { PageQueryData } from '../interface';
 
-const cache: Record<string, Record<string, string>> = {};
+const cache: Record<string, Promise<Record<string, string>>> = {};
 
 interface OptionsViewProps {
   optionsKey: string
@@ -48,19 +48,23 @@ export function OptionsView({ labelName = 'label', valueName = 'value', value, o
   const fetchOptions = async() => {
     if (!optionsKey) return;
     if (!cache[optionsKey]) {
-      const res = await context.fetchOption(optionsKey, { pageNo: 0, pageSize: 1000 });
-      const values = {} as Record<string, string>;
-      res.models.forEach((item: Record<string, string>) => {
-        values[item[valueName]] = item[labelName];
+      cache[optionsKey] = context.fetchOption(optionsKey, { pageNo: 0, pageSize: 1000 }).then((res)=>{
+        const values = {} as Record<string, string>;
+        res.models.forEach((item: Record<string, string>) => {
+          values[item[valueName]] = item[labelName];
+        });
+        return values;
+      }).catch((ex)=>{
+        delete cache[optionsKey];
+        return {};
       });
-      cache[optionsKey] = values;
     }
-    setModels(cache[optionsKey] || {});
+    const values = await Promise.resolve(cache[optionsKey]);
+    setModels(values || {});
   };
 
-  useEffect(() => {
-    fetchOptions();
-  }, [optionsKey, value]);
+  // eslint-disable-next-line brace-style
+  useEffect(() => {fetchOptions();}, [optionsKey, value]);
 
   return (
     <span>{options[value]}</span>

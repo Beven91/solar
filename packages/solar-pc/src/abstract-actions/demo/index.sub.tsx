@@ -105,7 +105,9 @@ export default function App() {
       subAction={subAction}
       onSubmit={onSubmit}
       addProduct={onAddProduct}
-      onSubCancel={() => setSubAction('')}
+      onSubCancel={() => {
+        setSubAction('');
+      }}
       style={{ height: 300 }}
       primaryKey="id"
       onCancel={() => setAction({ action: '', id: '' })}
@@ -121,7 +123,7 @@ export default function App() {
       </AbstractActions.List>
 
       <AbstractActions.Object title="修改活动" width={500} action="update" use={ActivityView} />
-      <AbstractActions.Popup title="添加商品" width={600} subAction="addproduct" use={CommodityPicker} />
+      <AbstractActions.Object title="添加商品" width={600} subAction="addproduct" use={CommodityPicker} />
 
     </AbstractActions>
   );

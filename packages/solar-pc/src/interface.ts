@@ -124,6 +124,8 @@ export interface AbstractFormItemType<TRow> {
   normalize?: (value: TRow, prevValue: TRow, allValues: TRow) => TRow
   // 单独设置 span值 总计24份
   span?: number
+  // 表单偏移量
+  offset?: number
 };
 
 export type FunctionItemType<TRow> = (record: TRow, isReadonly: boolean) => ReactElement

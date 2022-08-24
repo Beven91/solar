@@ -47,6 +47,7 @@ export interface AbstractItemProps<TRow> {
   // 设置外包col配置
   colOption?: {
     span: number
+    offset: number
     className: string
   },
   style?: React.CSSProperties
@@ -295,6 +296,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
       return (
         <Col
           span={colOption.span}
+          offset={colOption.offset}
           className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
         >
           {this.renderSlot()}
