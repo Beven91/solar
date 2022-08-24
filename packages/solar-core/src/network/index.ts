@@ -11,7 +11,7 @@ import Tunnel from '../tunnel/index';
 import RequestContext from './context';
 import BizError from '../biz-error';
 import UseQuery, { GenerateHooks } from './useQuery';
-import { HttpMethods, RHttpHeaders, NetworkBaseOptions, ChainResponses, SharedResponse } from './types';
+import { HttpMethods, RHttpHeaders, NetworkBaseOptions, ChainResponses, SharedResponse, NetworkExtra } from './types';
 import { NetworkEventHandler, NetworkEvents, NetworkOptions, Promiseable } from './types';
 
 let Options = {} as NetworkOptions;
@@ -607,6 +607,14 @@ export class AttachResponse<T, R> extends Promise<T> {
         }),
       });
     }
+    return this;
+  }
+
+  /**
+   * 设置请求上下文参数，主要用于在全局事件中做相关操作
+   */
+  setExtra(options: NetworkExtra) {
+    this.reqContext.extra = options || { type: 'default' };
     return this;
   }
 

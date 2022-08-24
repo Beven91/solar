@@ -2,7 +2,7 @@
  * @module RequestContext
  * @description 请求上下文
  */
-import { RHttpHeaders } from './types';
+import { NetworkExtra, RHttpHeaders } from './types';
 
 export default class RequestContext {
   /**
@@ -14,59 +14,62 @@ export default class RequestContext {
    * 在需要重试请求时，用于
    * 断言：本地请求是否返回结果正常
    */
-  public tryAssertFunc?= (data: any) => false
+  public tryAssertFunc?= (data: any) => false;
 
   /**
    * 当前请求是否开启：重试机制
    */
-  public tryable?: boolean = false
+  public tryable?: boolean = false;
 
   /**
    * 可重试的最大次数
    */
-  public maxTry?: number = 0
+  public maxTry?: number = 0;
 
   /**
    * 当前请求的url
    */
-  public readonly url: string
+  public readonly url: string;
 
   /**
    * 设置证书类型 omit:不传递cookie same-origin:同源发送cookie include:都发送cookie
    */
-  public credentials?: string
+  public credentials?: string;
 
   /**
    * 当前请求的数据
    */
-  public data?: any
+  public data?: any;
 
-  public responseConvert: 'json' | 'text' | 'arrayBuffer' | 'blob'
+  public responseConvert: 'json' | 'text' | 'arrayBuffer' | 'blob';
 
   /**
    * 请求内容类型
    */
-  public requestContentType: string
+  public requestContentType: string;
 
   /**
    * 当前请求的http谓词
    */
-  public method: string
+  public method: string;
 
   /**
    * 当前请求的额外请求头
    */
-  public headers?: RHttpHeaders
+  public headers?: RHttpHeaders;
 
   // 返回对象
-  public response?: Response
+  public response?: Response;
 
-  public fetchTimeoutId?:ReturnType<typeof setTimeout>
+  public fetchTimeoutId?:ReturnType<typeof setTimeout>;
 
   /**
    * 当前请求是否呗取消掉
    */
-  public isCancened:boolean
+  public isCancened:boolean;
+
+  // 单个接口调用的附加信息，用于全局事件使用
+  public extra: NetworkExtra;
 
   // 获取当前请求返回类型
   get responseType() {

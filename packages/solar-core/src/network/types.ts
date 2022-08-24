@@ -66,3 +66,8 @@ export interface SharedResponse {
   persistent: boolean
   isShared: IsSharedFnction
 }
+
+export interface NetworkExtra {
+  type: string
+  [x: string]: any
+}
