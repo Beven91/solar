@@ -3,7 +3,7 @@
  * @description 操作动作
  */
 
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import Context, { ActionsContext } from './context';
 import AbstractObject, { BaseObjectProps } from '../abstract-object';
 import AbstractForm from '../abstract-form';
@@ -34,6 +34,8 @@ export interface ObjectActionProps<TRow> extends ActionProps, BaseObjectProps<TR
 
 export interface DrawerActionProps<TRow> extends ObjectActionProps<TRow> {
   drawer?: DrawerProps
+  // 实时存储模式，即不管是确定还是取消都是进行提交操作
+  realtime?: boolean
   placement?: 'top' | 'right' | 'bottom' | 'left'
 }
 
@@ -131,87 +133,91 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const ActionInternal = use;
   const objectRef = useRef<AbstractObject>();
   const actionsRef = useRef<FooterActions<TRow>>();
+  const c = useContext(Context);
+  const realtime = props.realtime == true;
+  const context = getMatchContext(c, props);
+  const visible = !!context;
+  const showOk = props.showActions == 'ok-cancel' || props.showActions == 'ok' || !props.showActions;
+  const showCancel = props.showActions === 'cancel' || props.showActions === 'ok-cancel' || !props.showActions;
   const handleSubmit = () => objectRef.current.handleSubmit();
-  const handleCancel = () => objectRef.current.handleCancel();
+  const footerVisible = false !== props.footer && visible && !realtime;
+
+  const onSubmit = async(values: any) => {
+    const { onSubmit } = context;
+    onSubmit && onSubmit(values);
+  };
+
+  const onCancel = () => {
+    if (props.realtime) {
+      return objectRef.current.handleSubmit();
+    }
+    objectRef.current?.handleCancel();
+  };
+
+  const onValuesChange = (changedValues: TRow, allValues: TRow) => {
+    const onValuesChange = props.onValuesChange || context.onValuesChange;
+    onValuesChange && onValuesChange(changedValues, allValues);
+    if (actionsRef.current) {
+      actionsRef.current.refresh({ ...allValues, ...changedValues });
+    }
+  };
 
   return (
-    <Context.Consumer>
-      {
-        (c) => {
-          const useContext = getMatchContext(c, props);
-          const onSubmit = async(values: any) => {
-            const { onSubmit } = useContext;
-            onSubmit && onSubmit(values);
-          };
-          const onValuesChange = (changedValues: TRow, allValues: TRow) => {
-            const onValuesChange = props.onValuesChange || useContext.onValuesChange;
-            onValuesChange && onValuesChange(changedValues, allValues);
-            if (actionsRef.current) {
-              actionsRef.current.refresh({ ...allValues, ...changedValues });
-            }
-          };
-          const visible = !!useContext;
-          const showOk = props.showActions == 'ok-cancel' || props.showActions == 'ok' || !props.showActions;
-          const showCancel = props.showActions === 'cancel' || props.showActions === 'ok-cancel' || !props.showActions;
-          return (
-            <Drawer
-              maskClosable={false}
-              footer={
-                <div className="abstract-actions-drawer-footer">
-                  {
-                    (false !== props.footer && visible) && (
-                      <FooterActions
-                        ref={actionsRef}
-                        btnCancel={props.btnCancel}
-                        btnSubmit={props.btnSubmit}
-                        formValues={c.record}
-                        showCancel={showCancel}
-                        showOk={showOk}
-                        okEnable={props.okEnable}
-                        isReadOnly={props.action === 'view' || props.isReadOnly}
-                        handleCancel={handleCancel}
-                        handleSubmit={handleSubmit}
-                        okLoading={useContext.loading}
-                        actions={props.footActions}
-                      />
-                    )
-                  }
-                </div>
-              }
-              placement={placement || 'right'}
-              {...(drawer || {})}
-              style={style}
-              width={width || 800}
-              className={`${className} abstract-actions-drawer`}
-              title={props.title || ''}
-              visible={visible}
-              onClose={useContext?.onCancel}
-            >
-              {
-                visible && (
-                  <AbstractObject
-                    type={props.type}
-                    {...useContext}
-                    {...others}
-                    onValuesChange={onValuesChange}
-                    onSubmit={onSubmit}
-                    ref={objectRef}
-                    footer={false}
-                    action={useContext.action}
-                  >
-                    <AbstractForm.Context.Consumer>
-                      {
-                        (formContext) => ActionInternal ? <ActionInternal {...props} {...useContext} {...formContext} /> : children
-                      }
-                    </AbstractForm.Context.Consumer>
-                  </AbstractObject>
-                )
-              }
-            </Drawer>
-          );
-        }
+    <Drawer
+      maskClosable={false}
+      footer={
+        <div className="abstract-actions-drawer-footer">
+          {
+            footerVisible && (
+              <FooterActions
+                ref={actionsRef}
+                btnCancel={props.btnCancel}
+                btnSubmit={props.btnSubmit}
+                formValues={c.record}
+                showCancel={showCancel}
+                showOk={showOk}
+                okEnable={props.okEnable}
+                isReadOnly={props.action === 'view' || props.isReadOnly}
+                handleCancel={onCancel}
+                handleSubmit={handleSubmit}
+                okLoading={context.loading}
+                actions={props.footActions}
+              />
+            )
+          }
+        </div>
       }
-    </Context.Consumer>
+      placement={placement || 'right'}
+      {...(drawer || {})}
+      {...(realtime ? { mask: true, maskClosable: true } : {})}
+      style={style}
+      width={width || 800}
+      className={`${className} abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
+      title={props.title || ''}
+      visible={visible}
+      onClose={onCancel}
+    >
+      {
+        visible && (
+          <AbstractObject
+            type={props.type}
+            {...context}
+            {...others}
+            onValuesChange={onValuesChange}
+            onSubmit={onSubmit}
+            ref={objectRef}
+            footer={false}
+            action={context.action}
+          >
+            <AbstractForm.Context.Consumer>
+              {
+                (formContext) => ActionInternal ? <ActionInternal {...props} {...context} {...formContext} /> : children
+              }
+            </AbstractForm.Context.Consumer>
+          </AbstractObject>
+        )
+      }
+    </Drawer>
   );
 }
 

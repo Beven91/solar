@@ -10,7 +10,7 @@ import { MenuProps } from 'antd/lib/menu';
 import { Adapter } from 'solar-core';
 import { SelectInfo } from 'rc-menu/lib/interface';
 
-const { SubMenu } = Menu;
+const globalLink = document.createElement('a');
 
 export interface SelectMenuInfo extends SelectInfo {
   menu: AbstractMenuType
@@ -22,12 +22,10 @@ export interface AbstractMenuProps extends MenuProps {
   loadMenus: () => Promise<AbstractMenuType[]> | AbstractMenuType[]
   // 自定义匹配菜单
   matchSelectedKey?: (menu: AbstractMenuType, route: string) => boolean
-  // 自定义菜单渲染
-  renderItem?: (menu: AbstractMenuType) => React.ReactNode
-  // 自定义渲染子菜单
-  renderSubItem?: (menu: AbstractMenuType) => React.ReactNode
   // 选中指定菜单
   onSelect?: (data: SelectInfo) => void
+  // 自定义菜单跳转
+  onNavigate?: (menu: AbstractMenuType, info: SelectMenuInfo) => void
   // 路由模式
   type: 'hash' | 'browser'
 }
@@ -116,7 +114,7 @@ export default class AbstractMenu extends React.Component<AbstractMenuProps, Abs
       return true;
     }
     const path = route.replace('#', '');
-    const url = menu.href.split('/').map((v) => {
+    const url = menu.href?.split('/').map((v) => {
       return v[0] == ':' ? '(\\w|\\d|-)+' : v;
     }).join('/');
     return new RegExp('^' + url).test(path);
@@ -165,35 +163,16 @@ export default class AbstractMenu extends React.Component<AbstractMenuProps, Abs
     menus.forEach((menu) => {
       menu.parent = parent;
       menu.root = root;
+      menu.label = menu.title;
       elements.push(menu);
       if (menu.children && menu.children.length > 0) {
         root = root ? root : menu;
         elements.push(...this.flat(menu.children, menu, root));
+        menu.children = menu.children.filter((m) => m.virtual != true);
+        menu.children = menu.children.length < 1 ? undefined : menu.children;
       }
     });
     return elements;
-  }
-
-  defaultRenderItem(menu: AbstractMenuType) {
-    return (
-      <a className="abstract-nav-menu-link" href={menu.href || 'javascript:void(0)'} target={menu.target}>
-        {menu.name}
-      </a>
-    );
-  }
-
-  defaultRenderSubMenus(menu: AbstractMenuType) {
-    const { children = [] } = menu;
-    return (
-      <SubMenu
-        key={menu.key || menu.href}
-        className="abstract-sub-menu"
-        icon={menu.icon}
-        title={menu.name}
-      >
-        {children.map((m, i) => this.renderMenu(m, menu))}
-      </SubMenu>
-    );
   }
 
   onSelect = (data: SelectInfo) => {
@@ -215,29 +194,20 @@ export default class AbstractMenu extends React.Component<AbstractMenuProps, Abs
     });
   };
 
-  // 渲染单个菜单
-  renderMenu(menu: AbstractMenuType, parent?: AbstractMenuType) {
-    const { children = [] } = menu;
-    const hasSubMenus = children && children.length > 0;
-    const { renderItem, renderSubItem } = this.props;
-    const renderMenuItem = renderItem || this.defaultRenderItem;
-    const renderSubMenu = renderSubItem || this.defaultRenderSubMenus;
-    if (menu.virtual) {
-      return null;
+  onClickItem = (info: SelectMenuInfo) => {
+    const { onNavigate } = this.props;
+    const menu = this.flatMenus.find((m) => m.key == info.key);
+    if (!menu) {
+      return;
     }
-    if (hasSubMenus) {
-      return renderSubMenu.call(this, menu);
+    if (onNavigate) {
+      onNavigate(menu, info);
+    } else if (menu?.href) {
+      globalLink.href = menu.href;
+      globalLink.target = menu.target || '_self';
+      globalLink.click();
     }
-    return (
-      <Menu.Item
-        icon={menu.icon}
-        key={menu.key || menu.href}
-        className="abstract-menu-item"
-      >
-        {renderMenuItem.call(this, menu)}
-      </Menu.Item>
-    );
-  }
+  };
 
   componentWillUnmount() {
     window.removeEventListener('hashchange', this.sychronizeHandler);
@@ -248,16 +218,14 @@ export default class AbstractMenu extends React.Component<AbstractMenuProps, Abs
     const { openKeys, selectedKeys, menus } = this.state;
     return (
       <Menu
-        {...Adapter.filter(this.props, 'route', 'matchSelectedKey', 'loadMenus', 'renderItem', 'renderSubItem')}
+        {...Adapter.filter(this.props, 'route', 'matchSelectedKey', 'loadMenus')}
         onSelect={this.onSelect}
         onOpenChange={this.onOpenChanged}
         openKeys={openKeys}
+        onClick={this.onClickItem}
         selectedKeys={selectedKeys}
-      >
-        {
-          menus.map((menu) => this.renderMenu(menu))
-        }
-      </Menu>
+        items={menus}
+      />
     );
   }
 }

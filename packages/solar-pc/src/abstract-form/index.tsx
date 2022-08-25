@@ -9,6 +9,7 @@ import register, { ConverterRegistry, ValueConverter } from './register';
 import { AbstractGroups, AbstractFormLayout, AbstractRules as AbstractRules, FormGroupStyle, onValuesChangeHandler, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import FormContext from './context';
+import AbstractProvider from '../abstract-provider';
 import ISolation from './isolation';
 
 // 属性类型定义
@@ -69,9 +70,17 @@ export default class AbstractForm<TRow extends AbstractRow> extends React.Compon
   // 渲染
   render() {
     return (
-      <FormContext.Consumer>
-        {(context) => <Dynamic {...context} {...this.props} />}
-      </FormContext.Consumer>
+      <AbstractProvider.Consumer>
+        {
+          (config)=>{
+            return (
+              <FormContext.Consumer>
+                {(context) => <Dynamic formItemLayout={config.formItemLayout} {...context} {...this.props} />}
+              </FormContext.Consumer>
+            );
+          }
+        }
+      </AbstractProvider.Consumer>
     );
   }
 }

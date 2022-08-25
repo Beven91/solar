@@ -167,7 +167,7 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
       runtime.isInitialize = false;
     } else if (runtime.isInitialize) {
       runtime.isInitialize = false;
-      const empty = { action: '', id: '' };
+      const empty = { ...route?.params, action: '', id: '' };
       const data = cellRenders.createAction({ action: '', id: '' });
       const initUrl = data.create(route?.path || '', empty);
       this.props.history?.replace(initUrl);

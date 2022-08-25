@@ -8,6 +8,10 @@
 .abstract-form {
   overflow-x: hidden;
 
+  .tabs-group-form-inner {
+    padding-left: 20px;
+  }
+
   .abstract-form-item.input-full {
     margin-bottom: 0px;
   }

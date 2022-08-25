@@ -47,7 +47,7 @@ export interface AbstractItemProps<TRow> {
   // 设置外包col配置
   colOption?: {
     span: number
-    offset: number
+    offset:number
     className: string
   },
   style?: React.CSSProperties

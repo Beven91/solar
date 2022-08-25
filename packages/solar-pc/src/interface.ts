@@ -209,6 +209,7 @@ export interface PageQueryData {
 export interface AbstractConfig {
   valueFormatter?: (v: any) => any
   upload?: AbstractUploadConfig
+  formItemLayout?: FormItemLayout
   fetchOption?: (key: string, params: PageQueryData) => Promise<AbstractResponseModel>
 }
 
@@ -258,7 +259,7 @@ export type AbstractButtons<TRow> = AbstractButton<TRow>[]
 
 export interface AbstractMenuType {
   // 菜单名称
-  name: string
+  title: string
   // 菜单唯一key
   key: string
   // 菜单跳转地址
@@ -274,7 +275,6 @@ export interface AbstractMenuType {
   parent?: AbstractMenuType
   root?: AbstractMenuType
   children?: AbstractMenuType[],
-  [propName: string]: any
 }
 
 export interface AbstractActionProps {
@@ -316,4 +316,9 @@ export interface RecordViewProps<TRow extends AbstractRow = AbstractRow> {
   submitAction: () => void;
   // 取消编辑
   cancelAction: () => void;
+}
+
+export interface FormItemLayout {
+  labelCol: ColProps
+  wrapperCol: ColProps
 }

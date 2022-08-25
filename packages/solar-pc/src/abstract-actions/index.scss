@@ -18,9 +18,26 @@
 }
 
 .abstract-actions-drawer {
+  &.realtime {
+     .ant-drawer-mask {
+      opacity: 0 !important;
+    }
+  }
+
   .abstract-object-wrap{
     padding-top:0px;
   }
+  .abstract-form {
+    .tabs-group-form-inner {
+      padding-left: 0px;
+    }
+  }
+
+  .form-group >.ant-card-head,
+  .form-group >.ant-card-body {
+    padding-left: 0px;
+  }
+
   .abstract-actions-drawer-footer {
     text-align: center;
 

@@ -12,7 +12,7 @@ import FormItem from './Item';
 import {
   AbstractFormGroupItemType, AbstractGroups,
   AbstractFormItemType, AbstractFormLayout, AbstractRules,
-  FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow,
+  FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow, FormItemLayout,
 } from '../interface';
 
 export interface DynamicProps<TRow> {
@@ -52,7 +52,7 @@ export interface DynamicState {
   activeIndex: number
 }
 
-const defaultFormItemLayout = {
+const defaultFormItemLayout: FormItemLayout = {
   labelCol: {
     xs: { span: 24 },
     sm: { span: 6 },
@@ -133,9 +133,9 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     const tabGroups = tabs.filter((tab) => tab.items?.length > 0);
     tabGroups.forEach((group, index) => {
       group.items.forEach((item) => {
-        this.plainFields[item.name.toString()] = index;
+        this.plainFields[item.name?.toString()] = index;
       });
-      if (!group.items.find((item) => rules[item.name.toString()])) {
+      if (!group.items.find((item) => rules[item.name?.toString()])) {
         // 如果当前分组，么有配置校验规则，则标记成当前tab已访问。
         this.accessedKeys[index] = true;
       } else {
@@ -240,6 +240,8 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     return (
       <React.Fragment>
         <Tabs
+          className="abstract-form-tabs"
+          tabBarStyle={{ paddingLeft: 20 }}
           activeKey={this.state.activeIndex.toString()}
           type={tabType}
           tabPosition={tabPosition}
@@ -273,7 +275,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     }
     return (
       <React.Fragment>
-        <Row gutter={8}>
+        <Row className="abstract-form-normal-inner" gutter={8}>
           {node}
           {this.props.formChildren}
         </Row>

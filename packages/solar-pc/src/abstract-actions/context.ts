@@ -8,8 +8,8 @@ export interface ActionsContext<TRow = AbstractRow> {
   record: TRow
   subConfirmLoading?: boolean
   confirmLoading?: boolean
-  onMatch?: (action: string) => void
-  shouldHiddenList?: (hidden: boolean, isSubAction: boolean) => void
+  onMatch?: (action:string) => void
+  shouldHiddenList?: (hidden: boolean, isSubAction:boolean) => void
   onAction?: OnActionRoute<TRow>
   onCancel?: () => boolean | void
   onSubmit?: (record: TRow) => void
