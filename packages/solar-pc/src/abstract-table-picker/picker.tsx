@@ -7,7 +7,7 @@ import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Button } from 'antd';
 import AbstractTable from '../abstract-table';
-import { AbstractTableProps, AbstractButton } from '../abstract-table/types';
+import { AbstractTableProps } from '../abstract-table/types';
 import { AbstractFilters, AbstractQueryType, AbstractRow, AbstractRows } from '../interface';
 
 export interface ObjectPickerProps<TRow> extends AbstractTableProps<TRow> {
@@ -56,27 +56,27 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
   }
 
   // 当前操作按钮
-  get buttons() {
-    const { buttons } = this.props;
-    return [
-      ...(buttons || []),
-      {
-        target: 'cell',
-        title: '选择',
-        click: (row: AbstractRow) => {
-          const rows = this.state.selectedRows;
-          if (this.props.select === 'single') {
-            rows.length = 0;
-          }
-          if (rows.indexOf(row) < 0) {
-            rows.push(row);
-          }
-          this.setState({ selectedRows: [...rows] });
-          this.handleSubmit();
-        },
-      },
-    ] as AbstractButton<TRow>[];
-  }
+  // get buttons() {
+  //   const { buttons } = this.props;
+  //   return [
+  //     ...(buttons || []),
+  //     {
+  //       target: 'cell',
+  //       title: '选择',
+  //       click: (row: AbstractRow) => {
+  //         const rows = this.state.selectedRows;
+  //         if (this.props.select === 'single') {
+  //           rows.length = 0;
+  //         }
+  //         if (rows.indexOf(row) < 0) {
+  //           rows.push(row);
+  //         }
+  //         this.setState({ selectedRows: [...rows] });
+  //         this.handleSubmit();
+  //       },
+  //     },
+  //   ] as AbstractButton<TRow>[];
+  // }
 
   filters: AbstractFilters = {
     name: '@@mode',
@@ -122,8 +122,10 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
 
   // 选中行发生改变
   handleSelectRows = (selectedRows: AbstractRows) => {
-    this.setState({
-      selectedRows: selectedRows,
+    this.setState({ selectedRows }, ()=>{
+      if (this.props.select == 'single') {
+        this.handleSubmit();
+      }
     });
   };
 
@@ -179,7 +181,7 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
               selectedRows={selectedRows}
               searchFields={searchFields}
               onSelectRows={this.handleSelectRows}
-              buttons={this.buttons}
+              // buttons={this.buttons}
             />
           </div>
         </Modal>

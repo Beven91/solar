@@ -17,3 +17,10 @@
   title="输入框模式" 
   desc="可通过AbstractTablePicker.InputPicker 组件来实现输入框选择模式" 
 />
+
+<AppCodebox 
+  console="true"
+  src="src/abstract-table-picker/demo/index.object" 
+  title="输入框对象模式" 
+  desc="通过设置valueMode=object来选择一个json对象" 
+/>
