@@ -140,7 +140,7 @@ export interface AbstractFormGroupItemType<TRow> {
   // 为分组时，单个表单布局占比 总计24份
   span?: number
   // 分组时，当前组的所有表单
-  items?: Array<AbstractFormItemType<TRow>>
+  items?: Array<AbstractFormItemType<TRow> | FunctionItemType<TRow>>
   // 组名
   group?: ReactNode
   // 列独立布局
