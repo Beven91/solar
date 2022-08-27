@@ -272,9 +272,12 @@ export interface AbstractMenuType {
   system?: string
   // 当前菜单是否为虚拟菜单,虚拟菜单不会展示，仅用于层级关联。
   virtual?: boolean,
+  // 描述
+  desc?: React.ReactNode
   parent?: AbstractMenuType
   root?: AbstractMenuType
   children?: AbstractMenuType[],
+  [x: string]: any
 }
 
 export interface AbstractActionProps {
