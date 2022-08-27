@@ -37,7 +37,7 @@ type GenerateEffects<T extends { [propName: string]: (...args: any[]) => void }>
 
 export type RematchModelTo<T extends Record<string, any>> = GenerateEffects<T['effects']> & T['state'] & GenerateReducer<T['reducers']>
 
-export type RematchThis<T extends Record<string, any>> = GenerateEffects<T['effects']> & GenerateReducer<T['reducers']>
+export type RematchEffectThis<T extends Record<string, any>> = GenerateEffects<T['effects']> & GenerateReducer<T['reducers']>
 
 export default {
   createPromiseAsync,
