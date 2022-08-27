@@ -125,7 +125,7 @@ export default class Network {
   /**
    * 构造一个Hooks查询对象
    */
-  useQuery(deps: any[]) {
+  useQuery(deps?: any[]) {
     return new UseQuery(this, deps) as Omit<GenerateHooks<typeof this>, keyof Network>;
   }
 

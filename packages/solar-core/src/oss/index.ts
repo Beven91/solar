@@ -112,7 +112,7 @@ export default class AliOss {
    * @param category 上传目录
    * @param keep 是否保持原始文件目录上传
    */
-  static uploadToAliOss(file: File, options?: OssUploadOptions, onprogress?: onUploadProgress) {
+  static uploadToAliOss(file: File, options?: OssUploadOptions, onprogress?: onUploadProgress, url?:string) {
     let category = options?.category || config.options.oss?.directory || 'default';
     return this.aliOssConfig(category).then((ossConfig) => {
       let formData = {} as any;
@@ -135,7 +135,7 @@ export default class AliOss {
           'success_action_status': 201,
         };
         this.mergeOssFormData(formData, options);
-        return this.wxUpload(ossConfig.host, formData, file);
+        return this.wxUpload(url || ossConfig.host, formData, file);
       }
       formData = new FormData();
       formData.append('key', fileKey);
@@ -146,7 +146,7 @@ export default class AliOss {
       this.mergeOssFormData(formData, options);
       formData.append('file', file);
       return this
-        .h5Upload(ossConfig.host, formData, onprogress)
+        .h5Upload(url || ossConfig.host, formData, onprogress)
         .then((response: any) => {
           const domKey = response.querySelector('PostResponse Location');
           const url = (domKey || {}).innerHTML;
