@@ -40,7 +40,7 @@ export default class AliOss {
    */
   static getBucketAccessUrl(bucketType: BucketType, src: string, action?: string) {
     const cdn = config.options.cdn;
-    const fullUri = absoluteRegexp.test(src) ? src : `${cdn.replace(/\/$/, '')}/${src.replace(/^\//, '')}`;
+    const fullUri = absoluteRegexp.test(src) ? src : `${cdn.replace(/\/$/, '')}/${src?.replace(/^\//, '')}`;
     const joinChar = fullUri.indexOf('?') > 0 ? '&' : '?';
     if (fullUri.indexOf('x-oss-process=') > -1) {
       return fullUri;
