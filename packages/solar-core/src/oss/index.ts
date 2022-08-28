@@ -145,13 +145,7 @@ export default class AliOss {
       formData.append('success_action_status', 201);
       this.mergeOssFormData(formData, options);
       formData.append('file', file);
-      return this
-        .h5Upload(url || ossConfig.host, formData, onprogress)
-        .then((response: any) => {
-          const domKey = response.querySelector('PostResponse Location');
-          const url = (domKey || {}).innerHTML;
-          return (url || 'error').replace(/:\/\//g, ':///').replace(/\/\//g, '/');
-        });
+      return this.h5Upload(url || ossConfig.host, formData, onprogress);
     }) as unknown as Promise<any>;
   }
 
@@ -171,7 +165,7 @@ export default class AliOss {
         name: 'file',
         formData,
         success: (res: any) => {
-          resolve(res.data);
+          resolve(res.data as UploadResponse);
         },
         fail: reject,
       });
@@ -197,6 +191,12 @@ export default class AliOss {
       xhr.withCredentials = true;
       xhr.onreadystatechange = () => {
         if (xhr.readyState == 4) {
+          if (xhr.responseXML) {
+            const domKey = xhr.responseXML.querySelector('PostResponse Location');
+            const url = (domKey || {}).innerHTML;
+            const result = (url || '').replace(/:\/\//g, ':///').replace(/\/\//g, '/');
+            return result ? resolve({ errorMsg: '', errorCode: '0', success: true, result }) : reject({ success: false });
+          }
           const response = xhr.response as UploadResponse;
           (xhr.status >= 200 && xhr.status < 300) ? resolve(response) : reject(response);
         }
