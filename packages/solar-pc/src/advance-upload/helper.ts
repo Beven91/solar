@@ -11,7 +11,7 @@ export const getFileList = memoize((value, format, fileList, props: AdvanceUploa
   return items.map((a: UploadedValueOrList, i: number) => {
     const v = value[i];
     const item = normalize(v) as UploadFileValue;
-    const key = item.url;
+    const key = item.url || '';
     const url = format ? format(key, props) : key;
     const oItem = fileList[i] || {};
     return {

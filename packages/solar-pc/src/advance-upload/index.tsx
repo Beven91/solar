@@ -182,7 +182,9 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
         })
         .catch((ex) => {
           console.error(ex);
-          context.onError(ex);
+          setTimeout(()=>{
+            context.onError(ex);
+          }, 100);
         });
     }
   };
