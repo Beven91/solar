@@ -182,7 +182,6 @@ export default class AliOss {
     return new Promise<UploadResponse>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
-      xhr.responseType = 'json';
       xhr.onprogress = (ev) => {
         if (ev.lengthComputable) {
           onprogress && onprogress((ev.loaded / ev.total) * 100);
@@ -197,7 +196,7 @@ export default class AliOss {
             const result = (url || '').replace(/:\/\//g, ':///').replace(/\/\//g, '/');
             return result ? resolve({ errorMsg: '', errorCode: '0', success: true, result }) : reject({ success: false });
           }
-          const response = xhr.response as UploadResponse;
+          const response = JSON.parse(xhr.response || '{}') as UploadResponse;
           (xhr.status >= 200 && xhr.status < 300) ? resolve(response) : reject(response);
         }
       };
