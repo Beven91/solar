@@ -12,7 +12,7 @@ import FormItem from './Item';
 import {
   AbstractFormGroupItemType, AbstractGroups,
   AbstractFormItemType, AbstractFormLayout, AbstractRules,
-  FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow, FormItemLayout,
+  FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow, FormItemLayout, AbstractGroupItem,
 } from '../interface';
 
 export interface DynamicProps<TRow> {
@@ -46,6 +46,8 @@ export interface DynamicProps<TRow> {
   tabBarGutter?: number
   // 让指定表单获取焦点，仅在初始化时有效
   autoFocus?: string
+  // 初始化的tab焦点
+  defaultActiveIndex?: number
 }
 
 export interface DynamicState {
@@ -59,7 +61,7 @@ const defaultFormItemLayout: FormItemLayout = {
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 16 },
+    sm: { span: 18 },
   },
 };
 
@@ -81,6 +83,11 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   state: DynamicState = {
     activeIndex: 0,
   };
+
+  constructor(props:DynamicProps<TRow>) {
+    super(props);
+    this.state.activeIndex = props.defaultActiveIndex || 0;
+  }
 
   // 是否为只读模式
   get isReadOnly() {
@@ -177,11 +184,11 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 渲染表单
-  renderFormItem(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout) {
+  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, layout?: AbstractFormLayout) {
     if (typeof item === 'function') {
       return this.renderFreeFunction(item);
     }
-    return this.renderNormalLayoutInput(item, span, layout);
+    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, layout);
   }
 
   // 渲染一个自定义布局表单
@@ -210,18 +217,24 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
       className: num <= 3 ? 'three' : 'than-three',
     };
     return (
-      <FormItem
-        layout={layout2}
-        item={item}
-        autoFocusAt={this.props.autoFocus}
+      <React.Fragment
         key={`form-group-item-${item.name}`}
-        colOption={colOption}
-        onValuesChange={this.props.onValuesChange}
-        isReadOnly={this.props.isReadOnly}
-        form={this.props.form}
-        rules={itemRules}
-        model={this.props.model}
-      />
+      >
+        {
+          item.break ? (<Col span={24} className="break-form-item"></Col>) : null
+        }
+        <FormItem
+          layout={layout2}
+          item={item}
+          autoFocusAt={this.props.autoFocus}
+          colOption={colOption}
+          onValuesChange={this.props.onValuesChange}
+          isReadOnly={this.props.isReadOnly}
+          form={this.props.form}
+          rules={itemRules}
+          model={this.props.model}
+        />
+      </React.Fragment>
     );
   }
 

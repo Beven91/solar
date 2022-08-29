@@ -29,8 +29,9 @@ export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
     * 值模式
     * normal: 选择的值为字段值
     * object: 选择的值为选择的对象
+    * tags-single: 单选的tags
     */
-   valueMode?: 'normal' | 'object'
+   valueMode?: 'normal' | 'object' | 'tags-single'
    // 自定义数据获取，支持接口请求。
    api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
    // 本地数据源
@@ -111,6 +112,8 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     rows: [] as OptionObject[],
   };
 
+  tagsValue = undefined as string;
+
   get allOption() {
     return {
       value: '',
@@ -128,6 +131,8 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
           return (value as any)[valueName];
         }
         return value;
+      case 'tags-single':
+        return value || this.tagsValue;
       default:
         return value;
     }
@@ -187,6 +192,9 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     switch (this.props.valueMode) {
       case 'object':
         return isArray ? value.map((v) => this.findOrigin(v)) : this.findOrigin(value);
+      case 'tags-single':
+        this.tagsValue = (isArray ? value.slice(-1)[0] : value) as string;
+        return this.tagsValue;
       case 'normal':
         return value;
     }

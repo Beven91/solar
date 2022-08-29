@@ -64,6 +64,8 @@ export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends
     }
   }
 
+  pickerRef = React.createRef<Picker>();
+
   // 选择改变
   handleSelectOnchange = (rows: TRow[]) => {
     const item = (rows[0] || {}) as TRow;
@@ -82,6 +84,10 @@ export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends
     }
   };
 
+  toggle(visible:boolean) {
+    this.pickerRef.current?.toggle(visible);
+  }
+
   // 选择选择按钮
   renderAfter() {
     const { valueField, ...props } = this.props;
@@ -91,6 +97,7 @@ export default class InputPicker<TRow extends AbstractRow = AbstractRow> extends
     return (
       <Picker
         {...props}
+        ref={this.pickerRef}
         select="single"
         onChange={this.handleSelectOnchange}
         value={selected}

@@ -42,6 +42,8 @@ export interface AbstractFormProps<TRow> {
   tabPosition?: 'top' | 'left' | 'bottom' | 'right'
   // 如果分组风格为tabs其对应的tabs间隔
   tabBarGutter?: number
+  // 初始化的tab焦点
+  defaultActiveIndex?: number
 }
 
 export default class AbstractForm<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<AbstractFormProps<TRow>>> {
@@ -72,7 +74,7 @@ export default class AbstractForm<TRow extends AbstractRow> extends React.Compon
     return (
       <AbstractProvider.Consumer>
         {
-          (config)=>{
+          (config) => {
             return (
               <FormContext.Consumer>
                 {(context) => <Dynamic formItemLayout={config.formItemLayout} {...context} {...this.props} />}

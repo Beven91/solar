@@ -22,7 +22,7 @@ export default function App() {
       span: 12,
       items: [
         { title: '商品名', name: 'name', initialValue: '' },
-        { title: '颜色', name: 'color', initialValue: 'Black' },
+        { title: '颜色', name: 'color', initialValue: 'Black', break: true },
         { title: '尺寸', name: 'size', initialValue: '13.7' },
       ],
     },

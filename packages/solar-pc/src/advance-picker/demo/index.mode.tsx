@@ -22,6 +22,8 @@ export default function App() {
       <AdvancePicker onChange={setMultiple} data={data} mode="multiple" />
       <h4 style={{ marginTop: 10 }}>标签</h4>
       <AdvancePicker onChange={setTag} data={data} mode="tags" />
+      <h4 style={{ marginTop: 10 }}>单选标签</h4>
+      <AdvancePicker onChange={setTag} data={data} valueMode="tags-single" mode="tags" />
     </div>
   );
 }

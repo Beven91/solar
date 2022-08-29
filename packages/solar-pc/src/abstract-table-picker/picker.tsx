@@ -109,6 +109,10 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
     return onQuery(data);
   };
 
+  toggle(visible:boolean) {
+    this.setState({ visible });
+  }
+
   // 确认选择
   handleSubmit = () => {
     const { onChange } = this.props;

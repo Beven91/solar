@@ -124,13 +124,17 @@ export interface AbstractFormItemType<TRow> {
   normalize?: (value: TRow, prevValue: TRow, allValues: TRow) => TRow
   // 单独设置 span值 总计24份
   span?: number
+  // 当前表单项需要再新行排版
+  break?: boolean
   // 表单偏移量
   offset?: number
 };
 
 export type FunctionItemType<TRow> = (record: TRow, isReadonly: boolean) => ReactElement
 
-export type AbstractGroups<TRow> = Array<AbstractFormItemType<TRow> | AbstractFormGroupItemType<TRow> | FunctionItemType<TRow>>
+export type AbstractGroupItem<TRow = any> = AbstractFormItemType<TRow> | AbstractFormGroupItemType<TRow> | FunctionItemType<TRow>
+
+export type AbstractGroups<TRow> = Array<AbstractGroupItem<TRow>>
 
 export interface AbstractFormGroupItemType<TRow> {
   // 控制分组是否可见
@@ -272,12 +276,10 @@ export interface AbstractMenuType {
   system?: string
   // 当前菜单是否为虚拟菜单,虚拟菜单不会展示，仅用于层级关联。
   virtual?: boolean,
-  // 描述
-  desc?: React.ReactNode
   parent?: AbstractMenuType
   root?: AbstractMenuType
   children?: AbstractMenuType[],
-  [x: string]: any
+  [propName: string]: any
 }
 
 export interface AbstractActionProps {
