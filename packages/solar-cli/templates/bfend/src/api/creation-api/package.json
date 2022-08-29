@@ -4,6 +4,8 @@
   "dependencies": {
     "$projectName$-api-config":"^1.0.0",
     "$projectName$-api-models":"^1.0.0",
-    "$projectName$-api-core":"^1.0.0"
+    "$projectName$-api-core":"^1.0.0",
+    "node-web-mvc": "^2.14.1",
+    "reflect-metadata": "^0.1.13"
   }
 }

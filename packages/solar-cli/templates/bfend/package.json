@@ -51,7 +51,6 @@
     "metro-react-native-babel-preset": "^0.64.0",
     "mini-css-extract-hot-plugin": "^1.0.0",
     "mini-css-extract-plugin": "^2.6.0",
-    "node-web-mvc": "^2.12.3",
     "open": "7.3.0",
     "postcss-loader": "^6.2.1",
     "react-refresh": "^0.14.0",
