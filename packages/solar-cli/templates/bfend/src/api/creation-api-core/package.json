@@ -1,0 +1,7 @@
+{
+  "name":"$projectName$-api-core",
+  "version": "1.0.0",
+  "dependencies": {
+    "$projectName$-api-config":"^1.0.0"
+  }
+}

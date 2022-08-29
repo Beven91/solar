@@ -1,0 +1,7 @@
+{
+  "name":"$projectName$-services",
+  "version":"1.0.0",
+  "dependencies": {
+    "$projectName$-configs":"^1.0.0"
+  }
+}

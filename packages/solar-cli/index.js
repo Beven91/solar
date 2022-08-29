@@ -9,6 +9,7 @@ inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'
 const commands = [
   { name: 'H5项目', type: 'mobile', value: 'mobile' },
   { name: '创建后台应用', type: 'admin', value: 'admin' },
+  { name: '创建后台应用(服务端)', type: 'admin', value: 'bfend' },
   { name: '创建后台主应用', type: 'admin', value: 'admin-main' },
   { name: '创建后台子应用', type: 'admin', value: 'admin-sub' },
   { name: '创建Chrome扩展', type: 'browser', value: 'chrome' },

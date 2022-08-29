@@ -1,0 +1,9 @@
+{
+  "name":"$projectName$-api-models",
+  "version": "1.0.0",
+  "dependencies": {
+    "sequelize": "^5.22.3",
+    "sequelize-typescript": "^1.1.0",
+    "$projectName$-api-config":"^1.0.0"
+  }
+}
