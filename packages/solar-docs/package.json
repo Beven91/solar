@@ -1,6 +1,6 @@
 {
   "name": "solar-docs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "bin": {
     "solar-docs": "bin/cli.js"
   },
