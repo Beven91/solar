@@ -30,11 +30,11 @@ export interface AbstractFormatters {
 
 type AbstractFormatterConfig = [string, any];
 
-export interface AbstractColumnType<TRow extends AbstractRow> extends ColumnType<TRow> {
+export interface AbstractColumnType<TRow extends AbstractRow> extends Omit<ColumnType<TRow>, 'title'> {
   // 列属性名
   name: string
   // 列名
-  title: string
+  title: string | React.ReactNode
   // 枚举格式化配置，配置后将根据当前列值，使用enums对象进行格式化
   enums?: EnumsDataType
   // 外键数据格式化，配置后，该列会渲染为 【查看】 点击查看后，根据配置的外键数据，进行查询

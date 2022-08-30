@@ -48,6 +48,8 @@ export interface DynamicProps<TRow> {
   autoFocus?: string
   // 初始化的tab焦点
   defaultActiveIndex?: number
+  // 表单项样式名
+  formItemCls?: string
 }
 
 export interface DynamicState {
@@ -61,7 +63,7 @@ const defaultFormItemLayout: FormItemLayout = {
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 18 },
+    sm: { span: 17 },
   },
 };
 
@@ -165,7 +167,11 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     }
     const className = index === 0 ? 'first-group' : '';
     return (
-      <Col span={24} key={`from-group-${index}`}>
+      <Col
+        className="abstract-form-group-wrapper"
+        data-name={groupItem.group}
+        span={24} key={`from-group-${index}`}
+      >
         <FormGroup
           mode={groupItem.mode || this.props.groupStyle}
           icon={groupItem.icon}
@@ -214,7 +220,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     const colOption = {
       span: item.span || span || 24,
       offset: item.offset,
-      className: num <= 3 ? 'three' : 'than-three',
+      className: `${num <= 3 ? 'three' : 'than-three'} ${this.props.formItemCls}`,
     };
     return (
       <React.Fragment

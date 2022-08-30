@@ -74,6 +74,8 @@ export type AbstractValueConverter = 'moment' | string | [string, ...any]
 export type AbstractActionItem<TRow> = (values: TRow) => React.ReactElement | React.ReactNode
 
 export interface AbstractFormItemType<TRow> {
+  // 表单id
+  id?: string | number
   // 表单标题
   title: string
   // 表单字段名称
@@ -121,7 +123,7 @@ export interface AbstractFormItemType<TRow> {
   // 当前表单是否需要更新
   shouldUpdate?: import('rc-field-form/lib/Field').ShouldUpdate
   // 配置
-  normalize?: (value: TRow, prevValue: TRow, allValues: TRow) => TRow
+  normalize?: (value: any, prevValue: TRow, allValues: TRow) => any
   // 单独设置 span值 总计24份
   span?: number
   // 当前表单项需要再新行排版

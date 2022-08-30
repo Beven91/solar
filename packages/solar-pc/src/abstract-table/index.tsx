@@ -128,7 +128,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
   // 操作列
   get operatorColumn() {
     const { operation } = this.props;
-    const operateWidth = (operation || {}).width;
+    const operateWidth = (operation || {}).width || 160;
     const style = { width: operateWidth };
     const operators = this.cellOperators;
     return {
@@ -171,6 +171,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       const { width, ellipsis } = column;
       return {
         ...column,
+        title: <div className="abstract-table-column column-th" data-name={column.name}>{column.title}</div>,
         key: `col-${column.name}`,
         width: width || defaultWidth,
         ellipsis: ellipsis === undefined ? true : ellipsis,

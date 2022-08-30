@@ -147,7 +147,7 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
             editing: editable,
           };
         },
-      };
+      } as AbstractColumnType<TRow>;
     });
   }
 

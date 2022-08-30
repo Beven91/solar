@@ -7,30 +7,30 @@ import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Button } from 'antd';
 import AbstractTable from '../abstract-table';
-import { AbstractTableProps } from '../abstract-table/types';
+import { AbstractButton, AbstractTableProps } from '../abstract-table/types';
 import { AbstractFilters, AbstractQueryType, AbstractRow, AbstractRows } from '../interface';
 
 export interface ObjectPickerProps<TRow> extends AbstractTableProps<TRow> {
-  // 弹窗标题
-  title: string
-  // 当前选中的值
-  value?: TRow[]
-  // 选择数据后的改变事件
-  onChange?: (selectedRows: TRow[]) => Promise<any> | void
-  // 选择按钮文案
-  btnText?: React.ReactNode
-  // 弹窗宽度
-  width: number
-  // 弹窗高度
-  height?: number
-}
+   // 弹窗标题
+   title: string
+   // 当前选中的值
+   value?: TRow[]
+   // 选择数据后的改变事件
+   onChange?: (selectedRows: TRow[]) => Promise<any> | void
+   // 选择按钮文案
+   btnText?: React.ReactNode
+   // 弹窗宽度
+   width: number
+   // 弹窗高度
+   height?: number
+ }
 
 export interface AbstractTablePickerState {
-  submiting: boolean
-  selectedRows: AbstractRows
-  visible: boolean
-  prevValue?: any
-}
+   submiting: boolean
+   selectedRows: AbstractRows
+   visible: boolean
+   prevValue?: any
+ }
 
 export default class ObjectPicker<TRow = AbstractRow> extends React.Component<React.PropsWithChildren<ObjectPickerProps<TRow>>, AbstractTablePickerState> {
   // 默认属性值
@@ -55,28 +55,28 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
     return null;
   }
 
-  // 当前操作按钮
-  // get buttons() {
-  //   const { buttons } = this.props;
-  //   return [
-  //     ...(buttons || []),
-  //     {
-  //       target: 'cell',
-  //       title: '选择',
-  //       click: (row: AbstractRow) => {
-  //         const rows = this.state.selectedRows;
-  //         if (this.props.select === 'single') {
-  //           rows.length = 0;
-  //         }
-  //         if (rows.indexOf(row) < 0) {
-  //           rows.push(row);
-  //         }
-  //         this.setState({ selectedRows: [...rows] });
-  //         this.handleSubmit();
-  //       },
-  //     },
-  //   ] as AbstractButton<TRow>[];
-  // }
+  // 当前操作按钮;
+  get buttons() {
+    const { buttons } = this.props;
+    return [
+      ...(buttons || []),
+      {
+        target: 'cell',
+        title: '选择',
+        click: (row: AbstractRow) => {
+          const rows = this.state.selectedRows;
+          if (this.props.select === 'single') {
+            rows.length = 0;
+          }
+          if (rows.indexOf(row) < 0) {
+            rows.push(row);
+          }
+          this.setState({ selectedRows: [...rows] });
+          this.handleSubmit();
+        },
+      },
+    ] as AbstractButton<TRow>[];
+  }
 
   filters: AbstractFilters = {
     name: '@@mode',
@@ -185,7 +185,7 @@ export default class ObjectPicker<TRow = AbstractRow> extends React.Component<Re
               selectedRows={selectedRows}
               searchFields={searchFields}
               onSelectRows={this.handleSelectRows}
-              // buttons={this.buttons}
+              buttons={this.buttons}
             />
           </div>
         </Modal>

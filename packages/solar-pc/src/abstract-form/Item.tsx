@@ -297,6 +297,8 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
         <Col
           span={colOption.span}
           offset={colOption.offset}
+          data-id={this.props.item.id}
+          data-name={this.props.item.name?.toString()}
           className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
         >
           {this.renderSlot()}

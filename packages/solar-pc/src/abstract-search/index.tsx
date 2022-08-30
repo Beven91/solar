@@ -34,6 +34,8 @@ export interface AbstractSearchProps<TRow> {
    actionStyle?: 'inline' | 'newline'
    // 清空
    onClean?: () => void,
+   // 搜索表单项样式类名
+   formItemCls?: string
  }
 
 export interface AbstractSearchState {
@@ -151,7 +153,7 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
     }
   };
 
-  useValue(value:string, dv:string) {
+  useValue(value: string, dv: string) {
     return value === null || value == undefined ? dv : value;
   }
 
@@ -223,6 +225,7 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
           <AbstractForm
             form={this.formRef}
             groups={this.fields}
+            formItemCls={`${this.props.formItemCls || ''} abstract-search-form-item`}
             formChildren={this.renderInlineActions()}
           />
           {this.renderNewlineActions()}

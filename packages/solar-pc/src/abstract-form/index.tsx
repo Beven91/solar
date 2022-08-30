@@ -44,6 +44,8 @@ export interface AbstractFormProps<TRow> {
   tabBarGutter?: number
   // 初始化的tab焦点
   defaultActiveIndex?: number
+  // 表单项样式名
+  formItemCls?: string
 }
 
 export default class AbstractForm<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<AbstractFormProps<TRow>>> {
