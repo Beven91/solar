@@ -20,6 +20,8 @@ export interface IconPickerProps {
   onChange?: (icon: string) => void
   // 自定义渲染选中图标
   renderIcon?: (icon: string, family: string) => React.ReactElement
+  // 是否允许清空
+  allowClear?: boolean
   // 是否禁用
   disabled?: boolean
 }
@@ -32,7 +34,7 @@ export interface IconPickerState {
 }
 
 export default class IconPicker extends React.Component<IconPickerProps, IconPickerState> {
-  static defaultProps:IconPickerProps = {
+  static defaultProps: IconPickerProps = {
     mode: 'normal',
     url: '',
   };
@@ -60,6 +62,11 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
     this.setState({ visible });
   };
 
+  clear = ()=>{
+    this.props.onChange('');
+    this.setState({ icon: '' });
+  };
+
   onCheckedIcon = (icon: string) => {
     const value = this.props.mode == 'full' ? `${this.state.fontFamily} ${icon}` : icon;
     const { onChange } = this.props;
@@ -74,7 +81,9 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
       return renderIcon(icon, fontFamily);
     }
     const iconView = icon ? <div className={`${fontFamily} ${icon} icon-picker-icon`}></div> : <PlusOutlined />;
-    return <Button shape="circle" type="primary" icon={iconView} ></Button>;
+    return (
+      <Button shape="circle" type="primary" icon={iconView} ></Button>
+    );
   }
 
   renderIconViewer() {
@@ -95,17 +104,33 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
     if (this.props.disabled) {
       return this.renderCheckedIcon();
     }
+    const { allowClear } = this.props;
+    const showClear =this.state.icon && allowClear;
     return (
-      <Popover
-        trigger="click"
-        title="图标库"
-        placement="bottom"
-        visible={this.state.visible}
-        onVisibleChange={this.onVisibleChange}
-        content={this.renderIconViewer()}
-      >
-        {this.renderCheckedIcon()}
-      </Popover>
+      <React.Fragment>
+        <Popover
+          trigger="click"
+          title="图标库"
+          placement="bottom"
+          visible={this.state.visible}
+          onVisibleChange={this.onVisibleChange}
+          content={this.renderIconViewer()}
+        >
+          {this.renderCheckedIcon()}
+        </Popover>
+        <sub>
+          {
+            !showClear ? null : (
+              <Button
+                type="link"
+                onClick={() => this.clear()}
+              >
+              清空
+              </Button>
+            )
+          }
+        </sub>
+      </React.Fragment>
     );
   }
 

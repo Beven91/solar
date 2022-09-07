@@ -1,12 +1,15 @@
 import React from 'react';
 import Registrations, { RegistrationBase } from './Registration';
-import defaultRegistration from './registrations';
 
 /**
  * @module InputFactory
  * @description 表单输入项工厂
  */
 export interface InputRegistration extends RegistrationBase {
+  /**
+   * 对应的控件，类型
+   */
+  type: 'input' | 'display'
   /**
    * 对应的表单控件类
    */
@@ -52,5 +55,3 @@ export default class InputFactory {
     return registrations.register(registration);
   }
 }
-
-InputFactory.register(defaultRegistration);

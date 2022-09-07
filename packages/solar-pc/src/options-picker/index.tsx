@@ -36,6 +36,7 @@ export default function OptionsPicker(props: OptionsPickerProps) {
     <AdvancePicker
       {...others}
       type="local"
+      key={props.optionsKey}
       api={(query) => fetchOptions(query)}
     />
   );
@@ -63,8 +64,9 @@ export function OptionsView({ labelName = 'label', valueName = 'value', value, o
     setModels(values || {});
   };
 
-  // eslint-disable-next-line brace-style
-  useEffect(() => {fetchOptions();}, [optionsKey, value]);
+  useEffect(() => {
+    fetchOptions();
+  }, [optionsKey, value]);
 
   return (
     <span>{options[value]}</span>

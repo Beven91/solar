@@ -42,7 +42,7 @@ export class AbstractFormLayout {
 }
 
 export interface AbstractQueryType {
-  pageNum: number
+  pageNo: number
   pageSize: number
   sort: string,
   order: 'descend' | 'ascend' | undefined

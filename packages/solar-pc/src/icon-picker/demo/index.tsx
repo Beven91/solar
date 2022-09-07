@@ -10,6 +10,7 @@ export default function App() {
     <IconPicker
       value="icon-facebook"
       onChange={onChange}
+      allowClear
       url="https://at.alicdn.com/t/font_8d5l8fzk5b87iudi.css"
     />
   );

@@ -35,7 +35,7 @@ export interface AbstractTableState<TRow> {
    selectedRows: TRow[],
    propsSelectedRows: TRow[]
    pageSize: number
-   pageNum: number
+   pageNo: number
    dataSource?: AbstractResponseModel<TRow>
    prevData?: any
  }
@@ -111,7 +111,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       selectedRows: [],
       propsSelectedRows: null,
       pageSize: props.pageSize,
-      pageNum: 1,
+      pageNo: 1,
     };
   }
 
@@ -199,10 +199,10 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
   // 分页配置
   get pagination() {
     const { dataSource } = this.state;
-    const { pageNum, pageSize } = this.state;
+    const { pageNo, pageSize } = this.state;
     const total = dataSource ? dataSource.count || 0 : 0;
     return {
-      current: pageNum,
+      current: pageNo,
       pageSize,
       total: total,
       pageCount: Math.ceil(total / pageSize),
@@ -358,16 +358,16 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
   handleSearch(query: AbstractQueryType) {
     this.query = query;
     this.nativeQuery = query;
-    this.setState({ pageNum: 1 }, () => {
+    this.setState({ pageNo: 1 }, () => {
       this.handleQuery();
     });
   }
 
   paginateIntoView(total: number) {
     const { pageSize } = this.state;
-    const pageNum = Math.ceil(total / pageSize);
-    if (pageNum > this.state.pageNum) {
-      this.paginateTo(pageNum);
+    const pageNo = Math.ceil(total / pageSize);
+    if (pageNo > this.state.pageNo) {
+      this.paginateTo(pageNo);
     }
   }
 
@@ -376,12 +376,12 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
   }
 
   // 跳转到指定页
-  paginateTo(pageNum: number) {
-    this.setState({ pageNum: pageNum }, () => this.handleQuery());
+  paginateTo(pageNo: number) {
+    this.setState({ pageNo }, () => this.handleQuery());
   }
 
   onPaginateChanged = (e: TablePaginationConfig, filter?: any, order?: any) => {
-    this.setState({ pageNum: e.current, pageSize: e.pageSize, sort: order }, () => {
+    this.setState({ pageNo: e.current, pageSize: e.pageSize, sort: order }, () => {
       this.handleQuery();
     });
   };
@@ -396,7 +396,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       const query = this.query || {};
       this.applyTabQueryFilter();
       const res = onQuery({
-        pageNum: this.state.pageNum,
+        pageNo: this.state.pageNo,
         pageSize: this.state.pageSize,
         sort: field,
         order: field ? (desc ? 'descend' : 'ascend') : undefined,

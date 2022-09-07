@@ -128,8 +128,8 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
         ...column,
         editable: editable,
         onCell: !editable ? null : (record: TRow, index: number) => {
-          const { pageNum, pageSize } = (this.tableRef.current || {}).state || {};
-          const rowIndex = this.isLocal ? Math.max(pageNum - 1, 0) * pageSize + index : index;
+          const { pageNo, pageSize } = (this.tableRef.current || {}).state || {};
+          const rowIndex = this.isLocal ? Math.max(pageNo - 1, 0) * pageSize + index : index;
           const editable = this.props.mode == 'all' ? true : record == this.state.editRow;
           return {
             record,
@@ -162,8 +162,8 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
   };
 
   getCellRef(rowIndex: number, cell: string, creatable = true) {
-    // const pageNum = Math.max(this.tableRef.current.state.pageNum, 1);
-    // const rowIndex = pageNum * index;
+    // const pageNo = Math.max(this.tableRef.current.state.pageNo, 1);
+    // const rowIndex = pageNo * index;
     if (!this.cacheRowsRefs[rowIndex]) {
       this.cacheRowsRefs[rowIndex] = {};
     }
