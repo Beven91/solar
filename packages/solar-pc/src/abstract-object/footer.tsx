@@ -7,24 +7,24 @@ import { Button, ButtonProps } from 'antd';
 import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
 import { AbstractActionItem, AbstractRow } from '../interface';
 
- interface FooterActionsProps<TRow> {
-   okLoading: boolean
-   isReadOnly: boolean
-   showCancel: boolean
-   showOk: boolean
-   btnSubmit?: ButtonProps
-   btnCancel?: ButtonProps
-   handleCancel: () => void
-   handleSubmit: () => void
-   formValues: TRow
-   okEnable?: (values: TRow) => boolean
-   actions: AbstractActionItem<TRow>[]
- }
+interface FooterActionsProps<TRow> {
+  okLoading: boolean
+  isReadOnly: boolean
+  showCancel: boolean
+  showOk: boolean
+  btnSubmit?: ButtonProps
+  btnCancel?: ButtonProps
+  handleCancel: () => void
+  handleSubmit: () => void
+  formValues: TRow
+  okEnable?: (values: TRow) => boolean
+  actions: AbstractActionItem<TRow>[]
+}
 
- interface FooterActionsState<TRow> {
-   propsFormValues?: TRow
-   formValues?: TRow
- }
+interface FooterActionsState<TRow> {
+  propsFormValues?: TRow
+  formValues?: TRow
+}
 
 export default class FooterActions<TRow> extends React.Component<FooterActionsProps<TRow>, FooterActionsState<TRow>> {
   static getDerivedStateFromProps(props: FooterActionsProps<AbstractRow>, state: FooterActionsState<AbstractRow>) {

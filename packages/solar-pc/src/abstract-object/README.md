@@ -15,7 +15,7 @@
   console="true"
   src="src/abstract-object/demo/index.modal" 
   title="弹窗模式" 
-  desc="通过设置type来设置编辑页的UI风格,目前支持弹窗，抽屉，平铺三种风格" 
+  desc="通过设置type来设置编辑页的UI风格。" 
 />
 
 <AppCodebox 

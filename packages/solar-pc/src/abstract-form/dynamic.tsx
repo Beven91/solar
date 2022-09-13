@@ -50,6 +50,8 @@ export interface DynamicProps<TRow> {
   defaultActiveIndex?: number
   // 表单项样式名
   formItemCls?: string
+  // 表单容器外在宽度
+  containerWidth?: number
 }
 
 export interface DynamicState {
@@ -58,12 +60,19 @@ export interface DynamicState {
 
 const defaultFormItemLayout: FormItemLayout = {
   labelCol: {
-    xs: { span: 24 },
-    sm: { span: 6 },
+    span: 5,
   },
   wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 17 },
+    span: 16,
+  },
+};
+
+const defaultFormItemLayout2: FormItemLayout = {
+  labelCol: {
+    span: 5,
+  },
+  wrapperCol: {
+    span: 17,
   },
 };
 
@@ -86,7 +95,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     activeIndex: 0,
   };
 
-  constructor(props:DynamicProps<TRow>) {
+  constructor(props: DynamicProps<TRow>) {
     super(props);
     this.state.activeIndex = props.defaultActiveIndex || 0;
   }
@@ -94,6 +103,14 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   // 是否为只读模式
   get isReadOnly() {
     return this.props.isReadOnly;
+  }
+
+  getDefaultFormLayout() {
+    const width = this.props.containerWidth;
+    if (width > 0 && width <= 500) {
+      return defaultFormItemLayout2;
+    }
+    return defaultFormItemLayout;
   }
 
   get controlRules() {
@@ -213,7 +230,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout) {
     const { formItemLayout, rules } = this.props;
     const title = item.render2 ? '' : item.title;
-    const layout2 = title ? item.layout || layout || formItemLayout || defaultFormItemLayout : {};
+    const layout2 = title ? item.layout || layout || formItemLayout || this.getDefaultFormLayout() : {};
     const num = 24 / span;
     const name = item.name instanceof Array ? item.name.join('.') : item.name;
     const itemRules = rules[name];

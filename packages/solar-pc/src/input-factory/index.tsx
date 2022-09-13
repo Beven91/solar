@@ -14,6 +14,11 @@ export interface InputRegistration extends RegistrationBase {
    * 对应的表单控件类
    */
   component: React.ComponentType | React.ForwardRefExoticComponent<any>
+
+  /**
+   * 对应的设计器
+   */
+  designer: React.FC | React.ComponentType | React.ComponentClass
 }
 
 export interface InputRegistrations {

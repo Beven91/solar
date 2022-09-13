@@ -137,6 +137,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const realtime = props.realtime == true;
   const context = getMatchContext(c, props);
   const visible = !!context;
+  const finalWidth = width || 800;
   const showOk = props.showActions == 'ok-cancel' || props.showActions == 'ok' || !props.showActions;
   const showCancel = props.showActions === 'cancel' || props.showActions === 'ok-cancel' || !props.showActions;
   const handleSubmit = () => objectRef.current.handleSubmit();
@@ -191,7 +192,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       {...(drawer || {})}
       {...(realtime ? { mask: true, maskClosable: true } : {})}
       style={style}
-      width={width || 800}
+      width={finalWidth}
       className={`${className} abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
       title={props.title || ''}
       visible={visible}
@@ -203,6 +204,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
             type={props.type}
             {...context}
             {...others}
+            width={finalWidth}
             onValuesChange={onValuesChange}
             onSubmit={onSubmit}
             ref={objectRef}

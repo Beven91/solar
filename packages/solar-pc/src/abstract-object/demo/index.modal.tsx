@@ -27,11 +27,6 @@ export default function App() {
     { title: '尺寸', name: 'size' },
   ];
 
-  const onSubmit = (values: CommodityModel) => {
-    setAction('');
-    console.log(values);
-  };
-
   return (
     <div>
       <AbstractObject
@@ -40,8 +35,8 @@ export default function App() {
         title="新增商品"
         type="modal"
         width={800}
-        onSubmit={onSubmit}
-        onCancel={() => setAction('')}
+        onSubmit={(values) => console.log(values)}
+        onCancel={() => setAction('') }
       >
         <AbstractForm rules={rules} groups={groups} />
       </AbstractObject>

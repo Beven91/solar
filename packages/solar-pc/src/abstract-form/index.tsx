@@ -79,7 +79,17 @@ export default class AbstractForm<TRow extends AbstractRow> extends React.Compon
           (config) => {
             return (
               <FormContext.Consumer>
-                {(context) => <Dynamic formItemLayout={config.formItemLayout} {...context} {...this.props} />}
+                {(context) => {
+                  context.cacheGroups = this.props.groups;
+                  return (
+                    <Dynamic
+                      formItemLayout={config.formItemLayout}
+                      {...context}
+                      {...this.props}
+                      containerWidth={context.width}
+                    />
+                  );
+                }}
               </FormContext.Consumer>
             );
           }

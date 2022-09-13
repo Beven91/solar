@@ -9,11 +9,11 @@ export interface PermissionUser {
    * 当前用户角色信息
    * 例如: { admin: true, super: true }
    */
-  roles:UserRoles
+  roles: UserRoles
   // 用户名称
-  userName:string
+  userName: string
   // 当前登录用户id
-  id:string | number
+  id: string | number
   // 额外数据
   [propName: string]: any
 }

@@ -163,6 +163,10 @@ export interface AbstractFormContext {
   isReadOnly?: boolean
   form: React.RefObject<FormInstance>
   record: RecordModel
+  // 容器宽度
+  width?:number
+  // 表单存根
+  cacheGroups?: AbstractGroups<any>
   // 新增子表单容器
   addChildForm?: (form: React.RefObject<FormInstance>) => void
   // 移除子表单容器

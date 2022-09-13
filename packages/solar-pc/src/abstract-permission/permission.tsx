@@ -7,15 +7,19 @@ import React from 'react';
 import PermissionContext, { PermissionContextModel } from './context';
 
 export interface PermissionProps {
-   // 当前权限需要的角色 多个角色可以使用 "," 号隔开
-   roles: string
-   // 无权限时的展示内容
-   failRender?: (context: PermissionContextModel) => React.ReactElement
- }
+  // 当前权限需要的角色 多个角色可以使用 "," 号隔开
+  roles: string | (() => string)
+  // 无权限时的展示内容
+  failRender?: (context: PermissionContextModel) => React.ReactElement
+}
 
 export default class Permission extends React.Component<React.PropsWithChildren<PermissionProps>> {
   get needRoles() {
-    return (this.props.roles || '').split(',');
+    let roles = this.props.roles;
+    if (typeof roles == 'function') {
+      roles = roles();
+    }
+    return (roles || '').split(',');
   }
 
   render() {
@@ -27,9 +31,7 @@ export default class Permission extends React.Component<React.PropsWithChildren<
               return <Spin style={{ paddingTop: 120, height: '100%', width: '100%' }} spinning></Spin>;
             }
             const failRender = this.props.failRender || context.failRender;
-            const roles = (context.user || {}).roles || {};
-            const hasPermission = this.needRoles.find((role) => !!roles[role]);
-            if (!hasPermission) {
+            if (!context.hasPermission(...this.needRoles)) {
               // 如果没有权限
               return (
                 <React.Fragment>

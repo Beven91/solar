@@ -12,7 +12,7 @@ function ApplyPermission() {
           ...context.user,
         });
       }}
-      type="500"
+      type="404"
       btnText="申请权限"
       title="您没有权限查看此内容"
       desc="您可能需要申请权限"
@@ -25,7 +25,7 @@ export default function App() {
   const queryPermissions = () => {
     return Promise.resolve({
       id: 0,
-      userName: '小河',
+      userName: '小泰',
       roles: {
       },
     });
@@ -34,12 +34,13 @@ export default function App() {
 
   return (
     <AbstractPermission
-      failRender={() => <ApplyPermission /> }
+      failRender={() => <ApplyPermission />}
       initPermission={queryPermissions}
     >
       <AbstractPermission.Permission roles="admin">
         <Button style={{ margin: '0 10px' }}>管理员可见</Button>
       </AbstractPermission.Permission>
+
     </AbstractPermission>
   );
 }

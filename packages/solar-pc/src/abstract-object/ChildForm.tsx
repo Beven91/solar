@@ -6,21 +6,24 @@
 import React from 'react';
 import { Form } from 'antd';
 import AbstractForm from '../abstract-form';
-import { AbstractFormContext } from '../interface';
+import { AbstractFormContext, AbstractGroups } from '../interface';
 import { FormInstance, FormProps } from 'antd/lib/form';
 
 export interface ChildFormProps extends FormProps {
   formRef?: React.RefObject<FormInstance>
+  onCreated?: (groups: AbstractGroups<any>) => void
 }
 
 export default class ChildForm extends React.Component<React.PropsWithChildren<ChildFormProps>> {
-  formRef = React.createRef<FormInstance>()
+  formRef = React.createRef<FormInstance>();
 
-  formContext: AbstractFormContext
+  formContext: AbstractFormContext;
+
+  childContext: AbstractFormContext;
 
   adapterRef: {
     current: FormInstance
-  }
+  };
 
   constructor(props: React.PropsWithChildren<ChildFormProps>) {
     super(props);
@@ -42,6 +45,9 @@ export default class ChildForm extends React.Component<React.PropsWithChildren<C
     if (context && context.addChildForm) {
       context.addChildForm(this.adapterRef);
     }
+    if (this.childContext) {
+      this.props.onCreated && this.props.onCreated(this.childContext.cacheGroups);
+    }
   }
 
   componentWillUnmount() {
@@ -58,10 +64,12 @@ export default class ChildForm extends React.Component<React.PropsWithChildren<C
           (context) => {
             const formRef = this.props.formRef || this.formRef;
             this.formContext = context;
-            const childContext = {
+            const childContext = this.childContext = {
               isReadOnly: context.isReadOnly,
               form: formRef,
               record: this.props.initialValues,
+              addChildForm: context.addChildForm,
+              removeChildForm: context.removeChildForm,
             };
             const { children, ...props } = this.props;
             return (
