@@ -6,7 +6,7 @@ import BusinessEnum from '../enums/BusinessEnum';
 import { ApiModel, ApiModelProperty } from 'node-web-mvc';
 
 interface ErrorCode {
-  code: string
+  code: string | number
   message: string
 }
 

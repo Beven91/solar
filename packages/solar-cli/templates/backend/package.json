@@ -10,8 +10,10 @@
     "src/web/*"
   ],
   "scripts": {
-    "start": "ts-node ./src/api/$projectName$-api/index.ts",
-    "build": "cross-env NODE_ENV=production webpack --config ./build/webpack.js --color"
+    "start": "cross-env NODE_ENV=development ts-node ./src/api/$projectName$-api/index.ts",
+    "build": "rm -rf ./dist &&  npm run build:api && npm run build:web",
+    "build:web":"cross-env NODE_ENV=production webpack --config ./build/webpack.js --color",
+    "build:api":"tsc -p src/api --outDir dist/src/api --skipLibCheck --skipDefaultLibCheck"
   },
   "keywords": [
     "$projectName$"

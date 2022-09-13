@@ -18,7 +18,7 @@
  // 是否為生產環境
  const isProduction = process.env.NODE_ENV === 'production';
  // 发布目标目录
- const releaseDir = path.resolve('dist');
+ const releaseDir = path.resolve('dist/src/web');
 
  // 开发环境plugins
  const devPlugins = [
@@ -29,6 +29,9 @@
 
  // 生产环境plugins
  const proPlugins = [
+  new WWWPlugin({
+    target: path.resolve('dist/'),
+  }),
    new CleanWebpackPlugin(),
    new BundleAnalyzerPlugin({
      analyzerMode: 'static',
