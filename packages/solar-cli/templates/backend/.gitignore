@@ -36,9 +36,4 @@ Desktop.ini
 #Others
 .diff
 
-**.hot-update.**
-
-
 dist/*
-
-**tsconfig.json
