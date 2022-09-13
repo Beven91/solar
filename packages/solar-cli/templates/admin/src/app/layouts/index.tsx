@@ -43,7 +43,7 @@ function NavMenus() {
   );
 }
 
-export default function FluxyLayout(props: React.PropsWithChildren) {
+export default function SolarLayout(props: React.PropsWithChildren) {
   const [activeMenu, setActiveMenu] = useState<SelectMenuInfo>(null);
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const routes = activeMenu?.paths.map((item) => {
