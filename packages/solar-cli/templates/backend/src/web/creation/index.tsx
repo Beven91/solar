@@ -6,9 +6,8 @@ import { Network, Config, BizError } from 'solar-core';
 import App from './App';
 
 // 配置nebuals
-Config.config({
-  HOST: config.HOST,
-  STATIC: config.STATIC,
+Config.setup({
+  cdn: config.HOST,
 });
 
 // 全局接口数据配置
