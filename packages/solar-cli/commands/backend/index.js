@@ -61,7 +61,7 @@ function questions() {
  */
 function generate(answers) {
   const name = answers.name.toLowerCase().trim();
-  const templateRoot = path.join(__dirname, '../../templates/admin');
+  const templateRoot = path.join(__dirname, '../../templates/backend');
   const targetRoot = path.join(process.cwd(), name);
   const context = {
     projectName: name,
@@ -79,11 +79,17 @@ function generate(answers) {
     .shouldFormat((id) => false) // !/service\/index|build\//.test(id))
     .shouldFilter((file)=>/index\.dll\.ts|\.main\.(tsx|js)/.test(file))
     .setTemplate({
-      'src/app/': `src/${context.projectName}/`,
-      'src/app-provider/': `src/${name}-provider/`,
-      'src/app-ui/': `src/${name}-ui/`,
-      'src/service/': `src/${context.service}/`,
-      'src/configs/': `src/${context.configs}/`,
+      'src/api/creation-api/': `src/api/${context.projectName}-api/`,
+      'src/api/creation-api-config/': `src/api/${context.projectName}-api-config/`,
+      'src/api/creation-api-core/': `src/api/${context.projectName}-api-core/`,
+      'src/api/creation-api-models/': `src/api/${context.projectName}-api-models/`,
+      'src/api/creation-api-services/': `src/api/${context.projectName}-api-services/`,
+      'src/web/creation/': `src/web/${context.projectName}/`,
+      'src/web/creation-provider/': `src/web/${name}-provider/`,
+      'src/web/creation-ui/': `src/web/${name}-ui/`,
+      'src/web/creation-services/': `src/web/${context.service}/`,
+      'src/web/creation-configs/': `src/web/${context.configs}/`,
+
     })
     .compile(context);
   return true;

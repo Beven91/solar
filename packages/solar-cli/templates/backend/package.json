@@ -18,6 +18,11 @@
   "keywords": [
     "$projectName$"
   ],
+  "peerDependencies": {
+    "sequelize": "^5.x",
+    "sequelize-typescript": "^1.x",
+    "node-web-mvc": "^2.x"
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.1",
     "@babel/core": "^7.12.3",

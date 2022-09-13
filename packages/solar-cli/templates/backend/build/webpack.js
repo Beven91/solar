@@ -12,6 +12,7 @@
  const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
  const ESLintPlugin = require('eslint-webpack-plugin');
  // const CopyPlugin = require('copy-webpack-plugin');
+ const WWWPlugin = require('./plugins/WWWPlugin');
  const MiniCssExtractHotPlugin = require('mini-css-extract-hot-plugin');
  const pkg = require('../package.json');
 

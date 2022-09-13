@@ -5,11 +5,6 @@ import { notification, message } from 'antd';
 import { Network, Config, BizError } from 'solar-core';
 import App from './App';
 
-if (process.env.MainApp) {
-  // 如果是微服务主框架
-  require('./index.dll');
-}
-
 // 配置nebuals
 Config.config({
   HOST: config.HOST,

@@ -32,7 +32,7 @@ export default class WebAppConfigurer extends WebMvcConfigurationSupport {
   }
 
   public addResourceHandlers(registry: ResourceHandlerRegistry): void {
-    if (!isDevelopment) {
+    if (isDevelopment) {
       runWebpack(registry);
     }
   }

@@ -1,5 +1,5 @@
 {
-  "name":"creation-api-config",
+  "name":"$projectName$-api-config",
   "version": "1.0.0",
   "dependencies": {
     
