@@ -310,11 +310,15 @@ export interface AbstractActionProps {
 
 export type onValuesChangeHandler = (prevValues: RecordModel, curValues: RecordModel) => void
 
-export interface RecordViewProps<TRow extends AbstractRow = AbstractRow> {
+export interface RecordViewProps<TRow extends AbstractRow = AbstractRow, Sub = any> {
   // 当前正在编辑的数据
   record: TRow;
+  // 当前子动作编辑的数据
+  subRecord: Sub
   // 当前的操作名
   action: string;
+  // 当前子动作名
+  subAction: string
   // 当前record主键名
   primaryKey: string;
   // 当前动作路由数据

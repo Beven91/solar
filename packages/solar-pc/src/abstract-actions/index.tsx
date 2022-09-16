@@ -21,58 +21,60 @@ window.addEventListener('hashchange', updateRoute);
 window.addEventListener('popstate', updateRoute);
 
 export interface ActionRoute {
-  // 当前页面动作路由模板 例如: order/:action/:id
-  path: string
-  // 当前路由对应的参数
-  params: Partial<InitialAction>
-}
+   // 当前页面动作路由模板 例如: order/:action/:id
+   path: string
+   // 当前路由对应的参数
+   params: Partial<InitialAction>
+ }
 
 export interface ActionHistory {
-  replace(url: string): void
-  push(url: string): void
-  goBack: () => void
-}
+   replace(url: string): void
+   push(url: string): void
+   goBack: () => void
+ }
 
 export interface AbstractActionsProps<TRow> {
-  // 当前动作
-  action: string
-  // 当前自动做
-  subAction?: string
-  // 样式类名
-  className?: string
-  // 样式
-  style?: React.CSSProperties
-  // 当前动作对应的数据
-  model?: TRow
-  // 当前动作对应的数据的主键
-  primaryKey?: string
-  // 提交按钮是否展示loading
-  confirmLoading?: boolean
-  // 子动作是否提交中
-  subConfirmLoading?: boolean
-  // 路由历史对象可用来进行动作切换后进行地址替换
-  history?: ActionHistory
-  // 使用路由模式时的路由参数，需配合history一起使用
-  route?: ActionRoute
-  // 当动作切换时触发
-  onRoute?: OnActionRoute<TRow>
-  // 当取消动作切需要进行路由后退时触发,
-  onRouteBack?: (init?: boolean) => void
-  // 当取消动作时出发
-  onCancel?: () => boolean | void
-  // 当取消子动作时出发
-  onSubCancel?: () => void
-  // 当提交动作以及子动作时出发
-  onSubmit?: (data: SubmitAction<TRow>) => void
-  // 当有值发生改变时触发,优先级低于具体Action的同名属性
-  onValuesChange?: (action: string, values: TRow, prevValues: TRow) => void
-  children?: React.ReactNode
-  [x: string]: any
-}
+   // 当前动作
+   action: string
+   // 当前自动做
+   subAction?: string
+   // 样式类名
+   className?: string
+   // 样式
+   style?: React.CSSProperties
+   // 当前动作对应的数据
+   model?: TRow
+   // 当前子动作对应的数据
+   subModel?: any
+   // 当前动作对应的数据的主键
+   primaryKey?: string
+   // 提交按钮是否展示loading
+   confirmLoading?: boolean
+   // 子动作是否提交中
+   subConfirmLoading?: boolean
+   // 路由历史对象可用来进行动作切换后进行地址替换
+   history?: ActionHistory
+   // 使用路由模式时的路由参数，需配合history一起使用
+   route?: ActionRoute
+   // 当动作切换时触发
+   onRoute?: OnActionRoute<TRow>
+   // 当取消动作切需要进行路由后退时触发,
+   onRouteBack?: (init?: boolean) => void
+   // 当取消动作时出发
+   onCancel?: () => boolean | void
+   // 当取消子动作时出发
+   onSubCancel?: () => void
+   // 当提交动作以及子动作时出发
+   onSubmit?: (data: SubmitAction<TRow>) => void
+   // 当有值发生改变时触发,优先级低于具体Action的同名属性
+   onValuesChange?: (action: string, values: TRow, prevValues: TRow) => void
+   children?: React.ReactNode
+   [x: string]: any
+ }
 
 export interface AbstractActionsState {
 
-}
+ }
 
 export default class AbstractActions<TRow extends AbstractRow> extends React.Component<AbstractActionsProps<TRow>, AbstractActionsState> {
   // 动作
@@ -103,9 +105,10 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
   shouldHideObject = false;
 
   get actionContext() {
-    const { onCancel, onSubCancel, subAction, action, onSubmit, model: record, ...props } = this.props;
+    const { onCancel, onSubCancel, subModel, subAction, action, onSubmit, model: record, ...props } = this.props;
     return {
       record,
+      subRecord: subModel,
       onMatch: (action) => {
         if (action != '' && action !== 'list') {
           this.isNeedBack = 'yes';
