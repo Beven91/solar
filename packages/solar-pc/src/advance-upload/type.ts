@@ -53,4 +53,6 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
   acceptType?: 'image' | 'audio' | 'video'
   // 上传按钮文案
   uploadText?: React.ReactNode
+  // 选择模式
+  selectOnly?: boolean
 }

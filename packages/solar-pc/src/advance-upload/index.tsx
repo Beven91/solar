@@ -6,7 +6,7 @@
 import './index.scss';
 import React from 'react';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { Upload, message } from 'antd';
+import { Upload, message, Button } from 'antd';
 import { Oss, Rectangle } from 'solar-core';
 import { getFileList, normalizeValue } from './helper';
 import AbstractProvider from '../abstract-provider';
@@ -66,6 +66,12 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
 
   // 上传文件前，进行文件大小验证
   beforeUpload = (file: RcFile, files: RcFile[], config: AbstractUploadConfig) => {
+    if (this.props.selectOnly) {
+      return false;
+    }
+    if (this.props.beforeUpload) {
+      return this.props.beforeUpload(file, files);
+    }
     const defaultMax = 3 * 1024 * 1024;
     const media = config?.media || AbstractProvider.defaultMediaDefinitions;
     const data = media[this.props.acceptType] || { max: defaultMax };
@@ -105,7 +111,16 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
    */
   handleChange = (data: UploadChangeParam) => {
     const list = data.fileList as FileList;
-    this.setState({ fileList: [...list] }, () => this.handleQueues(list));
+    const props = this.props;
+    if (this.props.selectOnly) {
+      const isSingle = props.maxCount === 1 && !props.multiple;
+      const value = isSingle ? list[0] : list;
+      const { onChange } = this.props;
+      this.setState({ fileList: [...list] });
+      onChange && onChange(value, list);
+    } else {
+      this.setState({ fileList: [...list] }, () => this.handleQueues(list));
+    }
   };
 
   /**
@@ -191,9 +206,17 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
 
   // 渲染拖拽上传按钮
   renderUploadButton() {
-    const { children } = this.props;
+    const { children, listType } = this.props;
     if (children) {
       return children;
+    }
+    if (listType == 'text') {
+      return (
+        <Button type="primary">
+          <PlusOutlined />
+          {this.props.uploadText || '浏览...'}
+        </Button>
+      );
     }
     return (
       <div className="default-upload-btn">

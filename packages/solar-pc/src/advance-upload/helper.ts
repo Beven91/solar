@@ -6,6 +6,9 @@ import { AdvanceUploadProps, FileList, UploadedValueOrList, UploadFileValue } fr
  */
 export const getFileList = memoize((value, format, fileList, props: AdvanceUploadProps) => {
   value = value instanceof Array ? value : value ? [value] : [];
+  if (props.selectOnly) {
+    return [...value];
+  }
   const items = fileList?.length > value.length ? fileList : value;
   const normalize = (url: any) => typeof url === 'string' ? { url } : (url || {});
   return items.map((a: UploadedValueOrList, i: number) => {
@@ -24,6 +27,7 @@ export const getFileList = memoize((value, format, fileList, props: AdvanceUploa
       width: item.width,
       height: item.height,
       config: item.config || {},
+      type: item.type,
       thumbUrl: url,
     } as UploadFileValue;
   }).filter((m: any) => !!m.url || m.status === 'error') as FileList;
@@ -61,5 +65,6 @@ function createAdvanceObj(url: string, item: UploadFileValue) {
     width: response.width,
     height: response.height,
     config: item.config,
+    type: item.type,
   };
 }
