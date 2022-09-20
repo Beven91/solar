@@ -230,6 +230,11 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
     const shouldUpdate = item.dependencies ? undefined : this.shouldUpdate;
     const title = item.render2 ? '' : item.title || '';
     const type = item.render2 ? 'input-full' : '';
+    const isReadOnly = this.state.disabled || this.props.isReadOnly;
+    const wrapperCol = {
+      ...(layout.wrapperCol || {}),
+      className: `${layout.wrapperCol?.className || ''} ${isReadOnly ? 'readonly-wrapper' : ''}`,
+    };
     return (
       <ConfigConsumer.Consumer>
         {
@@ -237,6 +242,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
             <FormItem
               shouldUpdate={shouldUpdate}
               {...layout}
+              wrapperCol={wrapperCol}
               {...items}
               label={title}
               name={name}
@@ -256,7 +262,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
                   valueFormatter={context.valueFormatter}
                   record={record}
                   form={this.props.form}
-                  isReadOnly={this.state.disabled || this.props.isReadOnly}
+                  isReadOnly={isReadOnly}
                 />
               }
             </FormItem>

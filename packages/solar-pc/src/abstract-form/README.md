@@ -31,6 +31,13 @@
   desc="通过AbstractForm.ISolation来构建一个嵌套的AbstractForm" 
 />
 
+<AppCodebox 
+  console="true"
+  src="src/abstract-form/demo/index.textonly" 
+  title="文本模式" 
+  desc="通过设置每个表单的textonly来控制该表单项，仅展示成文本模式" 
+/>
+
 
 ```props
 ```

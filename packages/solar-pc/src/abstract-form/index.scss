@@ -8,6 +8,14 @@
 .abstract-form {
   overflow-x: hidden;
 
+  .readonly-form-item {
+    border:0px !important;
+  }
+
+  .readonly-wrapper {
+    flex: 1 1 0 !important;
+  }
+
   .tabs-group-form-inner {
     padding-left: 20px;
   }

@@ -13,13 +13,13 @@ export default function ReadOnly(props: ReadOnlyProps) {
     item.tooltip ?
       (
         <Tooltip placement="topLeft" title={value}>
-          <div className="ellipsis">
+          <div className="readonly-form ellipsis">
             {value}
           </div>
         </Tooltip>
       ) :
       (
-        <div className="ellipsis">
+        <div className="readonly-form-item ant-input">
           {value}
         </div>
       ));

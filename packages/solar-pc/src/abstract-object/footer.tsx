@@ -17,6 +17,7 @@ interface FooterActionsProps<TRow> {
   handleCancel: () => void
   handleSubmit: () => void
   formValues: TRow
+  record:TRow
   okEnable?: (values: TRow) => boolean
   actions: AbstractActionItem<TRow>[]
 }
@@ -49,11 +50,15 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
   }
 
   render() {
-    const { okLoading, isReadOnly, handleSubmit, handleCancel, showCancel, okEnable, showOk } = this.props;
+    const { okLoading, isReadOnly, handleSubmit, handleCancel, showCancel, record, okEnable, showOk } = this.props;
     const { btnSubmit, btnCancel, actions } = this.props;
     const { formValues } = this.state;
     const showOkBtn = !(isReadOnly || !showOk);
-    const isOkEnable = () => okEnable ? okEnable(formValues || {} as TRow) : true;
+    const model = {
+      ...(formValues ||{}),
+      ...(record || {}),
+    } as TRow;
+    const isOkEnable = () => okEnable ? okEnable(model) : true;
     return (
       <div className="object-view-footer">
         <div style={{ display: 'inline-block' }}>
@@ -86,7 +91,7 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
           )}
           {
             actions?.map((render, i) => (
-              <span className="footer-action-wrap" key={i}>{render(formValues || {} as TRow)}</span>
+              <span className="footer-action-wrap" key={i}>{render(model || {} as TRow)}</span>
             ))
           }
         </div>

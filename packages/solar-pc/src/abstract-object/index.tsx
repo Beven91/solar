@@ -30,7 +30,7 @@ export interface BaseObjectProps<TRow> {
   // 是否显示底部操作按钮
   footer?: boolean;
   // 确定按钮属性配置
-  btnSubmit?:ButtonProps
+  btnSubmit?: ButtonProps
   // 取消按钮配置
   btnCancel?: ButtonProps
   // 是否滚动到第一个错误的位置
@@ -359,6 +359,7 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
         formValues={this.props.record}
         showCancel={this.showCancel}
         showOk={this.showOk}
+        record={this.props.record}
         okEnable={this.props.okEnable}
         isReadOnly={this.isReadOnly}
         handleCancel={this.handleCancel}

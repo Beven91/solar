@@ -151,7 +151,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
 
   const onCancel = () => {
     if (props.realtime) {
-      return objectRef.current.handleSubmit();
+      return objectRef.current?.handleSubmit();
     }
     objectRef.current?.handleCancel();
   };
@@ -176,6 +176,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                 btnCancel={props.btnCancel}
                 btnSubmit={props.btnSubmit}
                 formValues={c.record}
+                record={c.record}
                 showCancel={showCancel}
                 showOk={showOk}
                 okEnable={props.okEnable}

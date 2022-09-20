@@ -341,7 +341,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       // 如果指定tab使用了自定义name 则这里需要将之前选择的tab的查询字段值移除
       delete this.query[activeTab.field];
     }
-    this.setState({ activeTab: tab }, () => this.handleQuery());
+    this.setState({ pageNo: 1, activeTab: tab }, () => this.handleQuery());
   };
 
   // 处理tab搜索
