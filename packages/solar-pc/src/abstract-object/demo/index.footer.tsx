@@ -33,7 +33,9 @@ export default function App() {
       record={record}
       footActions={
         [
-          (row)=><Button onClick={()=>alert('审核成功')} size="large" type="primary">审核({row.name})</Button>,
+          (row, ctx)=>{
+            return <Button onClick={ctx.bindValidate(()=>alert('审核成功'))} size="large" type="primary">审核({row.name})</Button>;
+          },
         ]
       }
       onSubmit={(values) => console.log(values)}

@@ -231,6 +231,7 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
     const title = item.render2 ? '' : item.title || '';
     const type = item.render2 ? 'input-full' : '';
     const isReadOnly = this.state.disabled || this.props.isReadOnly;
+    const readonlyCls = isReadOnly ? 'readonly-item' : '';
     const wrapperCol = {
       ...(layout.wrapperCol || {}),
       className: `${layout.wrapperCol?.className || ''} ${isReadOnly ? 'readonly-wrapper' : ''}`,
@@ -244,13 +245,15 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
               {...layout}
               wrapperCol={wrapperCol}
               {...items}
+              style={this.props.style}
               label={title}
+              colon={item.colon !== false}
               name={name}
               rules={visible ? rules : null}
               extra={item.extra || null}
               dependencies={item.dependencies}
               normalize={this.normalize}
-              className={`${visibleCls} abstract-form-item abstract-input-${item.name} ${type} ${item.className || ''}`}
+              className={`${visibleCls} abstract-form-item ${readonlyCls} abstract-input-${item.name} ${type} ${item.className || ''}`}
               hasFeedback={item.hasFeedback}
             >
               {

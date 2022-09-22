@@ -33,6 +33,7 @@ export interface FormGroupProps<TRow> {
   model: TRow
   // form对象
   form: React.RefObject<FormInstance>
+  noLeftPadding?: boolean
 }
 
 export interface FormGroupState {
@@ -48,7 +49,7 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
     form: null as any,
     group: null as any,
     model: {} as any,
-  }
+  };
 
   static getDerivedStateFromProps(nextProps: FormGroupProps<AbstractRow>, state: FormGroupState) {
     const { group } = nextProps;
@@ -64,7 +65,7 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
   state = {
     visible: true,
     visibleFunction: null as any,
-  }
+  };
 
   shouldUpdate = (prevValues: any, curValues: any) => {
     const group = this.props.group;
@@ -78,7 +79,7 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
       this.setState({ visible });
     }
     return false;
-  }
+  };
 
   // 渲染
   renderGroup() {
@@ -88,15 +89,22 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
       // 如果不可见
       return null;
     }
+
+    const title = (
+      <div className="from-group-title">
+        {icon}
+        {this.props.title}
+      </div>
+    );
+
+    const style = this.props.noLeftPadding ? { paddingLeft: 0 } : undefined;
+
     return (
       <Card
+        headStyle={style}
+        bodyStyle={style}
         className={`form-group ${className} ${mode || ''}`}
-        title={(
-          <div className="from-group-title">
-            {icon}
-            {this.props.title}
-          </div>
-        )}
+        title={this.props.title ? title : ''}
       >
         {this.props.children}
       </Card>
@@ -107,6 +115,7 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
     return (
       <Form.Item
         name="member"
+        className="form-group-box"
         shouldUpdate={this.shouldUpdate}
       >
         <VirtualInput>
@@ -114,5 +123,5 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
         </VirtualInput>
       </Form.Item>
     );
-  }
+  };
 }

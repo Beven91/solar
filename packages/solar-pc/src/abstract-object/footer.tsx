@@ -5,7 +5,7 @@
 import React from 'react';
 import { Button, ButtonProps } from 'antd';
 import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
-import { AbstractActionItem, AbstractRow } from '../interface';
+import { AbstractActionItem, AbstractActionItemContext, AbstractRow } from '../interface';
 
 interface FooterActionsProps<TRow> {
   okLoading: boolean
@@ -16,8 +16,9 @@ interface FooterActionsProps<TRow> {
   btnCancel?: ButtonProps
   handleCancel: () => void
   handleSubmit: () => void
+  validateForms: () => Promise<void>
   formValues: TRow
-  record:TRow
+  record: TRow
   okEnable?: (values: TRow) => boolean
   actions: AbstractActionItem<TRow>[]
 }
@@ -45,17 +46,25 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
     this.setState({ formValues: values });
   }
 
-  useValue(value:string, dv:string) {
+  useValue(value: string, dv: string) {
     return value === null || value == undefined ? dv : value;
   }
 
   render() {
-    const { okLoading, isReadOnly, handleSubmit, handleCancel, showCancel, record, okEnable, showOk } = this.props;
+    const { okLoading, isReadOnly, handleSubmit, validateForms, handleCancel, showCancel, record, okEnable, showOk } = this.props;
     const { btnSubmit, btnCancel, actions } = this.props;
     const { formValues } = this.state;
     const showOkBtn = !(isReadOnly || !showOk);
+    const ctx: AbstractActionItemContext = {
+      bindValidate: (handler: Function) => {
+        return async() => {
+          await validateForms();
+          handler && handler();
+        };
+      },
+    };
     const model = {
-      ...(formValues ||{}),
+      ...(formValues || {}),
       ...(record || {}),
     } as TRow;
     const isOkEnable = () => okEnable ? okEnable(model) : true;
@@ -90,9 +99,12 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
             </Button>
           )}
           {
-            actions?.map((render, i) => (
-              <span className="footer-action-wrap" key={i}>{render(model || {} as TRow)}</span>
-            ))
+            actions?.map((render, i) => {
+              const node = render(model || {} as TRow, ctx);
+              return (
+                <span style={{ display: node ? 'inline' : 'none' }} className="footer-action-wrap" key={i}>{node}</span>
+              );
+            })
           }
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { ColProps } from 'antd/lib/col';
 import { FormInstance, Rule } from 'antd/lib/form';
 import { NamePath } from 'antd/lib/form/interface';
-import { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { AbstractButton, AbstractColumnType, AbstractEditColumnType } from './abstract-table/types';
 import { DataNode } from 'rc-tree/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -71,7 +71,11 @@ export type OptionsApiRequest = [ApiRequest, string, string]
 
 export type AbstractValueConverter = 'moment' | string | [string, ...any]
 
-export type AbstractActionItem<TRow> = (values: TRow) => React.ReactElement | React.ReactNode
+export interface AbstractActionItemContext {
+  bindValidate: (handler: Function) => (...params: any[]) => any
+}
+
+export type AbstractActionItem<TRow> = (values: TRow, context: AbstractActionItemContext) => React.ReactElement | React.ReactNode
 
 export interface AbstractFormItemType<TRow> {
   // 表单id
@@ -130,6 +134,8 @@ export interface AbstractFormItemType<TRow> {
   break?: boolean
   // 表单偏移量
   offset?: number
+  // 是否出现分号，默认出现
+  colon?: boolean
 };
 
 export type FunctionItemType<TRow> = (record: TRow, isReadonly: boolean) => ReactElement
@@ -151,6 +157,10 @@ export interface AbstractFormGroupItemType<TRow> {
   group?: ReactNode
   // 列独立布局
   layout?: AbstractFormLayout
+  // 当前组是否只读
+  readonly?: boolean
+  // 表单选项的样式控制
+  itemStyle?: React.CSSProperties
   // 表单组展示模式
   mode?: FormGroupStyle
 }
@@ -164,7 +174,7 @@ export interface AbstractFormContext {
   form: React.RefObject<FormInstance>
   record: RecordModel
   // 容器宽度
-  width?:number
+  width?: number
   // 表单存根
   cacheGroups?: AbstractGroups<any>
   // 新增子表单容器
@@ -317,8 +327,8 @@ export interface RecordViewProps<TRow extends AbstractRow = AbstractRow, Sub = a
   subRecord: Sub
   // 当前的操作名
   action: string;
-  // 当前子动作名
-  subAction: string
+  // 子动作
+  subAction?: string
   // 当前record主键名
   primaryKey: string;
   // 当前动作路由数据
@@ -337,3 +347,5 @@ export interface FormItemLayout {
   labelCol: ColProps
   wrapperCol: ColProps
 }
+
+export type FormItemPadding = 'normal' | '' | 'mini'

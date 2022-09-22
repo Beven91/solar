@@ -46,6 +46,8 @@ export interface AbstractFormProps<TRow> {
   defaultActiveIndex?: number
   // 表单项样式名
   formItemCls?: string
+  // 表单项底部间距模式
+  itemStyle?: React.CSSProperties
 }
 
 export default class AbstractForm<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<AbstractFormProps<TRow>>> {

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AbstractForm, AbstractGroups, AbstractRules, RadioList } from 'solar-pc';
-import { Button, Form, FormInstance, message } from 'antd';
+import { Button, Form, FormInstance, Input, message } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 
 export interface CommodityModel {
@@ -21,9 +21,12 @@ export default function App() {
       group: '基本信息',
       span: 12,
       items: [
-        { title: '商品名', name: 'name', initialValue: '' },
+        { title: '商品名', name: 'name', initialValue: '', disabled: true, render: <Input /> },
+        { title: '价格', name: 'price', initialValue: '100.0', textonly: true },
         { title: '颜色', name: 'color', initialValue: 'Black', break: true },
         { title: '尺寸', name: 'size', initialValue: '13.7' },
+        { title: '品牌', name: 'brand', initialValue: 'Black', break: true },
+        { title: '厂商', name: 'marker', initialValue: '13.7' },
       ],
     },
     {

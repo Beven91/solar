@@ -52,6 +52,8 @@ export interface DynamicProps<TRow> {
   formItemCls?: string
   // 表单容器外在宽度
   containerWidth?: number
+  // 表单项底部间距模式
+  itemStyle?: React.CSSProperties
 }
 
 export interface DynamicState {
@@ -182,7 +184,13 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     if (!('group' in groupItem)) {
       return this.renderFormItem(groupItem as any, this.props.span);
     }
-    const className = index === 0 ? 'first-group' : '';
+    const classNames = [] as string[];
+    if (index == 0) {
+      classNames.push('first-group');
+    }
+    if (groupItem.readonly) {
+      classNames.push('readonly');
+    }
     return (
       <Col
         className="abstract-form-group-wrapper"
@@ -190,16 +198,21 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
         span={24} key={`from-group-${index}`}
       >
         <FormGroup
+          noLeftPadding={this.props.groupStyle == 'normal'}
           mode={groupItem.mode || this.props.groupStyle}
           icon={groupItem.icon}
           group={groupItem}
           title={group}
           form={this.props.form}
           model={this.props.model}
-          className={className}
+          className={`abstract-form-group ${classNames.join(' ')}`}
         >
           <Row gutter={24}>
-            {items.map((item) => this.renderFormItem(item, span || this.props.span, groupItem.layout))}
+            {items.map((item) => this.renderFormItem(
+              item, span || this.props.span,
+              groupItem.layout,
+              groupItem.itemStyle
+            ))}
           </Row>
         </FormGroup>
       </Col>
@@ -207,11 +220,11 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 渲染表单
-  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, layout?: AbstractFormLayout) {
+  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties) {
     if (typeof item === 'function') {
       return this.renderFreeFunction(item);
     }
-    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, layout);
+    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, layout, itemStyle);
   }
 
   // 渲染一个自定义布局表单
@@ -227,7 +240,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 渲染常规布局表单
-  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout) {
+  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties) {
     const { formItemLayout, rules } = this.props;
     const title = item.render2 ? '' : item.title;
     const layout2 = title ? item.layout || layout || formItemLayout || this.getDefaultFormLayout() : {};
@@ -256,6 +269,10 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
           form={this.props.form}
           rules={itemRules}
           model={this.props.model}
+          style={{
+            ...(this.props.itemStyle || {}),
+            ...(itemStyle || {}),
+          }}
         />
       </React.Fragment>
     );

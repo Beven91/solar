@@ -206,6 +206,22 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     }
   };
 
+  validateForms = async() => {
+    const form = this.formRef.current;
+    const childFormRefs = this.childFormRefs;
+    await form.validateFields();
+    if (childFormRefs.length > 1) {
+      await Promise.all(
+        childFormRefs.map((form) => {
+          return form.current.validateFields().catch((result) => {
+            this.doFinishFailed(form.current, result.errorFields);
+            return Promise.reject(result);
+          });
+        })
+      );
+    }
+  };
+
   // 处理提交操作
   handleSubmit = () => {
     if (this.isReadOnly) {
@@ -364,6 +380,7 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
         isReadOnly={this.isReadOnly}
         handleCancel={this.handleCancel}
         handleSubmit={this.handleSubmit}
+        validateForms={this.validateForms}
         okLoading={this.props.loading}
         actions={footActions}
       />

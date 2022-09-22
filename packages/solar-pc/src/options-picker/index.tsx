@@ -10,6 +10,7 @@ interface OptionsViewProps {
   value: string
   labelName?: string
   valueName?: string
+  style?: React.CSSProperties
 }
 
 type AdvancePickerFilterdProps = Omit<AdvancePickerProps<any>, 'data' | 'api' | 'type' | 'query'>
@@ -42,7 +43,7 @@ export default function OptionsPicker(props: OptionsPickerProps) {
   );
 }
 
-export function OptionsView({ labelName = 'label', valueName = 'value', value, optionsKey }: OptionsViewProps) {
+export function OptionsView({ labelName = 'label', valueName = 'value', value, optionsKey, ...props }: OptionsViewProps) {
   const context = useContext(ConfigProvider.Context);
   const [options, setModels] = useState<Record<string, string>>({});
 
@@ -69,7 +70,7 @@ export function OptionsView({ labelName = 'label', valueName = 'value', value, o
   }, [optionsKey, value]);
 
   return (
-    <span>{options[value]}</span>
+    <span style={props.style}>{options[value]}</span>
   );
 }
 
