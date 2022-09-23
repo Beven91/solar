@@ -1,14 +1,19 @@
 import { PageHeader, PageHeaderProps } from 'antd';
+import { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 import React, { useContext, useEffect, useState } from 'react';
 
 interface OverrideContextOptions {
-  setOptions?: (options: PageHeaderProps) => void
-  getOptions?: () => PageHeaderProps
+  setOptions?: (options: OverridePageHeaderProps) => void
+  getOptions?: () => OverridePageHeaderProps
+}
+
+interface OverridePageHeaderProps extends PageHeaderProps {
+  appendRoutes?: Route[]
 }
 
 export const OverrideContext = React.createContext<OverrideContextOptions>(null);
 
-export default function OverridePageHeader(props: PageHeaderProps) {
+export default function OverridePageHeader(props: OverridePageHeaderProps) {
   const context = useContext(OverrideContext);
 
   useEffect(() => {
@@ -21,16 +26,27 @@ export default function OverridePageHeader(props: PageHeaderProps) {
   return null as React.ReactElement;
 }
 
-OverridePageHeader.PageHeader = function PageHeaderWrapper(props: PageHeaderProps) {
+OverridePageHeader.PageHeader = (props: PageHeaderProps) => {
   const context = useContext(OverrideContext);
-  const options = context?.getOptions() || {};
+  const { appendRoutes, ...options } = context?.getOptions() || {};
+
+  let breadcrumb = props.breadcrumb || {} as any;
+  if ('routes' in breadcrumb) {
+    breadcrumb = {
+      ...breadcrumb,
+      routes: [
+        ...(breadcrumb.routes || []),
+        ...(appendRoutes || []),
+      ],
+    };
+  }
 
   return (
-    <PageHeader {...props} {...options} />
+    <PageHeader {...props} {...options} breadcrumb={breadcrumb} />
   );
 };
 
-OverridePageHeader.Container = function Container(props: React.PropsWithChildren) {
+OverridePageHeader.Container = (props: React.PropsWithChildren) => {
   const [options, setOptions] = useState<PageHeaderProps>();
   const context: OverrideContextOptions = {
     getOptions: () => {

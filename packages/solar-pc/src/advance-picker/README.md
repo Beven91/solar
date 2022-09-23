@@ -32,3 +32,10 @@
   title="对象值模式" 
   desc="可通过设置valueMode=object来指定返回选择的对象" 
 />
+
+<AppCodebox 
+  console="true"
+  src="src/advance-picker/demo/index.icon" 
+  title="带图标" 
+  desc="可通过设置prefix来指定前缀图标" 
+/>

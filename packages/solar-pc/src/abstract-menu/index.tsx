@@ -9,6 +9,7 @@ import { AbstractMenuType } from '../interface';
 import { MenuProps } from 'antd/lib/menu';
 import { Adapter } from 'solar-core';
 import { SelectInfo } from 'rc-menu/lib/interface';
+import history from './history';
 
 const globalLink = document.createElement('a');
 
@@ -58,7 +59,7 @@ export default class AbstractMenu extends React.Component<AbstractMenuProps, Abs
         window.addEventListener('hashchange', this.sychronizeHandler);
         break;
       case 'browser':
-        window.addEventListener('popstate', this.sychronizeHandler);
+        history.addListen(this.sychronizeHandler);
         break;
     }
   }
@@ -211,14 +212,14 @@ export default class AbstractMenu extends React.Component<AbstractMenuProps, Abs
 
   componentWillUnmount() {
     window.removeEventListener('hashchange', this.sychronizeHandler);
-    window.removeEventListener('popstate', this.sychronizeHandler);
+    history.removeListen(this.sychronizeHandler);
   }
 
   render() {
     const { openKeys, selectedKeys, menus } = this.state;
     return (
       <Menu
-        {...Adapter.filter(this.props, 'route', 'matchSelectedKey', 'loadMenus')}
+        {...Adapter.filter(this.props, 'route', 'matchSelectedKey', 'loadMenus', 'onNavigate')}
         onSelect={this.onSelect}
         onOpenChange={this.onOpenChanged}
         openKeys={openKeys}

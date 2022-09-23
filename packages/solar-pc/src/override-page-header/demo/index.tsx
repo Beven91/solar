@@ -23,6 +23,7 @@ export default function OverridablePageHeaderDemoApp() {
     // 1.设置可覆写的范围，本质就是React的Context.Provider
     <OverridePageHeader.Container>
       <div>
+      logo
         {/* 2. 实际PageHeader要展示的位置 */}
         <OverridePageHeader.PageHeader
           title="默认标题"

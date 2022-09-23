@@ -15,57 +15,59 @@ const NOOP = (a: any) => a;
 
 const network = new Network();
 
- type ModelRows = OptionObject[]
+type ModelRows = OptionObject[]
 
 export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
-   /**
-    * remote:  远程检索 默认值 ，
-    * local 本地检索
-    * none 无检索模式
-    * 可以设置本地检索  'local'(推荐本地模式 在接口数据小于100条时使用此模式)
-    */
-   type?: 'remote' | 'local' | 'none'
-   /**
-    * 值模式
-    * normal: 选择的值为字段值
-    * object: 选择的值为选择的对象
-    * tags-single: 单选的tags
-    */
-   valueMode?: 'normal' | 'object' | 'tags-single'
-   // 自定义数据获取，支持接口请求。
-   api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
-   // 本地数据源
-   data?: ModelRows
-   // 默认查询参数
-   query?: PlainObject
-   // 值字段
-   valueName?: string
-   // 名称字段
-   labelName?: string
-   // 是否多选时通过join链接，从而达到返回一个字符串形式
-   joinChar?: string
-   // 当选择值改变时
-   onChange?: (value: any, row: PlainObject) => void,
-   // 是否默认生成 【全部】 选项
-   allOption?: boolean
-   // 格式化返回值
-   format?: (response: any) => AbstractResponseModel,
-   // 是否禁用
-   disabled?: boolean
- }
+  /**
+   * remote:  远程检索 默认值 ，
+   * local 本地检索
+   * none 无检索模式
+   * 可以设置本地检索  'local'(推荐本地模式 在接口数据小于100条时使用此模式)
+   */
+  type?: 'remote' | 'local' | 'none'
+  /**
+   * 值模式
+   * normal: 选择的值为字段值
+   * object: 选择的值为选择的对象
+   * tags-single: 单选的tags
+   */
+  valueMode?: 'normal' | 'object' | 'tags-single'
+  // 自定义数据获取，支持接口请求。
+  api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
+  // 本地数据源
+  data?: ModelRows
+  // 默认查询参数
+  query?: PlainObject
+  // 值字段
+  valueName?: string
+  // 名称字段
+  labelName?: string
+  // 是否多选时通过join链接，从而达到返回一个字符串形式
+  joinChar?: string
+  // 当选择值改变时
+  onChange?: (value: any, row: PlainObject) => void,
+  // 是否默认生成 【全部】 选项
+  allOption?: boolean
+  // 格式化返回值
+  format?: (response: any) => AbstractResponseModel,
+  // 是否禁用
+  disabled?: boolean
+  // 前缀图标
+  prefix?: React.ReactNode
+}
 
 export interface AdvancePickerState {
-   // 搜索条件
-   value: SelectValue
-   // 是否正在加载中
-   loading: boolean
-   // 当前页码值
-   page: number
-   // 是否还有更多数据
-   hasMore: boolean
-   // 当前数据
-   rows: ModelRows
- }
+  // 搜索条件
+  value: SelectValue
+  // 是否正在加载中
+  loading: boolean
+  // 当前页码值
+  page: number
+  // 是否还有更多数据
+  hasMore: boolean
+  // 当前数据
+  rows: ModelRows
+}
 
 export default class AdvancePicker extends React.Component<AdvancePickerProps<SelectValue>, AdvancePickerState> {
   // 组件属性定义
@@ -292,7 +294,7 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
   render() {
     const { loading, rows = [], hasMore } = this.state;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-    const { valueMode, format, type, allOption, className, api, labelName, valueName, ...props } = this.props;
+    const { valueMode, format, query, prefix, data, type, allOption, className, api, labelName, valueName, ...props } = this.props;
     // 如果时设置data 则表示一定时本地检索
     const realType = !api && this.props.data ? 'local' : type;
     const handleRemote = realType === 'remote' ? this.handleRemote : NOOP;
@@ -302,29 +304,37 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     if (hasMore && loading && allRows.length > 0) {
       allRows.push({ api, format, valueName, labelName, value: '-------------------', label: '加载中...', loading: true });
     }
+
     return (
-      <Select
-        {...props}
-        showSearch={showSearch}
-        value={this.value}
-        className={`${className} advance-picker`}
-        onChange={this.handleChange}
-        onSearch={handleRemote}
-        filterOption={handleLocal}
-        optionLabelProp="children"
-        notFoundContent={loading ? <Spin /> : '无匹配数据'}
-        onPopupScroll={this.handleScrollPagination}
-      >
+      <div className={`advance-picker-box ${props.size}`} >
         {
-          allRows.map((row, i) => (
-            <Option value={`${row.value}`} key={`${row.value || ''}_${i}`}>
-              {
-                row.loading ? <Spin size="small" /> : row.label
-              }
-            </Option>
-          ))
+          prefix && (
+            <span className="ant-input-prefix">{prefix}</span>
+          )
         }
-      </Select>
+        <Select
+          {...props}
+          showSearch={showSearch}
+          value={this.value}
+          className={`${className} advance-picker`}
+          onChange={this.handleChange}
+          onSearch={handleRemote}
+          filterOption={handleLocal}
+          optionLabelProp="children"
+          notFoundContent={loading ? <Spin /> : '无匹配数据'}
+          onPopupScroll={this.handleScrollPagination}
+        >
+          {
+            allRows.map((row, i) => (
+              <Option value={`${row.value}`} key={`${row.value || ''}_${i}`}>
+                {
+                  row.loading ? <Spin size="small" /> : row.label
+                }
+              </Option>
+            ))
+          }
+        </Select>
+      </div>
     );
   }
 }

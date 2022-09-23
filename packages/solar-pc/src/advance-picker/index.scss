@@ -1,3 +1,27 @@
 .advance-picker {
   width: 100%;
 }
+
+.advance-picker-box {
+  position: relative;
+  &.large {
+    .ant-input-prefix {
+      font-size: 16px;
+    }
+  }
+  .ant-input-prefix {
+    position: absolute;
+    top:50%;
+    left: 12px;
+    transform: translateY(-50%);
+    z-index:10;
+  }
+  .ant-input-prefix + .advance-picker {
+    .ant-select-selection-search{
+      margin-left: 20px;
+    }
+    .ant-select-selector {
+      padding-left: 30px;
+    }
+  }
+}
