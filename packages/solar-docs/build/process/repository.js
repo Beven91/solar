@@ -124,7 +124,6 @@ class GitRepository {
       const item = repositories[i];
       const rootName = item.repo.name || path.basename(item.dir);
       const files = await this.findDocFiles(item.dir, item.repo, rootName);
-      console.log(files);
       sites.push({
         name: rootName,
         repo: item.repo,
