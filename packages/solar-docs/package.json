@@ -1,18 +1,32 @@
 {
   "name": "solar-docs",
-  "version": "1.0.2",
-  "bin": {
-    "solar-docs": "bin/cli.js"
+  "version": "1.0.0",
+  "description": "文档中心",
+  "main": "index.js",
+  "authors": {
+    "name": "beven",
+    "email": ""
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+  "scripts": {
+    "start": "vuepress dev src",
+    "build": "vuepress build src && mv src/.vuepress/dist ./"
   },
+  "bin":{
+    "solar-docs":"bin/index.js"
+  },
+  "license": "MIT",
   "dependencies": {
-    "vuepress": "^1.9.7",
-    "deepmerge":"^4.2.2",
-    "@babel/parser":"^7.18.5",
-    "@babel/types":"^7.18.4",
-    "@babel/traverse":"^7.18.5",
-    "@babel/generator":"^7.18.2"
+    "vuepress": "^1.5.3",
+    "vuex":"^2.5.0",
+    "sass-loader":"^10.2.1",
+    "sass":"^1.53.0",
+    "fs-extra":"^10.1.0",
+    "vue-loader":"15.9.8",
+    "metro-react-native-babel-preset":"^0.71.2",
+    "babel-plugin-refer-import":"^1.7.7",
+    "vue-clipboard-plus":"^1.0.6",
+    "react-refresh":"^0.14.0",
+    "@pmmmwh/react-refresh-webpack-plugin":"^0.5.7",
+    "qrcode":"^1.5.0"
   }
 }

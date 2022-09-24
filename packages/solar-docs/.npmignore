@@ -1,0 +1,14 @@
+node_modules/
+repositories.js
+yarn-error.log
+.auth
+repos/
+dist/
+src/.vuepress/dist
+.nvmrc
+.gitignore
+.cache
+src/.vuepress/public/demo
+src/.vuepress/public/vendors
+src/read.md
+.cache/

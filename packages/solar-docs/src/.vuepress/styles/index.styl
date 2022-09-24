@@ -1,0 +1,79 @@
+/**
+ * Custom Styles here.
+ *
+ * ref：https://v1.vuepress.vuejs.org/config/#index-styl
+ */
+
+body {
+  margin:0px;
+}
+
+.home .hero img
+  max-width 450px!important
+
+.table-props .default-value,
+.table-props .type-code,
+.table-props .keyword
+  padding: 2px 5px;
+  color: #454d64;
+  background: #f5f7fa;
+  border-radius: 2px;
+
+.table-props tr td:nth-child(1) {
+  font-weight: 600;
+} 
+
+.table-props tr td:nth-child(2) {
+  white-space: pre-line;  
+  color:$textColor;
+}
+
+.table-props tr td:nth-child(3) code.vue,
+.table-props tr .keyword,
+.table-props tr td:nth-child(3) {
+  color:#c41d7f;
+}
+
+.table-props tr td:nth-child(3) code.vue {
+  background-color: transparent;
+  padding-left: 0;
+}
+
+.table-props tr td a.click-link code.vue,
+.table-props a {
+  color: $accentColor;  
+}
+
+.theme-container .vue::-webkit-scrollbar {
+  width: 0px;
+  height:4px;
+}
+
+.theme-container .vue:hover::-webkit-scrollbar {
+  width:4px;
+  height:4px;
+}
+
+.vue::-webkit-scrollbar {
+  width: 4px;
+}
+
+.vue::-webkit-scrollbar-thumb {
+  border-radius: 1em;
+  background-color: rgba(50, 50, 50, .3);
+}
+
+.vue::-webkit-scrollbar-track {
+  border-radius: 1em;
+  background-color: transparent;
+}
+
+.click-link:hover {
+  text-decoration: none !important;
+}
+
+.demo {
+  display: block;
+  width:375px;
+  margin:0px auto 10px auto;
+}
