@@ -185,7 +185,7 @@ export default {
     };
   },
   mounted() {
-    const demo = self.STJKVENDORS[this.src];
+    const demo = self.SOLARVENDORS[this.src];
     if (demo) {
       this.$refs.source.innerHTML = demo.source.replace(/\t{2}/g, "\n").trim();
       this.$nextTick(() => {

@@ -2,7 +2,7 @@
 home: true
 navbar: false
 heroText: 文档系统
-heroImage: /favicon.png
+heroImage: /logo.svg
 tagline: 可调试的通用文档生成系统
 actionText: 起步 →
 actionLink: quick/
@@ -13,7 +13,7 @@ features:
   details: 提供文档同时，也会提供操作实例
 - title: 精诚团结
   details: 欢迎大家都来贡献
-footer: 文档中心
+footer: 由文档中心提供支持
 ---
 
 ### 安装 :tada: :100:

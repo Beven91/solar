@@ -163,7 +163,7 @@ export default {
   },
   mounted() {
     const container = this.$refs.demo;
-    const demo = self.STJKVENDORS[this.src];
+    const demo = self.SOLARVENDORS[this.src];
     if (demo) {
       demo.run(container, (type, args) => this.toConsole(type, args));
       this.$refs.source.innerHTML = demo.source.replace(/\t{2}/g, "\n").trim();

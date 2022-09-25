@@ -8,7 +8,7 @@ import cliLogo from '../assets/cli.png'
 Vue.use(Vuex)
 
 if (typeof window == 'object') {
-  window.STJKVENDORS = {};
+  window.SOLARVENDORS = {};
 }
 
 export default new Vuex.Store({
@@ -16,7 +16,7 @@ export default new Vuex.Store({
     return {
       library: [
         {
-          name: 'solar-docs',
+          name: 'docs',
           logo: cliLogo,
           description: '文档系统',
           tags: ['node', 'shell']

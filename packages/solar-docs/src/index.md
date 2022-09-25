@@ -2,6 +2,6 @@
 layout: MainLayout
 ---
 
-<Typography>二方库清单</Typography>
+<Typography>应用文档</Typography>
 
 <Repositories />

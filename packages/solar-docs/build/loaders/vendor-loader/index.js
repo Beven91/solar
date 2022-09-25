@@ -68,7 +68,7 @@ function createSource(type, source, resource) {
 function createVendor(name, source, options, resource, index) {
   const appType = probeApp(source);
   source = createSource(appType, source, resource).replace(/'/g, '\\\'').replace(/\n/g, '\t\t');
-  return `self.STJKVENDORS['${name}']= {
+  return `self.SOLARVENDORS['${name}']= {
     run(container,write){
       ___hook.write = write;
       const App = module.exports.default;

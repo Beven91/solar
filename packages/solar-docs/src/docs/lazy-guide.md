@@ -24,25 +24,3 @@
 }
 
 ```
-
-### 根据调试文件来生成文档
-
-如果您的二方库有demo代码，则您可以根据demo文件来生成一个附带演示的文档,例如: [@midway/ui](/solar-docs/@midway/ui)。
-
-例如: package.json
-
-```json
-{
-  "docs":{
-    "type":"demo",
-    "patterns":["demo/*.tsx"],
-    "findComponent":{
-      "demo/Button.tsx":"src/Button.tsx"
-    },
-    "demoBase":"https://h5.dev.shantaijk.cn/midway/#",
-    "demoUrl":{
-      "demo/Button.tsx":"demo/button"
-    }
-  }
-}
-```

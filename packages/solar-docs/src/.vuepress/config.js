@@ -5,13 +5,13 @@ const pkg = require('../../package.json');
 
 const isRepositoryMode = __dirname.indexOf(path.resolve('')) < 0;
 
-const base = '/solar-docs/'
+const base = '/docs/'
 
 module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: '太医指北',
+  title: '文档中心',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -38,7 +38,7 @@ module.exports = {
    */
   themeConfig: {
     repo: '',
-    logo: '/favicon.png',
+    logo: '/logo.svg',
     editLinks: false,
     docsDir: '',
     editLinkText: '',
@@ -46,37 +46,37 @@ module.exports = {
     nav: [
     ],
     sidebar: {
-      '/solar-docs/': [
+      '/docs/': [
         {
           title: '快速上手',
-          path: '/solar-docs/quick'
+          path: '/docs/quick'
         },
         {
           title: '文档配置',
-          path: '/solar-docs/config'
+          path: '/docs/config'
         },
         {
           title: '懒人教程',
-          path: '/solar-docs/lazy-guide'
+          path: '/docs/lazy-guide'
         },
         {
           title: '文档部署',
-          path: '/solar-docs/deploy'
+          path: '/docs/deploy'
         },
         {
           title: '内置组件',
-          path: '/solar-docs/components'
+          path: '/docs/components'
         },
         {
           title: '生成原理',
-          path: '/solar-docs/steps'
+          path: '/docs/steps'
         },
       ]
     },
     repository: {
-      'solar-docs': {
-        name: "solar-docs",
-        title: 'solar-docs',
+      'docs': {
+        name: "docs",
+        title: 'docs',
         version: pkg.version,
       }
     }

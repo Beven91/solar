@@ -3,9 +3,7 @@
 ## 安装
 
 ```shell
-$ npm install solar-docs --global --registry=https://packages.aliyun.com/5faa3678e6f9d07f148517ac/npm/npm-registry/
-$ or
-$ npm install solar-docs --location=global --registry=https://packages.aliyun.com/5faa3678e6f9d07f148517ac/npm/npm-registry/
+$ npm install solar-docs 
 ```
 
 ## 调试
