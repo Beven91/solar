@@ -10,10 +10,12 @@
 
   .readonly-form-item {
     border: 0px !important;
+    padding-left: 0px !important;
   }
 
   .readonly-wrapper {
     flex: 1 1 0 !important;
+    word-break: break-all;
   }
 
   .tabs-group-form-inner {

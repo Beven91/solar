@@ -187,10 +187,13 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
   }
 
   fallbackSubmit() {
-    const { subAction, onSubCancel, route, action } = this.props;
+    const { subAction, onSubCancel, onRoute, onCancel, route, action } = this.props;
     if (this.isNeedBack == 'yes' && route && route?.params?.action != action) {
+      this.isNeedBack = 'no';
       subAction && onSubCancel && onSubCancel();
-      this.navigateBack();
+      onCancel && onCancel();
+    } else if (this.isNeedBack == 'no' && route?.params?.action != action) {
+      onRoute && onRoute({ ...route.params } as any);
     }
   };
 

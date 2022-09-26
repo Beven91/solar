@@ -18,27 +18,27 @@ import { AbstractTableProps, AbstractButton, SelectMode, OnActionRoute, Abstract
 import { AbstractSField, AbstractQueryType, PlainObject, AbstractResponseModel } from '../interface';
 import { AbstractRows, AbstractRow, AbstractAction, AbstractFilters, FilterTabType } from '../interface';
 
- interface SortInfo {
-   field: string
-   order: string
- }
+interface SortInfo {
+  field: string
+  order: string
+}
 
 export interface AbstractTableState<TRow> {
-   loading: boolean
-   activeTab: FilterTabType
-   sort: SortInfo
-   scroll: {
-     x?: number | true | string;
-     y?: number | string;
-   },
-   prevPageSize?: number
-   selectedRows: TRow[],
-   propsSelectedRows: TRow[]
-   pageSize: number
-   pageNo: number
-   dataSource?: AbstractResponseModel<TRow>
-   prevData?: any
- }
+  loading: boolean
+  activeTab: FilterTabType
+  sort: SortInfo
+  scroll: {
+    x?: number | true | string;
+    y?: number | string;
+  },
+  prevPageSize?: number
+  selectedRows: TRow[],
+  propsSelectedRows: TRow[]
+  pageSize: number
+  pageNo: number
+  dataSource?: AbstractResponseModel<TRow>
+  prevData?: any
+}
 
 export default class AbstractTable<TRow extends AbstractRow> extends React.Component<AbstractTableProps<TRow>, AbstractTableState<TRow>> {
   // 默认属性值
@@ -430,8 +430,10 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
     } = this.props;
     const { scroll, selectedRows, dataSource } = this.state;
     const topActions = this.topOperators;
+    const y = scroll?.y;
+    const shouldAutoHeight = autoHeight || y !== undefined && y < 150;
     const topClass = topActions.length > 0 ? 'has-top-actions' : '';
-    const heightCls = autoHeight ? 'auto-height' : '';
+    const heightCls = shouldAutoHeight ? 'auto-height' : '';
     const columns = this.columns;
     const tabs = typeof filters.tabs === 'function' ? null : filters.tabs;
     const loadFilters = typeof filters.tabs === 'function' ? filters.tabs : null;
@@ -474,7 +476,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
                     <Table
                       rowKey={rowKey}
                       loading={loading}
-                      scroll={scroll}
+                      scroll={shouldAutoHeight ? { x: '100%' } : scroll}
                       pagination={this.pagination}
                       {...others}
                       dataSource={dataSource?.models?.filter((a) => !!a)}

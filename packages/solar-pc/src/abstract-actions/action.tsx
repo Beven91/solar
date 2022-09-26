@@ -102,7 +102,7 @@ export function ObjectIfHook<TRow = AbstractRow>(props: ObjectActionProps<TRow>)
                 type={props.type}
                 {...useContext}
                 {...props}
-                record={useContext.isSubAction ? useContext.subRecord : useContext.record }
+                record={useContext.isSubAction ? useContext.subRecord : useContext.record}
                 action={useContext.action}
               >
                 <AbstractForm.Context.Consumer>
@@ -142,6 +142,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const showOk = props.showActions == 'ok-cancel' || props.showActions == 'ok' || !props.showActions;
   const showCancel = props.showActions === 'cancel' || props.showActions === 'ok-cancel' || !props.showActions;
   const handleSubmit = () => objectRef.current.handleSubmit();
+  const validateForms = () => objectRef.current?.validateForms();
   const footerVisible = false !== props.footer && visible && !realtime;
 
   const onSubmit = async(values: any) => {
@@ -171,8 +172,9 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
         <div className="abstract-actions-drawer-footer">
           {
             footerVisible && (
-              <FooterActions
+              <FooterActions<any>
                 ref={actionsRef}
+                validateForms={validateForms}
                 btnCancel={props.btnCancel}
                 btnSubmit={props.btnSubmit}
                 formValues={c.record}
@@ -206,7 +208,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
             type={props.type}
             {...context}
             {...others}
-            record={context.isSubAction ? context.subRecord : context.record }
+            record={context.isSubAction ? context.subRecord : context.record}
             width={finalWidth}
             onValuesChange={onValuesChange}
             onSubmit={onSubmit}
