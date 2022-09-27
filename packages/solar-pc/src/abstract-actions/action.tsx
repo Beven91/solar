@@ -107,7 +107,7 @@ export function ObjectIfHook<TRow = AbstractRow>(props: ObjectActionProps<TRow>)
               >
                 <AbstractForm.Context.Consumer>
                   {
-                    (formContext) => ActionInternal ? <ActionInternal {...props} {...useContext} {...formContext} /> : children
+                    (formContext) => ActionInternal ? <ActionInternal {...props} {...useContext} {...formContext} record={useContext.record} /> : children
                   }
                 </AbstractForm.Context.Consumer>
               </AbstractObject>
@@ -218,7 +218,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
           >
             <AbstractForm.Context.Consumer>
               {
-                (formContext) => ActionInternal ? <ActionInternal {...props} {...context} {...formContext} /> : children
+                (formContext) => ActionInternal ? <ActionInternal {...props} {...context} {...formContext} record={context.record} /> : children
               }
             </AbstractForm.Context.Consumer>
           </AbstractObject>

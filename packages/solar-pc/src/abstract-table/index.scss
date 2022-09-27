@@ -47,7 +47,7 @@ $width:5px;
     display: flex;
     flex-direction: column;
     flex: 1;
-    overflow: hidden;
+    overflow:auto;
   }
 
   .table-operators {
@@ -87,8 +87,8 @@ $width:5px;
     flex-wrap: wrap;
     align-items: center;
     .cell-operator {
+      padding:0px;
       margin: 0px 5px 0px 0px;
-      padding:0;
       font-size: 12px;
       white-space: nowrap;
       display: inline-block;

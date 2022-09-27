@@ -323,7 +323,7 @@ export type onValuesChangeHandler = (prevValues: RecordModel, curValues: RecordM
 export interface RecordViewProps<TRow extends AbstractRow = AbstractRow, Sub = any> {
   // 当前正在编辑的数据
   record: TRow;
-  // 当前子动作编辑的数据
+  // 子动作record
   subRecord: Sub
   // 当前的操作名
   action: string;

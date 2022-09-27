@@ -5,11 +5,11 @@
 import './index.scss';
 import React from 'react';
 import Context, { ActionsContext } from './context';
-import TableContext, { AbstractTableContext } from '../abstract-table/context';
-import { ActionIfHook, ObjectIfHook, PopupIfHook, ListHook, DrawerIfHook } from './action';
 import { AbstractRow, InitialAction, SubmitAction } from '../interface';
 import { OnActionRoute } from '../abstract-table/types';
 import cellRenders from '../abstract-table/util/cellRenders';
+import TableContext, { AbstractTableContext } from '../abstract-table/context';
+import { ActionIfHook, ObjectIfHook, PopupIfHook, ListHook, DrawerIfHook } from './action';
 
 const runtime = {
   isInitialize: true,
@@ -21,60 +21,60 @@ window.addEventListener('hashchange', updateRoute);
 window.addEventListener('popstate', updateRoute);
 
 export interface ActionRoute {
-   // 当前页面动作路由模板 例如: order/:action/:id
-   path: string
-   // 当前路由对应的参数
-   params: Partial<InitialAction>
- }
+  // 当前页面动作路由模板 例如: order/:action/:id
+  path: string
+  // 当前路由对应的参数
+  params: Partial<InitialAction>
+}
 
 export interface ActionHistory {
-   replace(url: string): void
-   push(url: string): void
-   goBack: () => void
- }
+  replace(url: string): void
+  push(url: string): void
+  goBack: () => void
+}
 
 export interface AbstractActionsProps<TRow> {
-   // 当前动作
-   action: string
-   // 当前自动做
-   subAction?: string
-   // 样式类名
-   className?: string
-   // 样式
-   style?: React.CSSProperties
-   // 当前动作对应的数据
-   model?: TRow
-   // 当前子动作对应的数据
-   subModel?: any
-   // 当前动作对应的数据的主键
-   primaryKey?: string
-   // 提交按钮是否展示loading
-   confirmLoading?: boolean
-   // 子动作是否提交中
-   subConfirmLoading?: boolean
-   // 路由历史对象可用来进行动作切换后进行地址替换
-   history?: ActionHistory
-   // 使用路由模式时的路由参数，需配合history一起使用
-   route?: ActionRoute
-   // 当动作切换时触发
-   onRoute?: OnActionRoute<TRow>
-   // 当取消动作切需要进行路由后退时触发,
-   onRouteBack?: (init?: boolean) => void
-   // 当取消动作时出发
-   onCancel?: () => boolean | void
-   // 当取消子动作时出发
-   onSubCancel?: () => void
-   // 当提交动作以及子动作时出发
-   onSubmit?: (data: SubmitAction<TRow>) => void
-   // 当有值发生改变时触发,优先级低于具体Action的同名属性
-   onValuesChange?: (action: string, values: TRow, prevValues: TRow) => void
-   children?: React.ReactNode
-   [x: string]: any
- }
+  // 当前动作
+  action: string
+  // 当前自动做
+  subAction?: string
+  // 样式类名
+  className?: string
+  // 样式
+  style?: React.CSSProperties
+  // 当前动作对应的数据
+  model?: TRow
+  // 当前子动作对应的数据
+  subModel?: any
+  // 当前动作对应的数据的主键
+  primaryKey?: string
+  // 提交按钮是否展示loading
+  confirmLoading?: boolean
+  // 子动作是否提交中
+  subConfirmLoading?: boolean
+  // 路由历史对象可用来进行动作切换后进行地址替换
+  history?: ActionHistory
+  // 使用路由模式时的路由参数，需配合history一起使用
+  route?: ActionRoute
+  // 当动作切换时触发
+  onRoute?: OnActionRoute<TRow>
+  // 当取消动作切需要进行路由后退时触发,
+  onRouteBack?: (init?: boolean) => void
+  // 当取消动作时出发
+  onCancel?: () => boolean | void
+  // 当取消子动作时出发
+  onSubCancel?: () => void
+  // 当提交动作以及子动作时出发
+  onSubmit?: (data: SubmitAction<TRow>) => void
+  // 当有值发生改变时触发,优先级低于具体Action的同名属性
+  onValuesChange?: (action: string, values: TRow, prevValues: TRow) => void
+  children?: React.ReactNode
+  [x: string]: any
+}
 
 export interface AbstractActionsState {
 
- }
+}
 
 export default class AbstractActions<TRow extends AbstractRow> extends React.Component<AbstractActionsProps<TRow>, AbstractActionsState> {
   // 动作
@@ -94,7 +94,9 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
 
   preRouteAction: InitialAction;
 
-  isNeedBack: 'no' | 'updating' | 'yes';
+  reason: 'none' | 'submited' | 'yes';
+
+  reasonAction: string;
 
   listRef = React.createRef<HTMLDivElement>();
 
@@ -110,17 +112,15 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
       record,
       subRecord: subModel,
       onMatch: (action) => {
-        if (action != '' && action !== 'list') {
-          this.isNeedBack = 'yes';
-        }
       },
       onCancel: () => {
         onCancel && onCancel();
-        if (this.isNeedBack == 'yes') {
-          this.navigateBack();
-        }
+        this.reasonAction = action;
+        this.navigateBack();
       },
       onSubmit: (values: TRow) => {
+        this.reason = 'submited';
+        this.reasonAction = action;
         onSubmit && onSubmit({ action, model: values });
       },
       onSubSubmit: (values: TRow) => {
@@ -154,9 +154,9 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
         const { onRoute, route } = this.props;
         const data = cellRenders.createAction(action);
         const url = data.create(route.path || '', { ...(route.params || {}), ...action });
-        this.isNeedBack = 'updating';
         runtime.isInitialize = false;
         this.props?.history?.push(url);
+        this.reasonAction = action?.action;
         onRoute && onRoute(action);
       },
     } as AbstractTableContext;
@@ -164,7 +164,9 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
 
   navigateBack() {
     const { onRouteBack, route } = this.props;
-    this.isNeedBack = 'no';
+    const action = this.reasonAction;
+    const needBack = action == route?.params?.action;
+    if (!needBack) return;
     if (onRouteBack) {
       onRouteBack(runtime.isInitialize);
       runtime.isInitialize = false;
@@ -182,26 +184,31 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
   componentDidMount() {
     const { route, onRoute } = this.props;
     if (route && onRoute) {
+      this.reasonAction = route.params?.action;
       onRoute(route.params as InitialAction);
     }
   }
 
-  fallbackSubmit() {
-    const { subAction, onSubCancel, onRoute, onCancel, route, action } = this.props;
-    if (this.isNeedBack == 'yes' && route && route?.params?.action != action) {
-      this.isNeedBack = 'no';
-      subAction && onSubCancel && onSubCancel();
-      onCancel && onCancel();
-    } else if (this.isNeedBack == 'no' && route?.params?.action != action) {
-      onRoute && onRoute({ ...route.params } as any);
+  fallbackActions() {
+    const { subAction, onSubCancel, onRoute, route } = this.props;
+    const routeAction = route?.params?.action;
+    switch (this.reason) {
+      case 'submited':
+        subAction && onSubCancel && onSubCancel();
+        this.navigateBack();
+        this.reason = 'none';
+        break;
+      default:
+        if (this.reasonAction != routeAction) {
+          this.reasonAction = routeAction;
+          onRoute && onRoute({ ...route.params, action: this.reasonAction || '' } as any);
+          this.reason = 'none';
+        }
     }
   };
 
   componentDidUpdate() {
-    this.fallbackSubmit();
-    if (this.isNeedBack == 'updating') {
-      this.isNeedBack = 'yes';
-    }
+    this.fallbackActions();
     if (this.containerRef.current) {
       const name = this.shouldHideObject ? 'add' : 'remove';
       this.containerRef.current.classList[name]('sub-covered');
