@@ -194,9 +194,11 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
     const routeAction = route?.params?.action;
     switch (this.reason) {
       case 'submited':
-        subAction && onSubCancel && onSubCancel();
-        this.navigateBack();
-        this.reason = 'none';
+        if (this.reasonAction != this.props.action) {
+          subAction && onSubCancel && onSubCancel();
+          this.navigateBack();
+          this.reason = 'none';
+        }
         break;
       default:
         if (this.reasonAction != routeAction) {
