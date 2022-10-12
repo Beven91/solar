@@ -54,6 +54,8 @@ export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
   disabled?: boolean
   // 前缀图标
   prefix?: React.ReactNode
+  // 在api模式下，初始化时是否调用查询接口,默认为:true
+  initQuery?: boolean
 }
 
 export interface AdvancePickerState {
@@ -88,6 +90,7 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
     valueName: 'value',
     labelName: 'label',
     type: 'remote',
+    initQuery: true,
     data: null as any,
     allOption: false,
     format: (r: any) => r || {},
@@ -153,6 +156,8 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
   }
 
   componentDidMount() {
+    const { initQuery, api } = this.props;
+    if (initQuery == false && api) return;
     this.loadAsync();
   }
 
@@ -294,7 +299,7 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
   render() {
     const { loading, rows = [], hasMore } = this.state;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-    const { valueMode, format, query, prefix, data, type, allOption, className, api, labelName, valueName, ...props } = this.props;
+    const { valueMode, initQuery, format, query, prefix, data, type, allOption, className, api, labelName, valueName, ...props } = this.props;
     // 如果时设置data 则表示一定时本地检索
     const realType = !api && this.props.data ? 'local' : type;
     const handleRemote = realType === 'remote' ? this.handleRemote : NOOP;
