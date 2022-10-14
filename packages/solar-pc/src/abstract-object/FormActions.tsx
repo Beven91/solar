@@ -1,35 +1,38 @@
 /**
- * @module FooterActions
+ * @module FormActions
  * @description 底部操作按钮
  */
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Button, ButtonProps } from 'antd';
 import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
 import { AbstractActionItem, AbstractActionItemContext, AbstractRow } from '../interface';
 
-interface FooterActionsProps<TRow> {
-  okLoading: boolean
-  isReadOnly: boolean
-  showCancel: boolean
-  showOk: boolean
-  btnSubmit?: ButtonProps
-  btnCancel?: ButtonProps
-  handleCancel: () => void
-  handleSubmit: () => void
-  validateForms: () => Promise<void>
-  formValues: TRow
-  record: TRow
-  okEnable?: (values: TRow) => boolean
-  actions: AbstractActionItem<TRow>[]
-}
+ interface FormActionsProps<TRow> {
+   okLoading: boolean
+   isReadOnly: boolean
+   showCancel: boolean
+   showOk: boolean
+   btnSubmit?: ButtonProps
+   btnCancel?: ButtonProps
+   handleCancel: () => void
+   handleSubmit: () => void
+   validateForms: () => Promise<void>
+   formValues: TRow
+   record: TRow
+   okEnable?: (values: TRow) => boolean
+   actions: AbstractActionItem<TRow>[]
+   // 按钮渲染目标容器
+   container?: React.RefObject<HTMLElement>
+ }
 
-interface FooterActionsState<TRow> {
-  propsFormValues?: TRow
-  formValues?: TRow
-}
+ interface FormActionsState<TRow> {
+   propsFormValues?: TRow
+   formValues?: TRow
+ }
 
-export default class FooterActions<TRow> extends React.Component<FooterActionsProps<TRow>, FooterActionsState<TRow>> {
-  static getDerivedStateFromProps(props: FooterActionsProps<AbstractRow>, state: FooterActionsState<AbstractRow>) {
+export default class FormActions<TRow> extends React.Component<FormActionsProps<TRow>, FormActionsState<TRow>> {
+  static getDerivedStateFromProps(props: FormActionsProps<AbstractRow>, state: FormActionsState<AbstractRow>) {
     if (props.formValues != state.propsFormValues) {
       return {
         formValues: props.formValues,
@@ -39,7 +42,7 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
     return null;
   }
 
-  state: FooterActionsState<TRow> = {
+  state: FormActionsState<TRow> = {
   };
 
   refresh(values: TRow) {
@@ -50,7 +53,22 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
     return value === null || value == undefined ? dv : value;
   }
 
-  render() {
+  componentDidMount(): void {
+    this.delayUpdate();
+  }
+
+  componentDidUpdate(): void {
+    this.delayUpdate();
+  }
+
+  delayUpdate() {
+    const { container } = this.props;
+    if (container && !container.current) {
+      setTimeout(() => this.forceUpdate(), 100);
+    }
+  }
+
+  renderNode() {
     const { okLoading, isReadOnly, handleSubmit, validateForms, handleCancel, showCancel, record, okEnable, showOk } = this.props;
     const { btnSubmit, btnCancel, actions } = this.props;
     const { formValues } = this.state;
@@ -64,8 +82,8 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
       },
     };
     const model = {
-      ...(formValues || {}),
       ...(record || {}),
+      ...(formValues || {}),
     } as TRow;
     const isOkEnable = () => okEnable ? okEnable(model) : true;
     return (
@@ -109,5 +127,14 @@ export default class FooterActions<TRow> extends React.Component<FooterActionsPr
         </div>
       </div>
     );
+  }
+
+  render(): React.ReactNode {
+    const { container } = this.props;
+    if (!container) {
+      return this.renderNode();
+    } else if (container.current) {
+      return ReactDOM.createPortal(this.renderNode(), container.current);
+    }
   }
 }

@@ -10,7 +10,7 @@ import AbstractForm from '../abstract-form';
 import { Drawer } from 'antd';
 import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
-import FooterActions from '../abstract-object/footer';
+import FormActions from '../abstract-object/FormActions';
 
  interface ActionProps {
    action?: string
@@ -133,7 +133,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const { use, children, drawer, placement, width, className, style, ...others } = props;
   const ActionInternal = use;
   const objectRef = useRef<AbstractObject>();
-  const actionsRef = useRef<FooterActions<TRow>>();
+  const actionsRef = useRef<FormActions<TRow>>();
   const c = useContext(Context);
   const realtime = props.realtime == true;
   const context = getMatchContext(c, props);
@@ -172,7 +172,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
         <div className="abstract-actions-drawer-footer">
           {
             footerVisible && (
-              <FooterActions<any>
+              <FormActions<any>
                 ref={actionsRef}
                 validateForms={validateForms}
                 btnCancel={props.btnCancel}

@@ -6,7 +6,7 @@
 import './index.scss';
 import React from 'react';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { Upload, message, Button } from 'antd';
+import { Upload, Button } from 'antd';
 import { Oss, Rectangle } from 'solar-core';
 import { getFileList, normalizeValue } from './helper';
 import AbstractProvider from '../abstract-provider';
@@ -72,17 +72,7 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
     if (this.props.beforeUpload) {
       return this.props.beforeUpload(file, files);
     }
-    const defaultMax = 3 * 1024 * 1024;
-    const media = config?.media || AbstractProvider.defaultMediaDefinitions;
-    const data = media[this.props.acceptType] || { max: defaultMax };
-    const max = this.props.maxSize || data.max || defaultMax;
-    const isLt = file.size < max;
-    if (!isLt) {
-      const value = max / (1024 * 1024);
-      message.error(`上传不能超过 ${value}MB!`);
-      return false;
-    }
-    return isLt;
+    return true;
   };
 
   // 取消冒泡
@@ -126,37 +116,36 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
   /**
    * 执行文件队列
    */
-  handleQueues(fileList: FileList) {
+  async handleQueues(fileList: FileList) {
     const { onChange } = this.props;
     const uploading = fileList.filter((m) => m.status === 'uploading');
+    const needRectFiles = fileList.filter((m) => !(m.width > 0));
     // const errors = fileList.filter((m) => m.status === 'error');
     if (uploading.length > 0) {
-      Rectangle
-        .getRectangles(uploading.map((m) => m.originFileObj) as any)
-        .then((rects) => {
-          uploading.forEach((item: UploadFileExtend, index: number) => {
-            const rect = rects[index] as UploadFileExtend;
-            item.width = rect.width;
-            item.height = rect.height;
-            // 如果还在上传中
-            this.setState({ fileList });
-          });
-        });
-    } else {
-      const value = normalizeValue([...fileList], this.props);
-      onChange && onChange(value, fileList);
-      fileList.forEach((f) => {
-        if (f.status == 'error') {
-          f.url = f.status == 'error' ? '' : f.url;
-          delete f.originFileObj;
-        }
-      });
-      this.setState({
-        fileList: [
-          ...fileList,
-        ],
-      });
+      return this.setState({ fileList });
     }
+    await Rectangle
+      .getRectangles(needRectFiles.map((m) => m.originFileObj) as any)
+      .then((rects) => {
+        needRectFiles.forEach((item: UploadFileExtend, index: number) => {
+          const rect = rects[index] as UploadFileExtend;
+          item.width = rect.width;
+          item.height = rect.height;
+        });
+      });
+    const value = normalizeValue([...fileList], this.props);
+    onChange && onChange(value, fileList);
+    fileList.forEach((f) => {
+      if (f.status == 'error') {
+        f.url = f.status == 'error' ? '' : f.url;
+        delete f.originFileObj;
+      }
+    });
+    this.setState({
+      fileList: [
+        ...fileList,
+      ],
+    });
   }
 
   async handleRemove<T>(f: UploadFileExtend, onRemove: (file: UploadFile<T>) => void | boolean | Promise<void | boolean>) {
@@ -182,27 +171,52 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
     return Promise.reject(new Error(data.errorMsg));
   };
 
+  checkUpload(file: File, config: AbstractUploadConfig) {
+    const defaultMax = 3 * 1024 * 1024;
+    const media = config?.media || AbstractProvider.defaultMediaDefinitions;
+    const data = media[this.props.acceptType] || { max: defaultMax };
+    const max = this.props.maxSize || data.max || defaultMax;
+    const isLt = file.size < max;
+    if (!isLt) {
+      const value = max / (1024 * 1024);
+      return new Error(`上传不能超过 ${value}MB!`);
+    }
+  }
+
   /**
    * 上传图片
    */
   uploadRequest = (context: RcCustomRequestOptions, config: AbstractUploadConfig) => {
+    const error = this.checkUpload(context.file as File, config);
+    if (error) {
+      return this.handleError(error, context);
+    }
     const uploadRequest = config?.onUpload || this.defaultUploadToServer;
     if (typeof uploadRequest === 'function') {
       Promise
         .resolve(uploadRequest(context, config))
         .then((key: string) => {
-          const item = this.state.fileList[this.state.fileList.length - 1];
+          const item2 = context.file as any;
+          const item = this.state.fileList.find((m) => m.uid == item2.uid);
+          item.status = 'done';
           item.url = key;
           context.onSuccess(item, null);
         })
         .catch((ex) => {
-          console.error(ex);
-          setTimeout(()=>{
-            context.onError(ex);
-          }, 100);
+          this.handleError(ex, context);
         });
     }
   };
+
+  handleError(error: Error, context: RcCustomRequestOptions) {
+    setTimeout(() => {
+      const item2 = context.file as any;
+      const item = this.state.fileList.find((m) => m.uid == item2.uid);
+      item.status = 'error';
+      item.error = error;
+      context.onError(error, error);
+    }, 20);
+  }
 
   // 渲染拖拽上传按钮
   renderUploadButton() {

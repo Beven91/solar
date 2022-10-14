@@ -4,7 +4,7 @@ import { InputNumber } from 'antd';
 
 export default function App() {
   const fields: AbstractSFields = [
-    { title: '用户名', name: 'name', span: 24 },
+    { title: '用户名', name: 'name' },
     { title: '年龄', name: 'age', render: <InputNumber /> },
     { title: '地址', name: 'address' },
     { title: '省份', name: 'province' },

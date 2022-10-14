@@ -16,49 +16,49 @@ import {
 } from '../interface';
 
 export interface DynamicProps<TRow> {
-  // 是否使用外包裹
-  wrapper?: boolean
-  // 数据
-  model: TRow
-  // 默认跨列数
-  span?: number
-  // 表单配置
-  groups: AbstractGroups<TRow>
-  // 统一表单布局配置
-  formItemLayout?: AbstractFormLayout
-  // 校验规则
-  rules?: AbstractRules
-  // 是否为查看模式
-  isReadOnly?: boolean
-  // antd的form对象
-  form: React.RefObject<FormInstance>
-  // 表单组展示模式
-  groupStyle?: FormGroupStyle
-  // 表单值发生改变时间
-  onValuesChange?: onValuesChangeHandler
-  // 拼接在表单控件后的字元素
-  formChildren?: React.ReactNode
-  // 如果分组风格为tabs其对应的tabs类型
-  tabType?: 'line' | 'card'
-  // 如果分组风格为tabs其对应的tabs位置
-  tabPosition?: 'top' | 'left' | 'bottom' | 'right'
-  // 如果分组风格为tabs其对应的tabs间隔
-  tabBarGutter?: number
-  // 让指定表单获取焦点，仅在初始化时有效
-  autoFocus?: string
-  // 初始化的tab焦点
-  defaultActiveIndex?: number
-  // 表单项样式名
-  formItemCls?: string
-  // 表单容器外在宽度
-  containerWidth?: number
-  // 表单项底部间距模式
-  itemStyle?: React.CSSProperties
-}
+   // 是否使用外包裹
+   wrapper?: boolean
+   // 数据
+   model: TRow
+   // 默认跨列数
+   span?: number
+   // 表单配置
+   groups: AbstractGroups<TRow>
+   // 统一表单布局配置
+   formItemLayout?: AbstractFormLayout
+   // 校验规则
+   rules?: AbstractRules
+   // 是否为查看模式
+   isReadOnly?: boolean
+   // antd的form对象
+   form: React.RefObject<FormInstance>
+   // 表单组展示模式
+   groupStyle?: FormGroupStyle
+   // 表单值发生改变时间
+   onValuesChange?: onValuesChangeHandler
+   // 拼接在表单控件后的字元素
+   formChildren?: React.ReactNode
+   // 如果分组风格为tabs其对应的tabs类型
+   tabType?: 'line' | 'card'
+   // 如果分组风格为tabs其对应的tabs位置
+   tabPosition?: 'top' | 'left' | 'bottom' | 'right'
+   // 如果分组风格为tabs其对应的tabs间隔
+   tabBarGutter?: number
+   // 让指定表单获取焦点，仅在初始化时有效
+   autoFocus?: string
+   // 初始化的tab焦点
+   defaultActiveIndex?: number
+   // 表单项样式名
+   formItemCls?: string
+   // 表单容器外在宽度
+   containerWidth?: number
+   // 表单项底部间距模式
+   itemStyle?: React.CSSProperties
+ }
 
 export interface DynamicState {
-  activeIndex: number
-}
+   activeIndex: number
+ }
 
 const defaultFormItemLayout: FormItemLayout = {
   labelCol: {
@@ -182,7 +182,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   renderGroup(groupItem: AbstractFormGroupItemType<TRow>, index: number) {
     const { group, items, span } = groupItem;
     if (!('group' in groupItem)) {
-      return this.renderFormItem(groupItem as any, this.props.span);
+      return this.renderFormItem(groupItem as any, this.props.span, null, null, index);
     }
     const classNames = [] as string[];
     if (index == 0) {
@@ -195,7 +195,9 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
       <Col
         className="abstract-form-group-wrapper"
         data-name={groupItem.group}
-        span={24} key={`from-group-${index}`}
+        data-group-id={groupItem.group}
+        span={24}
+        key={`from-group-${groupItem.group}-${index}`}
       >
         <FormGroup
           noLeftPadding={this.props.groupStyle == 'normal'}
@@ -208,10 +210,11 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
           className={`abstract-form-group ${classNames.join(' ')}`}
         >
           <Row gutter={24}>
-            {items.map((item) => this.renderFormItem(
+            {items.map((item, i) => this.renderFormItem(
               item, span || this.props.span,
               groupItem.layout,
-              groupItem.itemStyle
+              groupItem.itemStyle,
+              i
             ))}
           </Row>
         </FormGroup>
@@ -220,18 +223,18 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 渲染表单
-  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties) {
+  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties, index?:number) {
     if (typeof item === 'function') {
-      return this.renderFreeFunction(item);
+      return this.renderFreeFunction(item, index);
     }
-    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, layout, itemStyle);
+    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, layout, itemStyle, index);
   }
 
   // 渲染一个自定义布局表单
-  renderFreeFunction(item: FunctionItemType<TRow>) {
+  renderFreeFunction(item: FunctionItemType<TRow>, index:number) {
     return (
       <Col
-        key={`form-group-item-${item.name}`}
+        key={`form-group-item-${index || 0}-${item.name}`}
         span={24}
       >
         {item(this.props.model as TRow, this.isReadOnly)}
@@ -240,7 +243,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 渲染常规布局表单
-  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties) {
+  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties, i?:number) {
     const { formItemLayout, rules } = this.props;
     const title = item.render2 ? '' : item.title;
     const layout2 = title ? item.layout || layout || formItemLayout || this.getDefaultFormLayout() : {};
@@ -254,7 +257,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
     };
     return (
       <React.Fragment
-        key={`form-group-item-${item.name}`}
+        key={`form-group-item-${i}-${item.name}`}
       >
         {
           item.break ? (<Col span={24} className="break-form-item"></Col>) : null
@@ -306,7 +309,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
               return (
                 <Tabs.TabPane tab={<div>{group.icon}{group.group || index}</div>} key={index}>
                   <Row className="tabs-group-form-inner" gutter={8}>
-                    {group.items?.map((item) => this.renderFormItem(item, group.span || this.props.span, group.layout))}
+                    {group.items?.map((item) => this.renderFormItem(item, group.span || this.props.span, group.layout, null, index))}
                   </Row>
                 </Tabs.TabPane>
               );

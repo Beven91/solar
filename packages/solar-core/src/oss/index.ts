@@ -182,11 +182,13 @@ export default class AliOss {
     return new Promise<UploadResponse>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
-      xhr.onprogress = (ev) => {
-        if (ev.lengthComputable) {
-          onprogress && onprogress((ev.loaded / ev.total) * 100);
-        }
-      };
+      if (xhr.upload) {
+        xhr.upload.onprogress = (ev) => {
+          if (ev.lengthComputable) {
+            onprogress && onprogress((ev.loaded / ev.total) * 100);
+          }
+        };
+      }
       xhr.withCredentials = true;
       xhr.onreadystatechange = () => {
         if (xhr.readyState == 4) {

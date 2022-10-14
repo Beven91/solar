@@ -21,14 +21,15 @@ export const getFileList = memoize((value, format, fileList, props: AdvanceUploa
       uid: oItem.uid || -i,
       originFileObj: oItem.originFileObj,
       status: oItem.status || 'done',
+      error: oItem.error || '',
       url: url,
       name: key.split('/').pop(),
       key: key,
       width: item.width,
       height: item.height,
       config: item.config || {},
-      type: item.type,
       thumbUrl: url,
+      type: item.type,
     } as UploadFileValue;
   }).filter((m: any) => !!m.url || m.status === 'error') as FileList;
 });
@@ -42,7 +43,7 @@ export const normalizeValue = (fileList: FileList, props: AdvanceUploadProps) =>
   if (!fileList || fileList.length < 1) {
     return null;
   }
-  if (props.maxCount === 1) {
+  if (props.maxCount === 1 && !props.multiple) {
     const item = fileList[0];
     const res = item ? item.response || item : {};
     const url = res.key || res.url;
@@ -62,8 +63,8 @@ function createAdvanceObj(url: string, item: UploadFileValue) {
   return {
     url: response.key || response.url,
     name: item.name,
-    width: response.width,
-    height: response.height,
+    width: response.width || item.width,
+    height: response.height || item.height,
     config: item.config,
     type: item.type,
   };
