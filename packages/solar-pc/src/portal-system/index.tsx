@@ -14,32 +14,32 @@ export interface PortalSystemProps {
   /**
    * 要加载的子系统名称,如果为空，当前组件将仅展示children ，会销毁子系统对应内容
    */
-  system:string
+  system: string
   /**
    * 要加载子系统的基础资源的基础路径
    */
-  base:string
+  base: string
   /**
    * 容器class名
    */
-  className?:string
+  className?: string
   /**
    * 容器style样式
    */
-  style?:React.CSSProperties
+  style?: React.CSSProperties
 }
 
 export interface PortalSystemState {
-  childApp:typeof React.Component,
-  status:PortalStatus
+  childApp: typeof React.Component,
+  status: PortalStatus
   // 当前要渲染的子系统
-  current:string
+  current: string
   // 是否需要加载子系统远程内容
-  needReload:boolean
+  needReload: boolean
 }
 
-export default class PortalSystem extends React.Component<PortalSystemProps, PortalSystemState> {
-  static getDerivedStateFromProps(props:PortalSystemProps, state:PortalSystemState) {
+export default class PortalSystem extends React.Component<React.PropsWithChildren<PortalSystemProps>, PortalSystemState> {
+  static getDerivedStateFromProps(props: PortalSystemProps, state: PortalSystemState) {
     if (props.system !== state.current) {
       if (!props.system) {
         // 退出系统
@@ -53,15 +53,15 @@ export default class PortalSystem extends React.Component<PortalSystemProps, Por
     return null;
   }
 
-  state:PortalSystemState = {
+  state: PortalSystemState = {
     childApp: null,
     status: 'loading',
     current: '',
     needReload: false,
-  }
+  };
 
   // 子系统根节点ref
-  childRootRef = React.createRef<HTMLDivElement>()
+  childRootRef = React.createRef<HTMLDivElement>();
 
   preparePortalSystem() {
     if (!this.state.needReload) return;
@@ -76,14 +76,14 @@ export default class PortalSystem extends React.Component<PortalSystemProps, Por
         },
       })
       .then(
-        (childApp:React.ComponentClass) => {
+        (childApp: React.ComponentClass) => {
           this.setState({ status: 'ok', childApp: childApp });
         },
         () => this.setState({ status: 'error' })
       );
   }
 
-  shouldComponentUpdate(nextProps:PortalSystemProps, nextState:PortalSystemState) {
+  shouldComponentUpdate(nextProps: PortalSystemProps, nextState: PortalSystemState) {
     return nextProps.system !== this.props.system || nextState.status !== this.state.status;
   }
 
@@ -137,7 +137,7 @@ export default class PortalSystem extends React.Component<PortalSystemProps, Por
     const isolation = status === 'ok' && !ChildApp;
     return (
       <div
-        className={`portal-system ${this.props.className || ''} ${ isolation ? 'isolation' :'' }`}
+        className={`portal-system ${this.props.className || ''} ${isolation ? 'isolation' : ''}`}
         style={this.props.style}
       >
         <div className="isolation-app" ref={this.childRootRef}></div>

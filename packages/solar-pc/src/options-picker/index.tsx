@@ -65,9 +65,7 @@ export function OptionsView({ labelName = 'label', valueName = 'value', value, o
     setModels(values || {});
   };
 
-  useEffect(() => {
-    fetchOptions();
-  }, [optionsKey, value]);
+  useEffect(() => {fetchOptions();}, [optionsKey, value]);
 
   return (
     <span style={props.style}>{options[value]}</span>

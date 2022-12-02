@@ -74,6 +74,10 @@ function image(src: string) {
   return <Image className="cell-image" src={src} />;
 }
 
+function privateImage(src: string) {
+  src = Oss.getPrivateUrl(src);
+  return <Image className="cell-image" src={src} />;
+}
 
 // 外键数据查看
 function fk(value: any, ctx: FormatContext) {
@@ -131,6 +135,7 @@ formatters.register(
     { name: 'money', format: money },
     { name: 'image', format: image },
     { name: 'fk', format: fk },
+    { name: 'privateImage', format: privateImage },
   ]
 );
 

@@ -29,8 +29,12 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
    * public:  公有云
    **/
   bucketType: 'private' | 'public'
-  // 上传目录
-  dir?: string
+  // 是否保留原始名字上传,注意指定次参数后，还需要设定storeDir参数
+  sameKeep?: boolean
+  // 再设置了sameKeep后需要指定文件的存放目录
+  storeDir?: string
+  // 业务id
+  bizId?: string
   // 值模式
   valueMode: 'url' | 'object'
   // 最多能上传的文件张数
@@ -53,6 +57,6 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
   acceptType?: 'image' | 'audio' | 'video'
   // 上传按钮文案
   uploadText?: React.ReactNode
-  // 选择模式
+  // 选择模式, 不进行上传，仅选择文件
   selectOnly?: boolean
 }

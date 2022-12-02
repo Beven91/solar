@@ -12,32 +12,32 @@ import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
 import FormActions from '../abstract-object/FormActions';
 
- interface ActionProps {
-   action?: string
-   subAction?: string
-   use?: React.ComponentType<any>
-   children?: React.ReactElement | React.ReactNode
-   className?: string
-   style?: React.CSSProperties
- }
+interface ActionProps {
+  action?: string
+  subAction?: string
+  use?: React.ComponentType<any>
+  children?: React.ReactElement | React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}
 
 export interface ListActionProps {
-   className?: string
-   children?: React.ReactElement | React.ReactNode
-   style?: React.CSSProperties
- }
+  className?: string
+  children?: React.ReactElement | React.ReactNode
+  style?: React.CSSProperties
+}
 
 export interface ObjectActionProps<TRow> extends ActionProps, BaseObjectProps<TRow> {
-   oClassName?: string
-   onSubmit?: (data: SubmitAction<TRow>) => void
- }
+  oClassName?: string
+  onSubmit?: (data: SubmitAction<TRow>) => void
+}
 
 export interface DrawerActionProps<TRow> extends ObjectActionProps<TRow> {
-   drawer?: DrawerProps
-   // 实时存储模式，即不管是确定还是取消都是进行提交操作
-   realtime?: boolean
-   placement?: 'top' | 'right' | 'bottom' | 'left'
- }
+  drawer?: DrawerProps
+  // 实时存储模式，即不管是确定还是取消都是进行提交操作
+  realtime?: boolean
+  placement?: 'top' | 'right' | 'bottom' | 'left'
+}
 
 const getMatchContext = (context: ActionsContext, props: ActionProps) => {
   const { onSubCancel, onSubSubmit, onSubmit, onCancel, action, subAction, ...others } = context;
@@ -197,7 +197,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       {...(realtime ? { mask: true, maskClosable: true } : {})}
       style={style}
       width={finalWidth}
-      className={`${className} abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
+      className={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
       title={props.title || ''}
       visible={visible}
       onClose={onCancel}

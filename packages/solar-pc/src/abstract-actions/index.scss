@@ -20,7 +20,7 @@
 .abstract-actions-drawer {
   &.realtime {
      .ant-drawer-mask {
-      opacity: 0 !important;
+      background-color: rgba(0,0,0,0);
     }
   }
 

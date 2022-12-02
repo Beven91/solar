@@ -52,6 +52,8 @@ export interface AbstractEditColumnType<TRow extends AbstractRow> extends Abstra
   formProps?: Omit<AbstractFormItemType<TRow>, 'name' | 'title' | 'render' | 'initialValue'>
 }
 
+type RenderButton = (href: string, onClick: (e: React.MouseEventHandler<HTMLElement>) => void) => ReactElement | React.ReactNode
+
 interface AbstractBaseButton<TRow> extends Omit<ButtonProps, 'disabled' | 'role'> {
   // 按钮标题
   title: string,
@@ -72,7 +74,7 @@ interface AbstractBaseButton<TRow> extends Omit<ButtonProps, 'disabled' | 'role'
    */
   disabled?: (row: TRow, index: number) => boolean | boolean
   // 自定义按钮渲染
-  render?: (row?: TRow) => ReactElement;
+  render?: (row?: TRow, render?: RenderButton) => ReactElement;
   // 按钮提示文案
   tip?: string,
 }
@@ -142,6 +144,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   selectedRows?: TRow[]
   // 操作列配置
   operation?: ColumnType<TRow>
+  // 默认的分页下标
+  initialPageIndex?: number
   // 分页size
   pageSize?: number,
   // 所有列默认宽度

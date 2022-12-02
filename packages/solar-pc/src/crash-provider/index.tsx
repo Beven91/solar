@@ -31,12 +31,12 @@ export default class CrashProvider extends React.Component<React.PropsWithChildr
     component: (props: any) => (
       <Exception type="500" title="抱歉，异常了..." {...props} />
     ),
-  }
+  };
 
   // 默认状态
   state = {
     error: null as Error,
-  }
+  };
 
   /**
    * 捕获异常，使用派生方式记录错误信息

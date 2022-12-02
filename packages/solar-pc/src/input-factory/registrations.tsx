@@ -28,6 +28,7 @@ const DateModes = [
 ];
 
 AbstractForm.registerConverter('advance-upload-dragger', {
+  name: 'advance-upload-dragger',
   getValue: (v)=> v === true ? 'drag': 'select',
   setInput: (v) => v == 'drag',
 });

@@ -76,7 +76,6 @@ export default function CodeHighlight(props:CodeHighlightProps) {
     },
     [props.code, props.language, props.url]
   );
-  console.log(Prism);
   return (
     <Spin
       spinning={loading}

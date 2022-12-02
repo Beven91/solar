@@ -57,7 +57,7 @@ export default class TreeView<TRow extends PlainObject> extends React.Component<
     rowKey: 'id',
     labelKey: 'title',
     parentKey: 'parentId',
-  }
+  };
 
   constructor(props: TreeViewProps<TRow>) {
     super(props);
@@ -83,11 +83,11 @@ export default class TreeView<TRow extends PlainObject> extends React.Component<
     const node = info.selectedNodes[0];
     const { onActionRoute } = this.props;
     onActionRoute && onActionRoute(renders.createAction({ id: node.key, action: 'update' }));
-  }
+  };
 
   stopPropagation = (ev: React.MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation();
-  }
+  };
 
   renderNode = (node: DataNode) => {
     const { itemRender, rowKey, disabled } = this.props;
@@ -114,7 +114,7 @@ export default class TreeView<TRow extends PlainObject> extends React.Component<
         </div>
       </div>
     );
-  }
+  };
 
   getData = memoize((data: TRow[], parentKey: string, rowKey: string, labelKey:string, format: getRootNodesFunc) => {
     if (!data) return [];

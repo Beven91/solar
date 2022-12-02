@@ -36,3 +36,10 @@
   title="确认按钮disabled控制" 
   desc="可以通过okEnable来控制提交按钮的禁用状态。" 
 />
+
+<AppCodebox 
+  console="true"
+  src="src/abstract-object/demo/index.isolation" 
+  title="isolation提交" 
+  desc="您可以在表单下配置ISolation子表单" 
+/>

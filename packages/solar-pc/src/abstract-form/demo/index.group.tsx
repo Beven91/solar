@@ -7,13 +7,29 @@ export interface CommodityModel {
   name: string
 }
 
+const rules = {
+  name: [{ required: true, message: '请输入姓名' }],
+  age: [{ required: true, message: '请设置年龄' }],
+};
+
+function NestedApp(props:{ value?:any, onChange?:(value:any)=>void }) {
+  const groups: AbstractGroups<CommodityModel> = [
+    { title: '编号', name: 'id' },
+    { title: '年龄', name: 'age' },
+  ];
+
+  return (
+    <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
+  );
+}
+
 export default function App() {
   const formRef = useRef<FormInstance>();
   const [groupStyle, setGroupStyle] = useState<any>('tabs');
 
   const rules: AbstractRules = {
     name: [{ required: true, message: '商品名称不能为空' }],
-    skuId: [{ required: true, message: '请设置条码' }],
+    // skuId: [{ required: true, message: '请设置条码' }],
   };
 
   const groups: AbstractGroups<CommodityModel> = [
@@ -21,19 +37,21 @@ export default function App() {
       group: '基本信息',
       span: 12,
       items: [
-        { title: '商品名', name: 'name', initialValue: '', disabled: true, render: <Input /> },
+        { title: '商品名', name: 'name', initialValue: '', render: <Input /> },
         { title: '价格', name: 'price', initialValue: '100.0', textonly: true },
         { title: '颜色', name: 'color', initialValue: 'Black', break: true },
-        { title: '尺寸', name: 'size', initialValue: '13.7' },
+        { title: '尺寸', name: 'size', initialValue: '13.7', disabled: true },
         { title: '品牌', name: 'brand', initialValue: 'Black', break: true },
         { title: '厂商', name: 'marker', initialValue: '13.7' },
       ],
     },
     {
       group: '条码配置',
+      readonly: true,
       items: [
         { title: '条码信息', name: 'skuId', initialValue: '' },
         { title: '条码信息', name: 'skuId2' },
+        { title: '', name: 'sku', render2: <NestedApp /> },
       ],
     },
     {

@@ -12,6 +12,10 @@ $width:5px;
 
 .abstract-table-wrapper {
 
+  .ant-spin-nested-loading {
+    height: 100%;
+  }
+
   th.column-cellOperator {
     right:$width !important;
   }

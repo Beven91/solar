@@ -71,28 +71,36 @@ export default class TopActions<TRow = AbstractRow> extends React.Component<TopA
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     const { select, tip, action, render, icon, visible, title, click, confirm, type, ...props } = button;
     const single = (select === 'single' || !select);
-    const buttonClick = confirm ? null : (e: any) => this.onClick(single ? selectedRows[0] : selectedRows, '', e, button);
+    const buttonClick = confirm ? null : (e: any) => {
+      this.onClick(single ? selectedRows[0] : selectedRows, '', e, button);
+    };
+    const href = 'href' in button ? button.href : undefined;
     const disabled = this.isDisabled(button, selectedRows);
+    const createButton = (href: string, onClick: any) => {
+      return (
+        <Button
+          {...props}
+          className="operator"
+          icon={icon}
+          href={href}
+          target={button.target || undefined}
+          key={`table-button-operat-${i}`}
+          type={type || 'primary'}
+          onClick={onClick}
+          disabled={disabled}
+        >
+          {title}
+        </Button>
+      );
+    };
     if (render) {
       return (
-        <span key={`table-button-operat-${i}`}>
-          {render()}
+        <span key={`table-button-operat-in-${i}`}>
+          {render(null, createButton)}
         </span>
       );
     }
-    return (
-      <Button
-        {...props}
-        className="operator"
-        icon={icon}
-        key={`table-button-operat-${i}`}
-        type={type || 'primary'}
-        onClick={buttonClick}
-        disabled={disabled}
-      >
-        {title}
-      </Button>
-    );
+    return createButton(href, buttonClick);
   }
 
   // 渲染跳转按钮

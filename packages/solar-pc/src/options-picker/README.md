@@ -41,3 +41,9 @@ export default function App() {
   title="基本用法" 
   desc="通过配置optionsKey来加载对应的字典数据" 
 />
+
+<AppCodebox 
+  src="src/options-picker/demo/index.view" 
+  title="文本模式" 
+  desc="一个带缓存的OptionsView" 
+/>

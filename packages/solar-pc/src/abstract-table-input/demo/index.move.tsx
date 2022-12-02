@@ -33,12 +33,19 @@ export default function App() {
     setRows([...values]);
   };
 
+  const onSave = (row: ActivityModel) => {
+    console.log('save row', row);
+    return Promise.resolve({});
+  };
+
   return (
     <div
-      style={{ height: 360, overflow: 'auto' }}
+      style={{ height: 360 }}
     >
       <AbstractTableInput
         rowKey="id"
+        moveable
+        onSave={onSave}
         onChange={onChange}
         columns={columns}
         value={rows}

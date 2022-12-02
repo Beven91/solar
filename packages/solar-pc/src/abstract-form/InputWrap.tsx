@@ -122,6 +122,7 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
 
   // 获取表单的值属性名
   renderPropValueName(input: ReactElement) {
+    if (!input) return 'value';
     const type = input.type as AbstractInputComponent;
     return type.valuePropName || 'value';
   }
@@ -152,10 +153,11 @@ export default class InputWrap<TRow> extends React.Component<InputWrapProps<TRow
     const initialValue = item.initialValue;
     const component = this.renderFormInput(item, initialValue);
     const valuePropName = this.valuePropName = this.renderPropValueName(component);
+    if (!component) return null;
     const options = {
       [valuePropName]: this.setInput(),
       disabled: component.props.disabled || isReadOnly,
-      placeholer: component.props.placeholer || item.placeholder,
+      placeholder: component.props.placeholder || item.placeholder,
       onChange: (...params: any[]) => this.wrappedOnChange(component, ...params),
     };
     if (item.render2) {

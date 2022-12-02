@@ -115,6 +115,7 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
       },
       onCancel: () => {
         onCancel && onCancel();
+        this.reason = 'none';
         this.reasonAction = action;
         this.navigateBack();
       },
@@ -155,11 +156,20 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
         const data = cellRenders.createAction(action);
         const url = data.create(route.path || '', { ...(route.params || {}), ...action });
         runtime.isInitialize = false;
-        this.props?.history?.push(url);
+        this.props?.history?.push(this.normalizeUrl(url));
         this.reasonAction = action?.action;
         onRoute && onRoute(action);
       },
     } as AbstractTableContext;
+  }
+
+  normalizeUrl(url: string) {
+    const query = location.search.slice(1);
+    const hashQuery = location.hash.split('?').slice(1);
+    const isHash = !!location.hash;
+    const useQuery = isHash ? hashQuery : query;
+    const joinChar = useQuery ? '?' : '';
+    return url + joinChar + useQuery;
   }
 
   navigateBack() {
@@ -175,7 +185,7 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
       const empty = { ...route?.params, action: '', id: '' };
       const data = cellRenders.createAction({ action: '', id: '' });
       const initUrl = data.create(route?.path || '', empty);
-      this.props.history?.replace(initUrl);
+      this.props.history?.replace(this.normalizeUrl(initUrl));
     } else {
       this.props.history?.goBack();
     }

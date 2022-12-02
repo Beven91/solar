@@ -13,33 +13,33 @@ import AdvancePicker from '../advance-picker';
 import AbstractForm from '../abstract-form';
 
 export interface AbstractSearchProps<TRow> {
-   // 容器样式名
-   className?: string
-   // 搜搜按钮容器样式
-   actionsCls?: string
-   // 默认查询条件
-   initialValues?: TRow
-   // 需要配置的搜索项
-   fields: Array<AbstractSField>
-   // 搜索调用的方法
-   onQuery: (query: AbstractQueryType) => void
-   // 查询按钮配置
-   btnQuery?: ButtonProps
-   // 取消按钮配置
-   btnCancel?: ButtonProps
-   // 每一个搜索项内部的标题和录入框的span配置
-   span?: number,
-   // 按钮是否换行展示
-   // 默认：inline
-   actionStyle?: 'inline' | 'newline'
-   // 清空
-   onClean?: () => void,
-   // 搜索表单项样式类名
-   formItemCls?: string
- }
+  // 容器样式名
+  className?: string
+  // 搜搜按钮容器样式
+  actionsCls?: string
+  // 默认查询条件
+  initialValues?: TRow
+  // 需要配置的搜索项
+  fields: Array<AbstractSField>
+  // 搜索调用的方法
+  onQuery: (query: AbstractQueryType) => void
+  // 查询按钮配置
+  btnQuery?: ButtonProps
+  // 取消按钮配置
+  btnCancel?: ButtonProps
+  // 每一个搜索项内部的标题和录入框的span配置
+  span?: number,
+  // 按钮是否换行展示
+  // 默认：inline
+  actionStyle?: 'inline' | 'newline'
+  // 清空
+  onClean?: () => void,
+  // 搜索表单项样式类名
+  formItemCls?: string
+}
 
 export interface AbstractSearchState {
- }
+}
 
 const FormItem = Form.Item;
 
@@ -96,7 +96,7 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
     } else if (field.api) {
       return <AdvancePicker allowClear allOption labelName={api[1]} valueName={api[2]} api={api[0]} />;
     }
-    return <Input />;
+    return <Input placeholder={field.placeholder} />;
   };
 
   // 处理搜索
@@ -110,8 +110,8 @@ export default class AbstractSearch<TRow = AbstractRow> extends React.Component<
   }
 
   /**
-    * 过滤为空的选项
-    */
+   * 过滤为空的选项
+   */
   renderQuery(query: PlainObject) {
     return Object.keys(query).reduce((newQuery: PlainObject, k) => {
       let v = query[k];

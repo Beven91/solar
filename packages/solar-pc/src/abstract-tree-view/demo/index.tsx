@@ -11,12 +11,11 @@ interface MenuModel {
 export default function App() {
   const onQuery = (query:AbstractQueryType)=>{
     return Promise.resolve([
-      { id: 1, name: '集团', status: '可用', parentId: 0 },
-      { id: 2, name: '华南', status: '不可用', parentId: 1 },
-      { id: 3, name: '华东', status: '可用', parentId: 1 },
-      { id: 4, name: '华南分公司', status: '不可用', parentId: 2 },
-      { id: 5, name: '华南分公司二', status: '不可用', parentId: 2 },
-      { id: 6, name: '华东分公司', status: '不可用', parentId: 3 },
+      { name: '订单管理', id: 1, parentId: 0 },
+      { name: '退货管理', id: 3, parentId: 1 },
+      { name: '订单审核', id: 4, parentId: 1 },
+      { name: '商品管理', id: 20, parentId: 0 },
+      { name: '库存管理', id: 21, parentId: 20 },
     ]);
   };
 

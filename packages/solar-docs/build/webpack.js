@@ -129,8 +129,8 @@ module.exports = function(options) {
                     require.resolve('babel-plugin-refer-import'),
                     {
                       modules: [
-                        { 'libraryName': 'fluxy-core', 'style': false, 'libraryDirectory': 'src' },
-                        { 'libraryName': 'fluxy-pc', 'style': false, 'libraryDirectory': 'src' },
+                        { 'libraryName': 'solar-core', 'style': false, 'libraryDirectory': 'src' },
+                        { 'libraryName': 'solar-pc', 'style': false, 'libraryDirectory': 'src' },
                         { 'libraryName': '@ant-design/icons', 'libraryDirectory': '', 'style': false, 'camel2DashComponentName': false },
                         { 'libraryName': 'antd', 'style': 'css' },
                       ],

@@ -12,6 +12,12 @@
 
 #### 内置了哪些组件?
 
+> 需要引用注册包 
+
+```ts
+import 'solar-pc/src/input-factory/registrations'
+```
+
 - input (Input)
 - iconfont (IconPicker.Input)
 - textarea (Input.TextArea)

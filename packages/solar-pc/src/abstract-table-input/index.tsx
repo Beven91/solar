@@ -6,49 +6,53 @@ import './index.scss';
 import React from 'react';
 import AbstractTable from '../abstract-table';
 import { Button } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import AbstractChildForm from '../abstract-object/ChildForm';
+import { PlusOutlined, DeleteOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
 import EditableCell from './EditableCell';
 import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, AbstractButton } from '../abstract-table/types';
 import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel } from '../interface';
 import { FormInstance } from 'antd/lib/form';
+import ISolation from '../abstract-form/isolation';
 
- type UpdateReason = 'input' | 'row' | 'none'
+type UpdateReason = 'input' | 'row' | 'none'
+
+const NOOP = [] as any[];
 
 export interface AbstractTableInputProps<TRow extends AbstractRow> extends AbstractTableProps<TRow> {
-   // 列配置信息
-   columns: AbstractEditColumnType<TRow>[]
-   // 返回的分页数据
-   value?: TRow[]
-   // 输入内容发生改变
-   onChange?: (rows: TRow[]) => void
-   // 保存指定行数据，仅在mode=row时能出发
-   onSave: (row: TRow) => Promise<any>
-   /**
-    * 编辑模式
-    * all: 所有行同时可以编辑
-    * row: 点击指定行的按钮进入编辑状态
-    */
-   mode: 'all' | 'row',
-   // 校验规则
-   rules?: AbstractRules
-   // 自定义创建行对象
-   createRow?: (rowKey: string, columns: AbstractColumnType<TRow>[], index: number) => TRow
-   // 新增按钮文案
-   addButton?: React.ReactNode
-   // 是否禁用
-   disabled?: boolean
-   // 新增按钮是否可见
-   addVisible: (rows: TRow[]) => boolean
-   // 删除按钮是否可见
-   removeVisible: (row: TRow) => boolean
-   // 是否显示操作列
-   hideOperation?: boolean
- }
+  // 列配置信息
+  columns: AbstractEditColumnType<TRow>[]
+  // 返回的分页数据
+  value?: TRow[]
+  // 输入内容发生改变
+  onChange?: (rows: TRow[]) => void
+  // 保存指定行数据，仅在mode=row时能出发
+  onSave: (row: TRow) => Promise<any>
+  /**
+   * 编辑模式
+   * all: 所有行同时可以编辑
+   * row: 点击指定行的按钮进入编辑状态
+   */
+  mode: 'all' | 'row',
+  // 校验规则
+  rules?: AbstractRules
+  // 自定义创建行对象
+  createRow?: (rowKey: string, columns: AbstractColumnType<TRow>[], index: number) => TRow
+  // 新增按钮文案
+  addButton?: React.ReactNode
+  // 是否禁用
+  disabled?: boolean
+  // 是否可排序移动
+  moveable?: boolean
+  // 新增按钮是否可见
+  addVisible: (rows: TRow[]) => boolean
+  // 删除按钮是否可见
+  removeVisible: (row: TRow) => boolean
+  // 是否显示操作列
+  hideOperation?: boolean
+}
 
- interface AbstractTableInputState<TRow> {
-   editRow: TRow
- }
+interface AbstractTableInputState<TRow> {
+  editRow: TRow
+}
 
 const components = {
   body: {
@@ -97,10 +101,10 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
   throttleId: any;
 
   cacheRowsRefs = {} as {
-     [propName: string]: {
-       [propName: string]: React.RefObject<React.Component>
-     }
-   };
+    [propName: string]: {
+      [propName: string]: React.RefObject<React.Component>
+    }
+  };
 
   formRef = React.createRef<FormInstance>();
 
@@ -115,7 +119,7 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
   }
 
   get isLocal() {
-    return !this.props.onQuery;
+    return !this.props.onQuery && this.props.pagination != false;
   }
 
   // 当前表格列配置
@@ -232,6 +236,30 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
     onChange && onChange(rows);
   }
 
+  moveUp = (row: TRow) => {
+    const rows = this.rows;
+    const { onChange } = this.props;
+    const index = rows.indexOf(row);
+    const targetIndex = index - 1;
+    if (targetIndex > -1) {
+      rows[index] = rows[targetIndex];
+      rows[targetIndex] = row;
+    }
+    onChange && onChange([...rows]);
+  };
+
+  moveDown = (row: TRow) => {
+    const rows = this.rows;
+    const index = rows.indexOf(row);
+    const { onChange } = this.props;
+    const targetIndex = index + 1;
+    if (targetIndex < rows.length) {
+      rows[index] = rows[targetIndex];
+      rows[targetIndex] = row;
+    }
+    onChange && onChange([...rows]);
+  };
+
   // 默认操作按钮
   get defaultButtons() {
     if (this.props.mode == 'all') {
@@ -287,6 +315,29 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
     ] as AbstractButton<TRow>[];
   }
 
+  // 移动按钮
+  get moveButtons() {
+    if (this.props.disabled || !this.props.moveable) {
+      return [];
+    }
+    return [
+      {
+        target: 'cell',
+        tip: '上移',
+        icon: <UpOutlined />,
+        visible: (row, i) => i > 0,
+        click: this.moveUp,
+      },
+      {
+        target: 'cell',
+        tip: '下移',
+        visible: (row, i) => i < (this.props.value?.length - 1),
+        icon: <DownOutlined />,
+        click: this.moveDown,
+      },
+    ] as AbstractButton<TRow>[];
+  }
+
   // 按钮
   get buttons() {
     if (this.props.disabled || this.props.hideOperation) {
@@ -294,6 +345,7 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
     }
     return [
       ...this.defaultButtons,
+      ...this.moveButtons,
       ...(this.props.buttons || []), ,
     ] as AbstractButton<TRow>[];
   }
@@ -362,30 +414,28 @@ export default class AbstractTableInput<TRow extends AbstractRow> extends React.
   render() {
     const rows = this.rows;
     return (
-      <React.Fragment>
-        <AbstractChildForm
-          component={false}
-          initialValues={{ rows: rows }}
-          onValuesChange={this.onValuesChange}
-          formRef={this.formRef}
+      <ISolation
+        value={{ rows: rows }}
+        groups={NOOP}
+        form={this.formRef}
+        onValuesChange={this.onValuesChange}
+      >
+        <AbstractTable
+          {...this.props}
+          autoHeight
+          onQuery={this.onQuery}
+          ref={this.tableRef}
+          locale={this.locale}
+          components={components}
+          data={{ models: this.rows, count: 0 }}
+          buttons={this.buttons}
+          footer={this.getRenderFooter()}
+          className={`abstract-table-input ${this.props.className || ''}`}
+          columns={this.mergedColumns}
         >
-          <AbstractTable
-            {...this.props}
-            autoHeight
-            onQuery={this.onQuery}
-            ref={this.tableRef}
-            locale={this.locale}
-            components={components}
-            data={{ models: this.rows, count: 0 }}
-            buttons={this.buttons}
-            footer={this.getRenderFooter()}
-            className={`abstract-table-input ${this.props.className || ''}`}
-            columns={this.mergedColumns}
-          >
-            {this.props.children}
-          </AbstractTable>
-        </AbstractChildForm>
-      </React.Fragment>
+          {this.props.children}
+        </AbstractTable>
+      </ISolation>
     );
   }
 }

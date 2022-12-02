@@ -2,11 +2,11 @@ import React from 'react';
 import { OnActionRoute } from '../abstract-table/types';
 import { AbstractRow } from '../interface';
 
-export interface ActionsContext<TRow = AbstractRow, Sub = any> {
+export interface ActionsContext<TRow = AbstractRow> {
   action: string
   subAction?: string
   record: TRow
-  subRecord?:Sub
+  subRecord?: any
   subConfirmLoading?: boolean
   confirmLoading?: boolean
   onMatch?: (action:string) => void

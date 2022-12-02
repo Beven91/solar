@@ -137,7 +137,9 @@ function processTemplate(name, data) {
 }
 
 function eachRepositories(ctx, handler) {
-  const dev = __dirname.indexOf(path.resolve('')) < 0;
+  const id = path.join(__dirname, '..', '..');
+  const pwd = path.resolve('');
+  const dev = id != pwd;
   if (dev) {
     return Promise.resolve(handler({ dir: path.resolve('') }));
   }
@@ -213,7 +215,7 @@ module.exports.generateFindTestsTemplate = (files, name) => {
   const file = path.join(cacheRoot, name, 'findTests.tsx');
   fs.ensureDirSync(path.dirname(file));
   const code = files
-    .filter((name)=>/\.(ts|tsx|vue|js)/.test(name))
+    .filter((name) => /\.(ts|tsx|vue|js)/.test(name))
     .map((item) => `import '${item.replace(/\\/g, '/')}';`).join('\n');
   fs.writeFileSync(file, code);
   return file;

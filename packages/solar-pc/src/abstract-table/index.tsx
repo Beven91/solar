@@ -14,9 +14,14 @@ import Formatters from './util/formatters';
 import CellRenders from './util/cellRenders';
 import TabFilters from './parts/TabFilters';
 import AbstractTableContext from './context';
-import { AbstractTableProps, AbstractButton, SelectMode, OnActionRoute, AbstractColumns } from './types';
+import { AbstractTableProps, AbstractButton, SelectMode, OnActionRoute, AbstractColumns, AbstractColumnType } from './types';
 import { AbstractSField, AbstractQueryType, PlainObject, AbstractResponseModel } from '../interface';
 import { AbstractRows, AbstractRow, AbstractAction, AbstractFilters, FilterTabType } from '../interface';
+
+function Title(props: { column: AbstractColumnType<any> }) {
+  const column = props.column;
+  return (<div data-name={column.name} className="abstract-table-column column-th" >{column.title}</div>);
+}
 
 interface SortInfo {
   field: string
@@ -24,7 +29,6 @@ interface SortInfo {
 }
 
 export interface AbstractTableState<TRow> {
-  loading: boolean
   activeTab: FilterTabType
   sort: SortInfo
   scroll: {
@@ -100,7 +104,6 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
     this.handleSearch = this.handleSearch.bind(this);
     this.sorts = {};
     this.state = {
-      loading: false,
       activeTab: this.defaultTab,
       sort: {
         field: props.sort,
@@ -111,7 +114,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       selectedRows: [],
       propsSelectedRows: null,
       pageSize: props.pageSize,
-      pageNo: 1,
+      pageNo: props.initialPageIndex == undefined ? 1 : props.initialPageIndex,
     };
   }
 
@@ -129,7 +132,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
   get operatorColumn() {
     const { operation } = this.props;
     const operateWidth = (operation || {}).width || 160;
-    const style = { width: operateWidth };
+    const style = {};
     const operators = this.cellOperators;
     return {
       title: '操作',
@@ -171,7 +174,7 @@ export default class AbstractTable<TRow extends AbstractRow> extends React.Compo
       const { width, ellipsis } = column;
       return {
         ...column,
-        title: <div className="abstract-table-column column-th" data-name={column.name}>{column.title}</div>,
+        title: <Title column={column} />,
         key: `col-${column.name}`,
         width: width || defaultWidth,
         ellipsis: ellipsis === undefined ? true : ellipsis,

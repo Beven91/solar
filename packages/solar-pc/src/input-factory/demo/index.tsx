@@ -1,5 +1,6 @@
 import React from 'react';
 import { InputFactory } from 'solar-pc';
+import 'solar-pc/src/input-factory/registrations';
 import { Form } from 'antd';
 
 export default function App() {

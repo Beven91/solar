@@ -65,31 +65,37 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     const { icon, render, tip, action, type, select, visible, click, disabled, title, ...props } = button;
     const buttonClick = confirm ? null : (e: any) => this.onClick(row, rowId, e, button);
+    const href = 'href' in button ? button.href : undefined;
+
+    const createButton = (href: string, onClick: any) => {
+      return (
+        <Button
+          {...props}
+          icon={icon}
+          className="cell-operator"
+          href={href}
+          target={button.target || undefined}
+          key={`cell-button-operator-${i}`}
+          onClick={onClick}
+          type={type || 'link'}
+        >
+          {title}
+        </Button>
+      );
+    };
+
     if (typeof render === 'function') {
       return (
         <span
           className="cell-operator"
           onClick={buttonClick}
-          key={`cell-button-operator-${i}`}
+          key={`cell-button-operator-in-${i}`}
         >
-          {render(row)}
+          {render(row, createButton)}
         </span>
       );
     }
-    return (
-      <Button
-        {...props}
-        icon={icon}
-        className="cell-operator"
-        href={'href' in button ? button.href : undefined}
-        target={button.target || undefined}
-        key={`cell-button-operator-${i}`}
-        onClick={buttonClick}
-        type={type || 'link'}
-      >
-        {title}
-      </Button>
-    );
+    return createButton(href, buttonClick);
   }
 
   // 渲染需要确认提示的操作按钮

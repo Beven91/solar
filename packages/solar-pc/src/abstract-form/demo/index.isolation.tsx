@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AbstractForm, AbstractGroups } from 'solar-pc';
-import { Form, FormInstance } from 'antd';
+import { Form, FormInstance, Button } from 'antd';
 
 export interface CommodityModel {
   name: string
@@ -10,6 +10,11 @@ export interface CommodityModel {
   }
 }
 
+const rules = {
+  name: [{ required: true, message: '请输入姓名' }],
+  age: [{ required: true, message: '请设置年龄' }],
+};
+
 function NestedApp(props:{ value?:any, onChange?:(value:any)=>void }) {
   const groups: AbstractGroups<CommodityModel> = [
     { title: '编号', name: 'id' },
@@ -17,7 +22,7 @@ function NestedApp(props:{ value?:any, onChange?:(value:any)=>void }) {
   ];
 
   return (
-    <AbstractForm.ISolation value={props.value} onChange={props.onChange} groups={groups} />
+    <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
   );
 }
 
@@ -37,8 +42,11 @@ export default function App() {
   };
 
   return (
-    <Form onValuesChange={onValuesChange} initialValues={record} ref={formRef}>
-      <AbstractForm model={record} groups={groups} form={formRef} />
+    <Form onFinish={(d)=>console.log('finish', d)} onValuesChange={onValuesChange} initialValues={record} ref={formRef}>
+      <AbstractForm rules={rules} model={record} groups={groups} form={formRef} />
+      <div style={{ textAlign: 'center' }}>
+        <Button type="primary" htmlType="submit" >提交</Button>
+      </div>
     </Form>
   );
 }

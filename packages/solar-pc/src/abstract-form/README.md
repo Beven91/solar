@@ -4,12 +4,6 @@
 
 ### 代码演示
 
-<AppCodebox 
-  console="true"
-  src="src/abstract-form/demo/index.basic" 
-  title="基本用法" 
-  desc="通过配置，来生成一个带校验的表单界面" 
-/>
 
 <AppCodebox 
   src="src/abstract-form/demo/index.group" 
@@ -17,26 +11,6 @@
   desc="通过配置group，来生成一个分组表单" 
 />
 
-<AppCodebox 
-  src="src/abstract-form/demo/index.readonly" 
-  title="只读表单" 
-  desc="通过配置isReadOnly，来生成一个只读表单" 
-/>
-
-
-<AppCodebox 
-  console="true"
-  src="src/abstract-form/demo/index.isolation" 
-  title="嵌套表单" 
-  desc="通过AbstractForm.ISolation来构建一个嵌套的AbstractForm" 
-/>
-
-<AppCodebox 
-  console="true"
-  src="src/abstract-form/demo/index.textonly" 
-  title="文本模式" 
-  desc="通过设置每个表单的textonly来控制该表单项，仅展示成文本模式" 
-/>
 
 
 ```props

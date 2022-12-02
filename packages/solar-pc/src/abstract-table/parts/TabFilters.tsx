@@ -11,21 +11,21 @@ const TabPane = Tabs.TabPane;
 const defaultTab = { label: '全部', value: '' };
 
 export interface FilterTabsProps {
-   // 过滤tabs配置
-   filters: FilterTabType[]
-   loadFilters: () => Promise<FilterTabType[]>
-   // 默认选中的值
-   value: any,
-   // tab发生改变
-   onChange: (v: any) => void,
- }
+  // 过滤tabs配置
+  filters: FilterTabType[]
+  loadFilters: () => Promise<FilterTabType[]>
+  // 默认选中的值
+  value: any,
+  // tab发生改变
+  onChange: (v: any) => void,
+}
 
 export interface FilterTabsState {
-   loadFilters?: () => Promise<FilterTabType[]>,
-   filters: FilterTabType[]
-   needReload: boolean
-   value: any
- }
+  loadFilters?: () => Promise<FilterTabType[]>,
+  filters: FilterTabType[]
+  needReload: boolean
+  value: any
+}
 
 export default class FilterTabs extends React.Component<FilterTabsProps, FilterTabsState> {
   // 默认属性

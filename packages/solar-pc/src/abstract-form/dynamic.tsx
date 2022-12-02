@@ -16,49 +16,51 @@ import {
 } from '../interface';
 
 export interface DynamicProps<TRow> {
-   // 是否使用外包裹
-   wrapper?: boolean
-   // 数据
-   model: TRow
-   // 默认跨列数
-   span?: number
-   // 表单配置
-   groups: AbstractGroups<TRow>
-   // 统一表单布局配置
-   formItemLayout?: AbstractFormLayout
-   // 校验规则
-   rules?: AbstractRules
-   // 是否为查看模式
-   isReadOnly?: boolean
-   // antd的form对象
-   form: React.RefObject<FormInstance>
-   // 表单组展示模式
-   groupStyle?: FormGroupStyle
-   // 表单值发生改变时间
-   onValuesChange?: onValuesChangeHandler
-   // 拼接在表单控件后的字元素
-   formChildren?: React.ReactNode
-   // 如果分组风格为tabs其对应的tabs类型
-   tabType?: 'line' | 'card'
-   // 如果分组风格为tabs其对应的tabs位置
-   tabPosition?: 'top' | 'left' | 'bottom' | 'right'
-   // 如果分组风格为tabs其对应的tabs间隔
-   tabBarGutter?: number
-   // 让指定表单获取焦点，仅在初始化时有效
-   autoFocus?: string
-   // 初始化的tab焦点
-   defaultActiveIndex?: number
-   // 表单项样式名
-   formItemCls?: string
-   // 表单容器外在宽度
-   containerWidth?: number
-   // 表单项底部间距模式
-   itemStyle?: React.CSSProperties
- }
+  // 是否使用外包裹
+  wrapper?: boolean
+  // 数据
+  model: TRow
+  // 默认跨列数
+  span?: number
+  // 表单配置
+  groups: AbstractGroups<TRow>
+  // 统一表单布局配置
+  formItemLayout?: AbstractFormLayout
+  // 校验规则
+  rules?: AbstractRules
+  // 是否为查看模式
+  isReadOnly?: boolean
+  // antd的form对象
+  form: React.RefObject<FormInstance>
+  // 表单组展示模式
+  groupStyle?: FormGroupStyle
+  // 表单值发生改变时间
+  onValuesChange?: onValuesChangeHandler
+  // 拼接在表单控件后的字元素
+  formChildren?: React.ReactNode
+  // 如果分组风格为tabs其对应的tabs类型
+  tabType?: 'line' | 'card'
+  // 如果分组风格为tabs其对应的tabs位置
+  tabPosition?: 'top' | 'left' | 'bottom' | 'right'
+  // 如果分组风格为tabs其对应的tabs间隔
+  tabBarGutter?: number
+  // 让指定表单获取焦点，仅在初始化时有效
+  autoFocus?: string
+  // 初始化的tab焦点
+  defaultActiveIndex?: number
+  // 表单项样式名
+  formItemCls?: string
+  // 表单容器外在宽度
+  containerWidth?: number
+  // 表单项底部间距模式
+  itemStyle?: React.CSSProperties
+  // 当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验
+  validateFirst?: boolean | 'parallel'
+}
 
 export interface DynamicState {
-   activeIndex: number
- }
+  activeIndex: number
+}
 
 const defaultFormItemLayout: FormItemLayout = {
   labelCol: {
@@ -103,8 +105,8 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 是否为只读模式
-  get isReadOnly() {
-    return this.props.isReadOnly;
+  getIsReadOnly(group:AbstractFormGroupItemType<TRow>) {
+    return this.props.isReadOnly || group?.readonly;
   }
 
   getDefaultFormLayout() {
@@ -163,12 +165,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
       group.items.forEach((item) => {
         this.plainFields[item.name?.toString()] = index;
       });
-      if (!group.items.find((item) => rules[item.name?.toString()])) {
-        // 如果当前分组，么有配置校验规则，则标记成当前tab已访问。
-        this.accessedKeys[index] = true;
-      } else {
-        this.accessedKeys[index] = index == this.state.activeIndex;
-      }
+      this.accessedKeys[index] = index == this.state.activeIndex;
     });
     return tabGroups;
   });
@@ -182,7 +179,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   renderGroup(groupItem: AbstractFormGroupItemType<TRow>, index: number) {
     const { group, items, span } = groupItem;
     if (!('group' in groupItem)) {
-      return this.renderFormItem(groupItem as any, this.props.span, null, null, index);
+      return this.renderFormItem(groupItem as any, this.props.span, null, index);
     }
     const classNames = [] as string[];
     if (index == 0) {
@@ -210,10 +207,10 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
           className={`abstract-form-group ${classNames.join(' ')}`}
         >
           <Row gutter={24}>
-            {items.map((item, i) => this.renderFormItem(
-              item, span || this.props.span,
-              groupItem.layout,
-              groupItem.itemStyle,
+            {items?.map((item, i) => this.renderFormItem(
+              item,
+              span || this.props.span,
+              groupItem,
               i
             ))}
           </Row>
@@ -223,29 +220,31 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   }
 
   // 渲染表单
-  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties, index?:number) {
+  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, index?: number) {
     if (typeof item === 'function') {
-      return this.renderFreeFunction(item, index);
+      return this.renderFreeFunction(item, group, index);
     }
-    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, layout, itemStyle, index);
+    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, group, index);
   }
 
   // 渲染一个自定义布局表单
-  renderFreeFunction(item: FunctionItemType<TRow>, index:number) {
+  renderFreeFunction(item: FunctionItemType<TRow>, group: AbstractFormGroupItemType<TRow>, index: number) {
     return (
       <Col
         key={`form-group-item-${index || 0}-${item.name}`}
         span={24}
       >
-        {item(this.props.model as TRow, this.isReadOnly)}
+        {item(this.props.model as TRow, this.getIsReadOnly(group))}
       </Col>
     );
   }
 
   // 渲染常规布局表单
-  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, layout?: AbstractFormLayout, itemStyle?: React.CSSProperties, i?:number) {
+  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, i?: number) {
     const { formItemLayout, rules } = this.props;
     const title = item.render2 ? '' : item.title;
+    const layout = group?.layout;
+    const itemStyle = group?.itemStyle;
     const layout2 = title ? item.layout || layout || formItemLayout || this.getDefaultFormLayout() : {};
     const num = 24 / span;
     const name = item.name instanceof Array ? item.name.join('.') : item.name;
@@ -268,9 +267,10 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
           autoFocusAt={this.props.autoFocus}
           colOption={colOption}
           onValuesChange={this.props.onValuesChange}
-          isReadOnly={this.props.isReadOnly}
+          isReadOnly={this.getIsReadOnly(group)}
           form={this.props.form}
           rules={itemRules}
+          validateFirst={this.props.validateFirst}
           model={this.props.model}
           style={{
             ...(this.props.itemStyle || {}),
@@ -309,7 +309,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
               return (
                 <Tabs.TabPane tab={<div>{group.icon}{group.group || index}</div>} key={index}>
                   <Row className="tabs-group-form-inner" gutter={8}>
-                    {group.items?.map((item) => this.renderFormItem(item, group.span || this.props.span, group.layout, null, index))}
+                    {group.items?.map((item) => this.renderFormItem(item, group.span || this.props.span, group, index))}
                   </Row>
                 </Tabs.TabPane>
               );
@@ -343,7 +343,7 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
   // 渲染
   render() {
     return (
-      <div className={`abstract-form ${this.isReadOnly ? 'readonly' : ''}`}>
+      <div className={`abstract-form ${this.props.isReadOnly ? 'readonly' : ''}`}>
         {this.renderStyle()}
       </div>
     );

@@ -48,6 +48,8 @@ export interface AbstractFormProps<TRow> {
   formItemCls?: string
   // 表单项底部间距模式
   itemStyle?: React.CSSProperties
+  // 当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验
+  validateFirst?: boolean | 'parallel'
 }
 
 export default class AbstractForm<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<AbstractFormProps<TRow>>> {

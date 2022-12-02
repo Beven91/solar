@@ -7,7 +7,6 @@ import './index.scss';
 import React from 'react';
 import { Modal, Form, ButtonProps } from 'antd';
 import AbstractForm from '../abstract-form';
-import AbstractChildForm from './ChildForm';
 import { AbstractActionItem, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import { Travel } from 'solar-core';
@@ -19,71 +18,71 @@ function NOOP(record: AbstractRow) { }
 let formIdIndex = 0;
 
 export interface BaseObjectProps<TRow> {
-   // 编辑页类型
-   type?: 'modal' | 'normal';
-   // 弹窗标题
-   title?: string;
-   // 取消操作
-   onCancel?: () => boolean | void;
-   // 弹窗宽度
-   width?: number;
-   // 内容高度
-   height?: string | number
-   // 是否显示底部操作按钮
-   footer?: boolean;
-   // 确定按钮属性配置
-   btnSubmit?: ButtonProps
-   // 取消按钮配置
-   btnCancel?: ButtonProps
-   // 是否滚动到第一个错误的位置
-   scrollToFirstError?: boolean;
-   // 主键字段
-   primaryKey?: string;
-   // 样式名
-   className?: string;
-   // 自定义底部actions
-   footActions?: AbstractActionItem<TRow>[];
-   // 自定义顶部actions
-   headActions?: AbstractActionItem<TRow>[];
-   // 自定义headActions渲染父元素
-   headContainer?: React.RefObject<HTMLElement>
-   // 是否为只读模式
-   isReadOnly?: boolean;
-   // 是否提交按钮显示loading
-   loading?: boolean
-   // 一个函数用于判定【确定】按钮是否可用
-   okEnable?: (values: TRow) => boolean
-   // 按钮显示情况
-   showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
-   // 当有值发生改变时
-   onValuesChange?: (values: TRow, prevValues: TRow) => void
- }
+  // 编辑页类型
+  type?: 'modal' | 'normal';
+  // 弹窗标题
+  title?: string;
+  // 取消操作
+  onCancel?: () => boolean | void;
+  // 弹窗宽度
+  width?: number;
+  // 内容高度
+  height?: string | number
+  // 是否显示底部操作按钮
+  footer?: boolean;
+  // 确定按钮属性配置
+  btnSubmit?: ButtonProps
+  // 取消按钮配置
+  btnCancel?: ButtonProps
+  // 是否滚动到第一个错误的位置
+  scrollToFirstError?: boolean;
+  // 主键字段
+  primaryKey?: string;
+  // 样式名
+  className?: string;
+  // 自定义底部actions
+  footActions?: AbstractActionItem<TRow>[];
+  // 自定义顶部actions
+  headActions?: AbstractActionItem<TRow>[];
+  // 自定义headActions渲染父元素
+  headContainer?: React.RefObject<HTMLElement>
+  // 是否为只读模式
+  isReadOnly?: boolean;
+  // 是否提交按钮显示loading
+  loading?: boolean
+  // 一个函数用于判定【确定】按钮是否可用
+  okEnable?: (values: TRow) => boolean
+  // 按钮显示情况
+  showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
+  // 当有值发生改变时
+  onValuesChange?: (values: TRow, prevValues: TRow) => void
+}
 
 export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
-   /**
-    * 当前对象所属动作
-    * 例如: add,update,view等任意字符串
-    * 注意: 当action为view时等同于设置了isReadOnly
-    */
-   action: string;
-   // 当前编辑的数据
-   record: TRow;
-   // 提交操作
-   onSubmit?: (record: TRow) => void;
- }
+  /**
+   * 当前对象所属动作
+   * 例如: add,update,view等任意字符串
+   * 注意: 当action为view时等同于设置了isReadOnly
+   */
+  action: string;
+  // 当前编辑的数据
+  record: TRow;
+  // 提交操作
+  onSubmit?: (record: TRow) => void;
+}
 
 export interface AbstractObjectState<TRow> {
-   modalDestory?: boolean;
-   visible?: boolean;
-   prevMode?: string;
-   values: TRow;
-   needFillValues: boolean;
- }
+  modalDestory?: boolean;
+  visible?: boolean;
+  prevMode?: string;
+  values: TRow;
+  needFillValues: boolean;
+}
 
 export default class AbstractObject<TRow = AbstractRow> extends React.Component<
-   React.PropsWithChildren<AbstractObjectProps<TRow>>,
-   AbstractObjectState<TRow>
- > {
+  React.PropsWithChildren<AbstractObjectProps<TRow>>,
+  AbstractObjectState<TRow>
+> {
   static getDerivedStateFromProps(
     props: AbstractObjectProps<AbstractRow>,
     state: AbstractObjectState<AbstractRow>
@@ -119,8 +118,6 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     onCancel: NOOP,
   };
 
-  static ChildForm = AbstractChildForm;
-
   formId = '';
 
   constructor(props: any) {
@@ -133,8 +130,6 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
   headerRef = React.createRef<FormActions<TRow>>();
 
   childFormRefs = [] as React.RefObject<FormInstance>[];
-
-  childValidate = true;
 
   cancelId: any;
 
@@ -159,19 +154,6 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
       isReadOnly: this.isReadOnly,
       form: this.formRef,
       width: this.props.width,
-      // 新增子表单容器
-      addChildForm: (form: React.RefObject<FormInstance>) => {
-        if (this.childFormRefs.indexOf(form) < 0) {
-          this.childFormRefs.push(form);
-        }
-      },
-      // 移除子表单容器
-      removeChildForm: (form: React.RefObject<FormInstance>) => {
-        const index = this.childFormRefs.indexOf(form);
-        if (index > -1) {
-          this.childFormRefs.splice(index, 1);
-        }
-      },
       // 提交
       submitAction: this.handleSubmit,
       // 取消
@@ -236,32 +218,12 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     if (this.isReadOnly) {
       return this.handleCancel();
     }
-    this.childValidate = true;
     const form = this.formRef.current;
-    const childFormRefs = this.childFormRefs;
-    if (childFormRefs.length < 1) {
-      return form.submit();
-    }
-    Promise.all(
-      childFormRefs.map((form) => {
-        return form.current.validateFields().catch((result) => {
-          this.childValidate = false;
-          this.doFinishFailed(form.current, result.errorFields);
-          return Promise.reject(result);
-        });
-      })
-    )
-      .catch((err) => {
-        console.error(err);
-      })
-      .then(() => form.submit());
+    return form.submit();
   };
 
   // 表单校验成功
   onFinish = async(values: AbstractRow) => {
-    if (this.childValidate === false) {
-      return;
-    }
     const { onSubmit, record, primaryKey } = this.props;
     if (typeof onSubmit === 'function') {
       // record是null，默认值就不会生效
@@ -364,7 +326,7 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     }
     const fixedCls = height ? 'fixed-footer' : '';
     return (
-      <div className={`abstract-object-wrap ${fixedCls} ${mode}`}>
+      <div className={`abstract-object-wrap  abstract-object-view ${fixedCls} ${mode}`}>
         <div
           onClick={this.handleCommands}
           style={{ height: height }}
@@ -438,7 +400,7 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     const fixedCls = height ? 'fixed-footer' : '';
     return (
       <Modal
-        wrapClassName={`abstract-object-modal-wrap ${fixedCls} ${className} ${width > 0 ? '' : 'large'
+        wrapClassName={`abstract-object-modal-wrap abstract-object-view ${fixedCls} ${className} ${width > 0 ? '' : 'large'
         }`}
         className={`abstract-object ${mode}`}
         title={title}

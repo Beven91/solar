@@ -105,7 +105,7 @@ export interface AbstractFormItemType<TRow> {
   // 是否禁用表单
   disabled?: boolean | ((record: TRow) => boolean)
   // 当前表单对应的extra 内容
-  extra?: React.ReactNode
+  extra?: React.ReactNode | ((record: TRow) => React.ReactNode)
   // 是否显示输入反馈
   hasFeedback?: boolean
   // 关联数据变更，在当前表单数据发生改变时，可以设置其他表单数据的变化
@@ -177,10 +177,6 @@ export interface AbstractFormContext {
   width?: number
   // 表单存根
   cacheGroups?: AbstractGroups<any>
-  // 新增子表单容器
-  addChildForm?: (form: React.RefObject<FormInstance>) => void
-  // 移除子表单容器
-  removeChildForm?: (form: React.RefObject<FormInstance>) => void
 }
 
 export interface AbstractSField<TRow extends AbstractRow = AbstractRow> extends AbstractFormItemType<TRow> {

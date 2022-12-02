@@ -8,28 +8,28 @@ import { Button, ButtonProps } from 'antd';
 import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
 import { AbstractActionItem, AbstractActionItemContext, AbstractRow } from '../interface';
 
- interface FormActionsProps<TRow> {
-   okLoading: boolean
-   isReadOnly: boolean
-   showCancel: boolean
-   showOk: boolean
-   btnSubmit?: ButtonProps
-   btnCancel?: ButtonProps
-   handleCancel: () => void
-   handleSubmit: () => void
-   validateForms: () => Promise<void>
-   formValues: TRow
-   record: TRow
-   okEnable?: (values: TRow) => boolean
-   actions: AbstractActionItem<TRow>[]
-   // 按钮渲染目标容器
-   container?: React.RefObject<HTMLElement>
- }
+interface FormActionsProps<TRow> {
+  okLoading: boolean
+  isReadOnly: boolean
+  showCancel: boolean
+  showOk: boolean
+  btnSubmit?: ButtonProps
+  btnCancel?: ButtonProps
+  handleCancel: () => void
+  handleSubmit: () => void
+  validateForms: () => Promise<void>
+  formValues: TRow
+  record: TRow
+  okEnable?: (values: TRow) => boolean
+  actions: AbstractActionItem<TRow>[]
+  // 按钮渲染目标容器
+  container?: React.RefObject<HTMLElement>
+}
 
- interface FormActionsState<TRow> {
-   propsFormValues?: TRow
-   formValues?: TRow
- }
+interface FormActionsState<TRow> {
+  propsFormValues?: TRow
+  formValues?: TRow
+}
 
 export default class FormActions<TRow> extends React.Component<FormActionsProps<TRow>, FormActionsState<TRow>> {
   static getDerivedStateFromProps(props: FormActionsProps<AbstractRow>, state: FormActionsState<AbstractRow>) {

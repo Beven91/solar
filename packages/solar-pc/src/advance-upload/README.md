@@ -10,13 +10,18 @@
 import { Config } from 'solar-core';
 
 Config.setup({
-  oss: {
-    directory: 'demo',
-    aliOssConfig: (category: string): Promise<AliOssConfig> => {
-      return Promise.resolve({
-      });
-    },
-  },
+  fileGateway: {
+    // 该参数可以用来全局指定调用上传接口时的额外参数
+    data: { bizId: 'doctorSubmit' },
+    // 文件上传地址
+    uploadUrl: 'http://file-gw.dev.shantaijk.cn/file/uploadFileReturnKey',
+    urls: {
+      // 私有云访问地址
+      private: 'http://file-gw.dev.shantaijk.cn/file/privateDownPicByKey',
+      // 共有云访问地址
+      public: 'http://oss-pub.dev.shantaijk.cn/file-gateway'
+    }
+  }
 });
 ```
 
@@ -41,4 +46,23 @@ Config.setup({
   src="src/advance-upload/demo/index.array" 
   title="图片列表上传" 
   desc="您可以设置maxCount来设置多张图片上传" 
+/>
+
+<AppCodebox 
+  src="src/advance-upload/demo/index.multiple" 
+  title="批量上传" 
+  desc="通过设置multiple可以同时选择多张图片上传" 
+/>
+
+<AppCodebox 
+  console="true"
+  src="src/advance-upload/demo/index.select" 
+  title="手动上传" 
+  desc="通过设置selectOnly来提供选择文件模式，然后进行自定义上传" 
+/>
+
+<AppCodebox 
+  src="src/advance-upload/demo/index.file" 
+  title="支持docx、pptx、xlsx、pdf、文本、图片、视频(mp4)等文件" 
+  desc="通过accept指定文件类型" 
 />

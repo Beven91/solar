@@ -6,7 +6,7 @@
 import './index.scss';
 import React from 'react';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { Upload, Button } from 'antd';
+import { Upload, Button, ConfigProvider } from 'antd';
 import { Oss, Rectangle } from 'solar-core';
 import { getFileList, normalizeValue } from './helper';
 import AbstractProvider from '../abstract-provider';
@@ -25,6 +25,7 @@ export interface AdvanceUploadState {
   previewItem: UploadFile
   prevValue?: UploadedValueOrList
   fileList?: FileList
+  fileUrl?: string
 }
 
 export default class AdvanceUpload extends React.Component<AdvanceUploadProps, AdvanceUploadState> {
@@ -91,8 +92,10 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
    * 预览图片
    */
   handlePreview = (file: UploadFile) => {
+    const url = file.url;
     this.setState({
       previewItem: file,
+      fileUrl: url,
     });
   };
 
@@ -161,10 +164,28 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
     onChange && onChange(value, fileList);
   }
 
+  getExtension(type: string, path: string) {
+    const [id, name] = (type || '').toString().split('/');
+    const ext = (path || '').split('.').pop();
+    const useExt = (ext || name);
+    switch (id.toLowerCase()) {
+      case 'image':
+        return '.jpg';
+      default:
+        return '.' + useExt;
+    }
+  }
+
   defaultUploadToServer = async(context: RcCustomRequestOptions) => {
-    const onProgress = (percent: number) => context.onProgress({ percent });
-    const { bucketType, dir } = this.props;
-    const data = await Oss.uploadToAliOss(context.file as File, { category: dir, bucketType }, onProgress);
+    const onProgress = (percent: number) => {
+      context.onProgress({ percent });
+    };
+    const { bucketType, bizId } = this.props;
+    const file = (context.file as File);
+    const type = this.getExtension(file.type, file.name);
+    const overlaySameFile = this.props.sameKeep === true;
+    const storeDir = this.props.storeDir;
+    const data = await Oss.uploadToAliOss(context.file as File, { storeDir, overlaySameFile, fileType: type, bizId, bucketType }, onProgress);
     if (data.success) {
       return data.result;
     }
@@ -220,7 +241,7 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
 
   // 渲染拖拽上传按钮
   renderUploadButton() {
-    const { children, listType } = this.props;
+    const { listType, children } = this.props;
     if (children) {
       return children;
     }
@@ -233,22 +254,40 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
       );
     }
     return (
-      <div className="default-upload-btn">
-        <PlusOutlined />
-        <div className="ant-upload-text">{this.props.uploadText || '上传'}</div>
-      </div>
+      <ConfigProvider.ConfigContext.Consumer>
+        {
+          (ctx)=>(
+            <div className="default-upload-btn">
+              <PlusOutlined />
+              <div className={ctx.getPrefixCls('upload-text')}>
+                {this.props.uploadText || '上传'}
+              </div>
+            </div>
+          )
+        }
+      </ConfigProvider.ConfigContext.Consumer>
     );
   }
 
   // 渲染拖拽上传按钮
   renderDraggerUpload() {
     return (
-      <div className="dragger-button">
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <div className="ant-upload-text">{this.props.uploadText || '点击或者拖拽文件到此区域,进行文件上传'}</div>
-      </div>
+      <ConfigProvider.ConfigContext.Consumer>
+        {
+          (context)=>{
+            return (
+              <div className="dragger-button">
+                <p className={context.getPrefixCls('upload-drag-icon')}>
+                  <InboxOutlined />
+                </p>
+                <div className={context.getPrefixCls('upload-text')}>
+                  {this.props.uploadText || '点击或者拖拽文件到此区域,进行文件上传'}
+                </div>
+              </div>
+            );
+          }
+        }
+      </ConfigProvider.ConfigContext.Consumer>
     );
   }
 
@@ -293,12 +332,7 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
                     {showUpload ? uploadButton : null}
                   </UploadFile>
                 </div>
-                <ItemPreview
-                  onCancel={this.handleCancelPreview}
-                  accept={realAccept}
-                  config={config}
-                  file={this.state.previewItem}
-                />
+                <ItemPreview file={this.state.previewItem} onCancel={this.handleCancelPreview} config={config} accept={accept} />
               </div>
             );
           }

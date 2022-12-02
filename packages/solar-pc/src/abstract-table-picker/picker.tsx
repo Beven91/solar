@@ -11,26 +11,26 @@ import { AbstractButton, AbstractTableProps } from '../abstract-table/types';
 import { AbstractFilters, AbstractQueryType, AbstractRow, AbstractRows } from '../interface';
 
 export interface ObjectPickerProps<TRow> extends AbstractTableProps<TRow> {
-   // 弹窗标题
-   title: string
-   // 当前选中的值
-   value?: TRow[]
-   // 选择数据后的改变事件
-   onChange?: (selectedRows: TRow[]) => Promise<any> | void
-   // 选择按钮文案
-   btnText?: React.ReactNode
-   // 弹窗宽度
-   width: number
-   // 弹窗高度
-   height?: number
- }
+  // 弹窗标题
+  title: string
+  // 当前选中的值
+  value?: TRow[]
+  // 选择数据后的改变事件
+  onChange?: (selectedRows: TRow[]) => Promise<any> | void
+  // 选择按钮文案
+  btnText?: React.ReactNode
+  // 弹窗宽度
+  width: number
+  // 弹窗高度
+  height?: number
+}
 
 export interface AbstractTablePickerState {
-   submiting: boolean
-   selectedRows: AbstractRows
-   visible: boolean
-   prevValue?: any
- }
+  submiting: boolean
+  selectedRows: AbstractRows
+  visible: boolean
+  prevValue?: any
+}
 
 export default class ObjectPicker<TRow = AbstractRow> extends React.Component<React.PropsWithChildren<ObjectPickerProps<TRow>>, AbstractTablePickerState> {
   // 默认属性值
