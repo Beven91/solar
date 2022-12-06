@@ -12,6 +12,7 @@ const commands = [
   { name: '创建后台应用(服务端)', type: 'admin', value: 'backend' },
   { name: '创建后台主应用', type: 'admin', value: 'admin-main' },
   { name: '创建后台子应用', type: 'admin', value: 'admin-sub' },
+  { name: '小程序', type: 'mp', value: 'wxapp' },
   { name: '创建Chrome扩展', type: 'browser', value: 'chrome' },
   { name: '创建一个Admin页面模块', type: 'admin', value: 'admin-module' },
   { name: '创建一个Service', type: 'api', value: 'service' },
@@ -27,7 +28,7 @@ function mainQuestions() {
       message: '请选择平台(' + pgk.version + ')',
       choices: [
         { name: '接口', value: 'api' },
-        // { name: '移动端', value: 'mobile' },
+        { name: '小程序', value: 'mp' },
         { name: '后台', value: 'admin' },
         { name: '浏览器', value: 'browser' },
       ],

@@ -4,8 +4,9 @@
   "private": true,
   "description": "Chrome扩展程序",
   "main": "www/index.js",
+  "workspace": true,
   "workspaces": [
-    "packages/*"
+    "src/*"
   ],
   "scripts": {
     "start": "ts-node ./www/index.ts",
@@ -78,7 +79,7 @@
     "solar-pc": "^3.1.49"
   },
   "solar": {
-    "prefix":"$projectName$",
+    "prefix": "$projectName$",
     "service": {
       "target": "packages/$service$",
       "servs": []

@@ -48,11 +48,6 @@ module.exports = {
     globalObject: 'this',
     publicPath: '',
   },
-  resolve: {
-    alias: {
-      'whatwg-fetch': 'solar-core/src/network/fetch.wx.ts',
-    },
-  },
   plugins: [
     ...(isProduction ? proPlugins : devPlugins),
     new ESLintPlugin({
@@ -183,6 +178,9 @@ module.exports = {
     ],
   },
   resolve: {
+    alias: {
+      'whatwg-fetch': 'solar-core/src/network/fetch.wx.ts',
+    },
     extensions: ['.ts', '.tsx', '.js'],
   },
 };

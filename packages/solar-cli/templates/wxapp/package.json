@@ -4,15 +4,14 @@
   "private": true,
   "description": "$projectName$",
   "main": "www/index.js",
+  "workspace": true,
   "workspaces": [
-    "packages/*"
+    "src/*"
   ],
   "scripts": {
     "test": "jest",
     "init": "yarn install",
     "start": "ts-node ./www/index.ts",
-    "lerna": "lerna bootstrap",
-    "postinstall": "node ./lerna.js",
     "build": "cross-env NODE_ENV=production webpack --config ./build/webpack.js --color"
   },
   "keywords": [
@@ -45,8 +44,7 @@
     "file-loader": "^6.2.0",
     "sass": "^1.52.3",
     "open": "8.4.0",
-    "lerna": "^5.1.2",
-    "postcss":"8.4.14",
+    "postcss": "8.4.14",
     "postcss-loader": "^7.0.0",
     "sass-loader": "^13.0.0",
     "url-loader": "^4.1.1",
@@ -66,7 +64,7 @@
     "solar-core": "^2.3.4"
   },
   "solar": {
-    "prefix":"$projectName$",
+    "prefix": "$projectName$",
     "service": {
       "target": "packages/$projectName$-services",
       "servs": []
