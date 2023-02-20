@@ -69,7 +69,7 @@
     "chrome-manifest-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
-    "antd": "^4.0.1",
+    "antd": "^4.24.5",
     "@babel/polyfill": "^7.2.5",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
@@ -77,8 +77,8 @@
     "react-redux": "^6.0.1",
     "@rematch/core": "^1.1.0",
     "@loadable/component": "^5.7.0",
-    "solar-core": "^2.3.4",
-    "solar-pc": "^3.1.49"
+    "solar-core": "^4.0.0",
+    "solar-pc": "^4.0.0"
   },
   "solar": {
     "prefix": "$projectName$",
