@@ -3,15 +3,15 @@ import { Image } from 'antd';
 import { ImageProps } from 'rc-image/lib/Image';
 import { Oss } from 'solar-core';
 
-export interface GwImageProps extends ImageProps {
+export interface BucketImageProps extends ImageProps {
   bucketType?: 'private' | 'public'
 }
 
-export default function GwImage({ src, bucketType = 'public', ...others }: GwImageProps) {
+export default function BucketImage({ src, bucketType = 'public', ...others }: BucketImageProps) {
   return (
     <Image
       {...others}
-      src={Oss.getBucketAccessUrl(bucketType, src)}
+      src={Oss.getBucketAccessUrl(bucketType, src || '')}
     />
   );
 }
