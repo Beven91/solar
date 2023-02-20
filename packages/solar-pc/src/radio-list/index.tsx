@@ -37,14 +37,16 @@ export interface RadioListProps extends Omit<RadioGroupProps, 'options'> {
 }
 
 export default function RadioList({ api, optionClassName, buttonStyle='solid', options, direction = 'horizon', labelName = 'label', valueName = 'value', ...props }: RadioListProps) {
-  const [models, setModels] = useState(options || []);
+  const [source, setSource] = useState(options || []);
   const fetchApiResponse = async() => {
     if (!api) return;
     const data = await (typeof api == 'function' ? api() : network.get<RadioOptionType[]>(api).json());
-    setModels(data);
+    setSource(data);
   };
 
-  useEffect(() => {fetchApiResponse();}, [api]);
+  useEffect(() => {
+    fetchApiResponse();
+  }, [api]);
 
   return (
     <Radio.Group
@@ -53,7 +55,7 @@ export default function RadioList({ api, optionClassName, buttonStyle='solid', o
       className={`radio-list ${props.className || ''} ${direction}`}
     >
       {
-        models?.map((option, idx) => {
+        source?.map((option, idx) => {
           return (
             <Radio
               key={idx}

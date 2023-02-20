@@ -15,14 +15,20 @@
   }
   .abstract-table-input-footer{
     background-color: #fff;
-    .abstract-table-input-btns{
-      padding:16px 0px;
-      border-bottom: 1px solid #f0f0f0;
-    }
     .abstract-table-input-footer-ext{
       padding:16px 0px;
       border-bottom: 1px solid #f0f0f0;
       background-color: #fafafa;
+    }
+  }
+  .footer-actions {
+    display: flex;
+    flex-direction: row;
+    padding:16px 0px;
+    justify-content: center;
+    border-bottom: 1px solid #f0f0f0;
+    .table-operators {
+      margin-left: 10px;
     }
   }
 }

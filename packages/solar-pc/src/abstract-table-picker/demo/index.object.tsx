@@ -21,7 +21,7 @@ const demoRows: ActivityModel[] = [
 ];
 
 export default function App() {
-  const [code, setCode] = useState<ActivityModel>(null);
+  const [code, setCode] = useState<ActivityModel>(demoRows[0]);
 
   const columns: AbstractEColumns<ActivityModel> = [
     { title: '商品名', name: 'name' },

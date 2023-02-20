@@ -4,8 +4,8 @@
  *       用于选择外键数据
  */
 import './index.scss';
-import React from 'react';
-import { Select, Spin } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ConfigProvider, Select, Spin } from 'antd';
 import { Network } from 'solar-core';
 import { SelectProps, SelectValue } from 'antd/lib/select';
 import { AbstractResponseModel, OptionObject, PageQueryData, PlainObject } from '../interface';
@@ -17,7 +17,22 @@ const network = new Network();
 
 type ModelRows = OptionObject[]
 
-export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
+type ValueType = Parameters<SelectProps['onChange']>[0]
+
+type TimerId = ReturnType<typeof setTimeout>;
+
+type TRowModel = Record<string, string | number>
+
+export interface OptionRow<TRow> {
+  original: TRow,
+  originalValue: any
+  value: string
+  // 是否为loading占位选项
+  loading?: boolean
+  label: React.ReactNode | string
+}
+
+export interface AdvancePickerProps<TRow, ValueType> extends SelectProps<ValueType> {
   /**
    * remote:  远程检索 默认值 ，
    * local 本地检索
@@ -35,7 +50,7 @@ export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
   // 自定义数据获取，支持接口请求。
   api?: ((query: PageQueryData) => Promise<AbstractResponseModel>) | string
   // 本地数据源
-  data?: ModelRows
+  data?: TRow[] | TRowModel
   // 默认查询参数
   query?: PlainObject
   // 值字段
@@ -45,7 +60,7 @@ export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
   // 是否多选时通过join链接，从而达到返回一个字符串形式
   joinChar?: string
   // 当选择值改变时
-  onChange?: (value: any, row: PlainObject) => void,
+  onChange?: (value: any) => void,
   // 是否默认生成 【全部】 选项
   allOption?: boolean
   // 格式化返回值
@@ -56,6 +71,43 @@ export interface AdvancePickerProps<ValueType> extends SelectProps<ValueType> {
   prefix?: React.ReactNode
   // 在api模式下，初始化时是否调用查询接口,默认为:true
   initQuery?: boolean
+  // 自定义展示格式化
+  formatLabel?: (row: OptionRow<TRow>) => React.ReactNode
+  // 分页大小值
+  pageSize?: number
+}
+
+const allOptionItem = { value: '', label: '全部' } as OptionRow<any>;
+
+const fetchRemote = (url: string, data: PlainObject) => {
+  return network.get<AbstractResponseModel>(url, data).json();
+};
+
+const uniqueRows = (rows: OptionRow<any>[]) => {
+  const data = {} as PlainObject;
+  return rows.filter((row) => {
+    const exists = data[row.value];
+    data[row.value] = true;
+    return !exists;
+  });
+};
+
+function createOption<TRow extends PlainObject>(row: TRow, valueName: string, labelName: string): OptionRow<TRow> {
+  return { original: row, originalValue: row[valueName], value: `${row[valueName]}`, label: row[labelName] };
+}
+
+function createSource<TRow extends PlainObject>(data: Array<TRow> | TRowModel, valueName: string, labelName: string) {
+  if (data instanceof Array) {
+    // 本地配置数组初始化数据
+    return data.map((row) => createOption(row, valueName, labelName));
+  } else if (typeof data === 'object' && data) {
+    // 本地配置枚举对象初始化数据
+    return Object.keys(data).map((k) => {
+      const item = data[k];
+      return ({ original: item, value: `${k}`, originalValue: item, label: `${item}` }) as any as OptionRow<TRow>;
+    });
+  }
+  return [];
 }
 
 export interface AdvancePickerState {
@@ -71,64 +123,26 @@ export interface AdvancePickerState {
   rows: ModelRows
 }
 
-export default class AdvancePicker extends React.Component<AdvancePickerProps<SelectValue>, AdvancePickerState> {
-  // 组件属性定义
-  static propTypes = {
+export default function AdvancePicker<TRow = PlainObject>({
+  valueMode = 'normal',
+  valueName = 'value',
+  labelName = 'label',
+  type = 'local',
+  initQuery = true,
+  pageSize = 20,
+  joinChar,
+  ...props
+}: AdvancePickerProps<TRow, SelectValue>
+) {
+  const [options, setOptions] = useState(createSource<TRow>(props.data, valueName, labelName));
+  const [pagination, setPagination] = useState({ init: true, search: '', loading: false, page: 0, hasMore: false });
+  const [tagsValue, setTagsValue] = useState('');
+  const [internalValue, setInternalValue] = useState<any>();
+  const [timerId, setTimerId] = useState<TimerId>();
 
-    // 其他属性 可以参照Select组件
-  };
-
-  static Option = Select.Option;
-
-  // 默认属性值
-  static defaultProps: AdvancePickerProps<SelectValue> = {
-    api: null as any,
-    query: {},
-    onChange: () => '',
-    disabled: false,
-    valueMode: 'normal',
-    valueName: 'value',
-    labelName: 'label',
-    type: 'remote',
-    initQuery: true,
-    data: null as any,
-    allOption: false,
-    format: (r: any) => r || {},
-  };
-
-  // 默认的fetch实现
-  static fetch(url: string, data: PlainObject) {
-    return network.get<AbstractResponseModel>(url, data).json();
-  }
-
-  searching: boolean;
-
-  // 默认状态
-  state = {
-    // 搜索条件
-    value: null as SelectValue,
-    // 是否正在加载中
-    loading: false,
-    // 当前页码值
-    page: 0,
-    // 是否还有更多数据
-    hasMore: false,
-    // 当前数据
-    rows: [] as OptionObject[],
-  };
-
-  tagsValue = undefined as string;
-
-  get allOption() {
-    return {
-      value: '',
-      label: '全部',
-    };
-  }
-
-  get nativeValue() {
-    const { value, valueName } = this.props;
-    switch (this.props.valueMode) {
+  const nativeValue = useMemo(() => {
+    const value = props.value == undefined ? internalValue : props.value;
+    switch (valueMode) {
       case 'object':
         if (value instanceof Array) {
           return value.map((item: any) => item[valueName].toString());
@@ -137,210 +151,184 @@ export default class AdvancePicker extends React.Component<AdvancePickerProps<Se
         }
         return value;
       case 'tags-single':
-        return value || this.tagsValue;
+        return value || tagsValue;
       default:
         return value;
     }
-  }
+  }, [valueMode, props.value, valueName, tagsValue, internalValue]);
 
-  get value() {
-    const { joinChar } = this.props;
-    const value = this.nativeValue;
-    if (!this.props.mode) {
+  const value = useMemo(() => {
+    const value = nativeValue;
+    if (!props.mode) {
+      // 单选
       return value ? value.toString() : value;
     }
+    // 多选
     if (joinChar && typeof value === 'string') {
-      return value === '' ? undefined : value.split(joinChar);
+      // 使用连接符
+      return value === '' ? undefined : (value as string).split(joinChar);
     }
-    return value;
-  }
+    return value instanceof Array ? value : [value].filter((v) => !(v === '' || v === undefined));
+  }, [joinChar, nativeValue, props.mode]);
 
-  componentDidMount() {
-    const { initQuery, api } = this.props;
-    if (initQuery == false && api) return;
-    this.loadAsync();
-  }
-
-  componentDidUpdate(prevProps: Readonly<AdvancePickerProps<SelectValue>>, prevState: Readonly<AdvancePickerState>, snapshot?: any): void {
-    if (prevProps.data !== this.props.data) {
-      this.loadAsync();
-    }
-  }
-
-  // 如果是第一次进行，则加载一次数据
-  loadAsync() {
-    const { data } = this.props;
-    if (data instanceof Array) {
-      // 本地配置数组初始化数据
-      const rows = data.map((row) => this.handleRow(row));
-      this.setState({ rows, loading: false });
-    } else if (typeof data === 'object' && data) {
-      // 本地配置枚举对象初始化数据
-      const rows = Object.keys(data).map((k) => {
-        const item = data[k];
-        return ({ value: item, originalValue: item, label: k });
-      });
-      this.setState({ rows, loading: false });
+  useEffect(() => {
+    if (pagination.init) {
+      initQuery && handleRemote('', false);
     } else {
-      // 远程初始化数据
-      this.handleRemote();
+      handleRemote('', false);
+      return;
     }
-  }
+    setPagination({ ...pagination, init: false });
+  }, [pageSize]);
 
-  findOrigin(value: any) {
-    const { rows } = this.state;
-    const { valueName, labelName } = this.props;
-    const row = rows.find((r) => r.value.toString() === value);
-    return row?.original || { [valueName]: value, [labelName]: value };
-  }
+  useEffect(() => {
+    const rows = props.data || options.map((m) => m.original);
+    setOptions(createSource<TRow>(rows, valueName, labelName));
+  }, [props.data, valueName, labelName]);
 
-  createValue(value: SelectValue) {
+  // 搜索
+  const thottleSearch = (value?: string) => {
+    clearTimeout(timerId);
+    const id = setTimeout(() => handleRemote(value, false, true), 300);
+    setTimerId(id);
+  };
+
+  // 远程加载数据
+  const handleRemote = (value?: string, isPagination = false, force = false) => {
+    // 如果没有指定数据源，则不进行远程请求
+    if (!props.api || (pagination.loading && force !== true)) return;
+    // 当选择 项时也会触发 onSearch 所以为了减少不必要的请求，这里进行控制
+    const { api, query = {}, format } = props;
+    const page = (isPagination ? pagination.page : 0) + 1;
+    query.pageNo = page;
+    query.pageSize = type === 'local' ? 100 : pageSize;
+    query.filter = value;
+    setPagination({ ...pagination, search: value, loading: true });
+    // setState({ page, loading: true, value, rows: isPagination ? allRows : [] });
+    Promise
+      .resolve((typeof api === 'function' ? api(query as PageQueryData) : fetchRemote(api, query)))
+      .then((reponse) => {
+        const result = format ? format(reponse) : reponse;
+        const { count } = result || {};
+        const models = (result?.models || []) as TRow[];
+        const orinalRows = isPagination ? options : [];
+        const rows = models.map((row) => createOption<TRow>(row, valueName, labelName));
+        const allRows = uniqueRows([...orinalRows, ...rows]);
+        const hasMore = count ? allRows.length < count : false;
+        setPagination({ ...pagination, page, hasMore, loading: false });
+        setOptions(allRows);
+      });
+  };
+
+  const createValue = (value: ValueType) => {
     const isArray = value instanceof Array;
-    switch (this.props.valueMode) {
+    const findOrigin = (data: ValueType) => {
+      const row = options.find((r) => r.value.toString() === data);
+      return row?.original || { [valueName]: data, [labelName]: data };
+    };
+    switch (valueMode) {
       case 'object':
-        return isArray ? value.map((v) => this.findOrigin(v)) : this.findOrigin(value);
+        return isArray ? value.map((v) => findOrigin(v)) : findOrigin(value);
       case 'tags-single':
-        this.tagsValue = (isArray ? value.slice(-1)[0] : value) as string;
-        return this.tagsValue;
+        const tagsValue = (isArray ? value.slice(-1)[0] : value) as string;
+        setTagsValue(tagsValue);
+        return tagsValue;
       case 'normal':
         return value;
     }
-  }
+  };
 
   // 处理选择项
-  handleChange = (value: SelectValue) => {
-    this.searching = true;
-    const { rows } = this.state;
-    const nativeValue = this.createValue(value);
-    const { onChange, joinChar, mode } = this.props;
+  const handleChange = (value: ValueType) => {
+    const nativeValue = createValue(value);
+    const { onChange, mode } = props;
+    setInternalValue(nativeValue);
     if (mode) {
       const v = joinChar ? (nativeValue as []).join(joinChar) : nativeValue;
-      return onChange && onChange(v, {});
+      return onChange && onChange(v);
     }
-    if (this.props.valueMode == 'object') {
-      return onChange && onChange(nativeValue, { original: nativeValue });
+    if (valueMode == 'object') {
+      return onChange && onChange(nativeValue);
     }
-    const row = rows.find((r) => r.value.toString() === value) || { originalValue: undefined as any };
-    onChange && onChange(row.originalValue, row);
+    const row = options.find((r) => r.value.toString() === value) || { originalValue: undefined as any };
+    onChange && onChange(row.originalValue);
   };
 
-  // 远程搜索数据
-  handleRemote = (value?: string, isPagination = false) => {
-    // 当选择 项时也会触发 onSearch 所以为了减少不必要的请求，这里进行控制
-    if (!this.searching) {
-      const { page: pageIndex, rows: allRows } = this.state;
-      const { api, query = {}, type, format } = this.props;
-      const page = (isPagination ? pageIndex : 0) + 1;
-      query.pageNo = page;
-      query.pageSize = type === 'local' ? 100 : 20;
-      query.filter = value;
-      this.setState({ page, loading: true, value, rows: isPagination ? allRows : [] });
-      const res = typeof api === 'function' ? api(query as PageQueryData) : AdvancePicker.fetch(api, query);
-      Promise
-        .resolve(res)
-        .then((reponse) => {
-          const result = format(reponse);
-          const { models = [], count } = result || {};
-          const orinalRows = isPagination ? this.state.rows : [];
-          const rows = (models || []).map((row) => this.handleRow(row));
-          const allRows = this.uniqueRows(orinalRows.concat(rows));
-          const hasMore = count ? allRows.length < count : false;
-          this.setState({ hasMore, rows: allRows, loading: false });
-        });
-    }
-    this.searching = false;
-  };
-
-  // 去重数据源
-  uniqueRows(rows: ModelRows) {
-    const data = {} as PlainObject;
-    return rows.filter((row) => {
-      const exists = data[row.value];
-      data[row.value] = true;
-      return !exists;
-    });
-  }
-
-  // 格式化选项值
-  handleRow(row: PlainObject) {
-    const { valueName, labelName } = this.props;
-    return { original: row, originalValue: row[valueName], value: `${row[valueName]}`, label: row[labelName] };
-  }
 
   // 本地检索数据
-  handleLocal(input: string, option: any) {
-    return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-  }
-
-  // 频率控制函数
-  throttle(handler: Function) {
-    let id = null as any;
-    return (...args: Array<any>) => {
-      clearTimeout(id);
-      id = setTimeout(() => handler(...args), 200);
-    };
-  }
+  const handleLocal = (input: string, option: any) => {
+    const children = option.props.children;
+    const isString = typeof children === 'string';
+    const value = input.toLowerCase();
+    if (isString) {
+      return children.toLowerCase().indexOf(value) >= 0;
+    }
+    return children.props?.children.toLowerCase().indexOf(value) >= 0;
+  };
 
   // 处理滚动分页
-  handleScrollPagination = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+  const handleScrollPagination = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
     // 如果正在执行分页请求，则默认滚动事件不做任何响应
-    if (!this.state.loading && this.state.hasMore) {
+    if (!pagination.loading && pagination.hasMore) {
       // 由于读取scrollTop以及scrollHeight可能会导致reflow所以分开isPaginating判断 尽可能减少ui计算
       const target = e.target as HTMLDivElement;
       const { scrollTop, scrollHeight, clientHeight } = target;
       if (scrollTop >= (scrollHeight - clientHeight - 50)) {
         // 如果滚动到底部，出现loading图标，此时触发刷新分页数据接口
-        this.handleRemote(this.state.value as string, true);
+        handleRemote(pagination.search as string, true);
       }
     }
   };
 
   // 渲染
-  render() {
-    const { loading, rows = [], hasMore } = this.state;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-    const { valueMode, initQuery, format, query, prefix, data, type, allOption, className, api, labelName, valueName, ...props } = this.props;
-    // 如果时设置data 则表示一定时本地检索
-    const realType = !api && this.props.data ? 'local' : type;
-    const handleRemote = realType === 'remote' ? this.handleRemote : NOOP;
-    const handleLocal = realType === 'local' ? this.handleLocal : NOOP;
-    const showSearch = realType !== 'none';
-    const allRows = allOption ? [this.allOption, ...rows] : [...rows];
-    if (hasMore && loading && allRows.length > 0) {
-      allRows.push({ api, format, valueName, labelName, value: '-------------------', label: '加载中...', loading: true });
-    }
-
-    return (
-      <div className={`advance-picker-box ${props.size}`} >
-        {
-          prefix && (
-            <span className="ant-input-prefix">{prefix}</span>
-          )
-        }
-        <Select
-          {...props}
-          showSearch={showSearch}
-          value={this.value}
-          className={`${className} advance-picker`}
-          onChange={this.handleChange}
-          onSearch={handleRemote}
-          filterOption={handleLocal}
-          optionLabelProp="children"
-          notFoundContent={loading ? <Spin /> : '无匹配数据'}
-          onPopupScroll={this.handleScrollPagination}
-        >
-          {
-            allRows.map((row, i) => (
-              <Option value={`${row.value}`} key={`${row.value || ''}_${i}`}>
-                {
-                  row.loading ? <Spin size="small" /> : row.label
-                }
-              </Option>
-            ))
-          }
-        </Select>
-      </div>
-    );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  const { formatLabel, format, query, prefix, data, allOption, className, api, ...rest } = props;
+  // 如果时设置data 则表示一定是本地检索
+  const realType = !api && props.data ? 'local' : type;
+  const onSearch = realType === 'remote' ? thottleSearch : NOOP;
+  const filterOption = realType === 'local' ? handleLocal : NOOP;
+  const showSearch = realType !== 'none';
+  const allRows = allOption ? [allOptionItem, ...options] : [...options];
+  if (pagination.hasMore && pagination.loading && allRows.length > 0) {
+    allRows.push({ loading: true, original: {} as TRow, originalValue: null, value: '-------------------', label: '加载中...' });
   }
+  return (
+    <ConfigProvider.ConfigContext.Consumer>
+      {
+        (ctx) => (
+          <div className={`advance-picker-box ${props.size}`} >
+            {
+              prefix && (
+                <span className={ctx.getPrefixCls('input-prefix')}>{prefix}</span>
+              )
+            }
+            <Select
+              optionLabelProp="children"
+              {...rest}
+              showSearch={showSearch}
+              value={value}
+              className={`${className} advance-picker`}
+              onChange={handleChange}
+              onSearch={onSearch}
+              filterOption={filterOption}
+              notFoundContent={pagination.loading ? <Spin /> : '无匹配数据'}
+              onPopupScroll={handleScrollPagination}
+            >
+              {
+                allRows.map((row, i) => (
+                  <Option value={`${row.value}`} key={`${row.value || ''}_${i}`} label={row.label}>
+                    {
+                      row.loading ? <Spin size="small" /> : (formatLabel ? formatLabel(row) : row.label)
+                    }
+                  </Option>
+                ))
+              }
+            </Select>
+          </div>
+        )
+      }
+    </ConfigProvider.ConfigContext.Consumer>
+  );
 }
 
+AdvancePicker.Option = Select.Option;

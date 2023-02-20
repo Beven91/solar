@@ -12,7 +12,7 @@ export interface OssUploadOptions {
   // 上传bucket类型
   bucketType?: BucketType
   // 是否保留原始文件名
-  keepName?: boolean
+  hash?: boolean
   // 设置上传文件，访问时的缓存策略
   'Cache-Control'?: string
   // 设置上传文件，访问时的编码类型
@@ -119,10 +119,10 @@ export default class AliOss {
       category = category.replace(/\/$/, '');
       // const path = `https://${ossConfig.bucketName}.${config.OSS.region}.aliyuncs.com/`;
       const ext = file.name.split('.').pop();
-      const name = options?.keepName ? file.name : new Date().getTime() + '-ali-oss-' + Math.random().toString().split('.').pop() + '.' + ext;
+      const name = options?.hash == false ? file.name : new Date().getTime() + '-ali-oss-' + Math.random().toString().split('.').pop() + '.' + ext;
       const fileKey = category + '/' + name;
       options = options || {} as OssUploadOptions;
-      delete options.keepName;
+      delete options.hash;
       // 默认设置cache-control 为no-cache
       options['Cache-Control'] = options['Cache-Control'] || 'no-cahe';
       // options['Content-Encoding'] = options['Content-Encoding'] || 'utf-8';

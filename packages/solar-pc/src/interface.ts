@@ -77,6 +77,13 @@ export interface AbstractActionItemContext {
 
 export type AbstractActionItem<TRow> = (values: TRow, context: AbstractActionItemContext) => React.ReactElement | React.ReactNode
 
+export interface GenericKey {
+  // 表单属性名
+  name: string
+  // 从来源值获取的值信息
+  fromKey: string
+}
+
 export interface AbstractFormItemType<TRow> {
   // 表单id
   id?: string | number
@@ -84,6 +91,10 @@ export interface AbstractFormItemType<TRow> {
   title: string
   // 表单字段名称
   name: string | Array<string>
+  // 派生映射字段，用于实现一个输入可以派生出额外的表单值，例如：下拉框组件选择后，需要同时获取id和name
+  // 例如: { id:'id',name:'cityName' }
+  genericKeys?: Record<string, string>
+  // 联动字段
   // 默认值
   initialValue?: any
   // 自定义表单组件 可以为一个jsx对象或者一个函数自定义渲染 默认为Input组件
@@ -112,8 +123,6 @@ export interface AbstractFormItemType<TRow> {
   cascade?: (value: any, model: TRow, prevValue?: TRow) => Partial<TRow>
   // 当前表单输入发生改变时触发此函数
   onChange?: (...params: Array<any>) => void
-  // 在输入框后面的内容
-  after?: (record: TRow) => ReactNode
   // 分组时，单个表单项FormItem的布局配置,和ant design 的FormItem对应的layout一致
   layout?: AbstractFormLayout
   // FormItem添加class
@@ -196,6 +205,8 @@ export interface AbstractSField<TRow extends AbstractRow = AbstractRow> extends 
   auto?: boolean
 }
 
+type DefaultPreview = () => React.ReactNode
+
 export interface AbstractUploadConfig {
   media?: AbstractMediaConfig,
   // 上传公用参数
@@ -204,7 +215,7 @@ export interface AbstractUploadConfig {
   public?: string
   // 私有云上传地址
   private?: string
-  onPreview?: (url: string, accept: string, onCancel: () => void) => React.ReactNode
+  onPreview?: (url: string, accept: string, onCancel: () => void, urls: string[], defaultPreview: DefaultPreview) => React.ReactNode
   onUpload?: (options: RcCustomRequestOptions, config: AbstractUploadConfig) => Promise<string>
   onRemove?: (file: UploadFile) => void | boolean | Promise<void | boolean>
 }

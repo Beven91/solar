@@ -20,6 +20,7 @@ export default function App() {
       <AdvancePicker
         size="large"
         prefix={<UserOutlined />}
+        value={multiple}
         onChange={setMultiple}
         data={data}
       />

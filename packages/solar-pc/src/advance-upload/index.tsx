@@ -4,244 +4,122 @@
  *       支持图片等资源上传，同时提供图片上传链接配置
  */
 import './index.scss';
-import React from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
 import { Upload, Button, ConfigProvider } from 'antd';
-import { Oss, Rectangle } from 'solar-core';
-import { getFileList, normalizeValue } from './helper';
+import { Oss } from 'solar-core';
+import { checkUpload, getExtension, getFileList, normalizeValue, processUploadInteceptors, stopPropagation } from './helper';
 import AbstractProvider from '../abstract-provider';
 import { UploadChangeParam } from 'antd/lib/upload';
-import { AdvanceUploadProps, FileList, UploadFileExtend, UploadedValueOrList } from './type';
+import { AdvanceUploadProps, UploadFileExtend, UploadFileValue, FileList } from './type';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { RcFile, UploadFile } from 'antd/lib/upload/interface';
-import { AbstractUploadConfig } from '../interface';
 import ItemPreview from './ItemPreview';
 
 const Dragger = Upload.Dragger;
 
-function noop() { }
+export default function AdvanceUpload(
+  {
+    maxCount = 1,
+    acceptType = 'image',
+    bucketType = 'public',
+    valueMode = 'url',
+    headers = { 'X-Requested-With': null as any },
+    formatUrl = (key, props: AdvanceUploadProps) => Oss.getBucketAccessUrl(props.bucketType, key),
+    withCredentials = true,
+    params,
+    ...props
+  }: AdvanceUploadProps
+) {
+  const provider = useContext(AbstractProvider.Context);
+  const configProvider = useContext(ConfigProvider.ConfigContext);
+  const all = { maxCount, acceptType, bucketType, valueMode, headers, formatUrl, withCredentials, ...props };
+  const [fileList, setFileList] = useState(getFileList(props.value, formatUrl, [], all));
+  const [previewItem, setPreview] = useState<UploadFile>();
 
-export interface AdvanceUploadState {
-  previewItem: UploadFile
-  prevValue?: UploadedValueOrList
-  fileList?: FileList
-  fileUrl?: string
-}
+  useEffect(() => {
+    setFileList(getFileList(props.value, formatUrl, fileList, all));
+  }, [props.value]);
 
-export default class AdvanceUpload extends React.Component<AdvanceUploadProps, AdvanceUploadState> {
-  // 默认属性
-  static defaultProps: AdvanceUploadProps = {
-    maxCount: 1,
-    acceptType: 'image',
-    valueMode: 'url',
-    multiple: false,
-    name: 'file',
-    bucketType: 'public',
-    action: '',
-    disabled: false,
-    headers: {
-      'X-Requested-With': null as any,
-    },
-    formatUrl: (key, props: AdvanceUploadProps) => {
-      return Oss.getBucketAccessUrl(props.bucketType, key);
-    },
-    onChange: noop,
-    withCredentials: true,
-  };
-
-  static getDerivedStateFromProps(props: AdvanceUploadProps, state: AdvanceUploadState) {
-    if (props.value !== state.prevValue) {
-      return {
-        fileList: getFileList(props.value, props.formatUrl, state.fileList, props),
-        prevValue: props.value,
-      };
-    }
-    return null;
-  }
-
-  // 状态
-  state: AdvanceUploadState = {
-    previewItem: null as UploadFile,
-    fileList: [] as FileList,
-  };
-
-  // 上传文件前，进行文件大小验证
-  beforeUpload = (file: RcFile, files: RcFile[], config: AbstractUploadConfig) => {
-    if (this.props.selectOnly) {
-      return false;
-    }
-    if (this.props.beforeUpload) {
-      return this.props.beforeUpload(file, files);
-    }
+  // 控制上传校验
+  const beforeUpload = useCallback((file: RcFile, files: RcFile[]) => {
+    if (props.selectOnly) return false;
+    if (props.beforeUpload) return props.beforeUpload(file, files);
     return true;
-  };
+  }, [props.selectOnly, props.beforeUpload]);
 
-  // 取消冒泡
-  stopPropagation(e: React.DragEvent<HTMLDivElement>) {
-    e.stopPropagation();
-  }
-
-  /**
-   * 取消图片放大预览
-   */
-  handleCancelPreview = () => {
-    this.setState({ previewItem: null });
-  };
-
-  /**
-   * 预览图片
-   */
-  handlePreview = (file: UploadFile) => {
-    const url = file.url;
-    this.setState({
-      previewItem: file,
-      fileUrl: url,
-    });
-  };
-
-  /**
-   * 处理文件变动
-   */
-  handleChange = (data: UploadChangeParam) => {
-    const list = data.fileList as FileList;
-    const props = this.props;
-    if (this.props.selectOnly) {
-      const isSingle = props.maxCount === 1 && !props.multiple;
-      const value = isSingle ? list[0] : list;
-      const { onChange } = this.props;
-      this.setState({ fileList: [...list] });
-      onChange && onChange(value, list);
-    } else {
-      this.setState({ fileList: [...list] }, () => this.handleQueues(list));
-    }
-  };
-
-  /**
-   * 执行文件队列
-   */
-  async handleQueues(fileList: FileList) {
-    const { onChange } = this.props;
-    const uploading = fileList.filter((m) => m.status === 'uploading');
-    const needRectFiles = fileList.filter((m) => !(m.width > 0));
-    // const errors = fileList.filter((m) => m.status === 'error');
-    if (uploading.length > 0) {
-      return this.setState({ fileList });
-    }
-    await Rectangle
-      .getRectangles(needRectFiles.map((m) => m.originFileObj) as any)
-      .then((rects) => {
-        needRectFiles.forEach((item: UploadFileExtend, index: number) => {
-          const rect = rects[index] as UploadFileExtend;
-          item.width = rect.width;
-          item.height = rect.height;
-        });
-      });
-    const value = normalizeValue([...fileList], this.props);
-    onChange && onChange(value, fileList);
-    fileList.forEach((f) => {
-      if (f.status == 'error') {
-        f.url = f.status == 'error' ? '' : f.url;
-        delete f.originFileObj;
+  // 上传文件状态变化
+  const onUploadChange = async(data: UploadChangeParam) => {
+    setFileList([...data.fileList as any]);
+    const items = data.fileList as FileList;
+    const isAllComplete = !data.fileList.find((m) => m.status == 'uploading');
+    if (isAllComplete) {
+      // 添加上传处理切面
+      await processUploadInteceptors(data.fileList, all);
+      if (props.selectOnly) {
+        const isSingle = maxCount === 1 && !props.multiple;
+        const value = isSingle ? data.fileList[0] : data.fileList;
+        props.onChange && props.onChange(value as Array<UploadFileValue>, items);
+      } else {
+        const value = normalizeValue(items, all);
+        props.onChange && props.onChange(value,);
       }
-    });
-    this.setState({
-      fileList: [
-        ...fileList,
-      ],
-    });
-  }
+    }
+  };
 
-  async handleRemove<T>(f: UploadFileExtend, onRemove: (file: UploadFile<T>) => void | boolean | Promise<void | boolean>) {
+  // 移除上传项
+  const doRemove = async(f: UploadFileExtend) => {
+    const onRemove = props.onRemove || provider.upload?.onRemove;
     await Promise.resolve(onRemove && onRemove(f));
-    const fileList = this.state.fileList;
-    const index = fileList.indexOf(f);
-    const { onChange } = this.props;
-    if (index >= 0) {
-      fileList.splice(index, 1);
-    }
-    this.setState({ fileList });
-    const value = normalizeValue(fileList, this.props);
-    onChange && onChange(value, fileList);
-  }
+    const afterItems = fileList.filter((e) => e !== f);
+    setFileList(afterItems);
+    // props.onChange && props.onChange(normalizeValue(afterItems, all), afterItems);
+  };
 
-  getExtension(type: string, path: string) {
-    const [id, name] = (type || '').toString().split('/');
-    const ext = (path || '').split('.').pop();
-    const useExt = (ext || name);
-    switch (id.toLowerCase()) {
-      case 'image':
-        return '.jpg';
-      default:
-        return '.' + useExt;
-    }
-  }
-
-  defaultUploadToServer = async(context: RcCustomRequestOptions) => {
+  // 默认上传方法
+  const defaultUploadToServer = async(context: RcCustomRequestOptions) => {
+    const { bizId } = props;
+    const file = (context.file as File);
     const onProgress = (percent: number) => {
       context.onProgress({ percent });
     };
-    const { bucketType, bizId } = this.props;
-    const file = (context.file as File);
-    const type = this.getExtension(file.type, file.name);
-    const overlaySameFile = this.props.sameKeep === true;
-    const storeDir = this.props.storeDir;
-    const data = await Oss.uploadToAliOss(context.file as File, { storeDir, overlaySameFile, fileType: type, bizId, bucketType }, onProgress);
+    const type = getExtension(file.type, file.name);
+    const options = {
+      fileType: type,
+      bizId, bucketType,
+      ...(params || {}),
+    };
+    const data = await Oss.uploadToAliOss(context.file as File, options, onProgress);
     if (data.success) {
-      return data.result;
+      return formatUrl ? formatUrl(data.result, all) : data.result;
     }
     return Promise.reject(new Error(data.errorMsg));
   };
 
-  checkUpload(file: File, config: AbstractUploadConfig) {
-    const defaultMax = 3 * 1024 * 1024;
-    const media = config?.media || AbstractProvider.defaultMediaDefinitions;
-    const data = media[this.props.acceptType] || { max: defaultMax };
-    const max = this.props.maxSize || data.max || defaultMax;
-    const isLt = file.size < max;
-    if (!isLt) {
-      const value = max / (1024 * 1024);
-      return new Error(`上传不能超过 ${value}MB!`);
-    }
-  }
-
-  /**
-   * 上传图片
-   */
-  uploadRequest = (context: RcCustomRequestOptions, config: AbstractUploadConfig) => {
-    const error = this.checkUpload(context.file as File, config);
+  // 自定义文件上传
+  const customRequest = (context: RcCustomRequestOptions) => {
+    const config = provider.upload || {};
+    const uploadToServer = props.customRequest || config?.onUpload || defaultUploadToServer;
+    const item = fileList.find((m) => m.uid == (context.file as any).uid);
+    const error = checkUpload(context.file as File, acceptType, props.maxSize, config);
     if (error) {
-      return this.handleError(error, context);
+      return context.onError(error);
     }
-    const uploadRequest = config?.onUpload || this.defaultUploadToServer;
-    if (typeof uploadRequest === 'function') {
-      Promise
-        .resolve(uploadRequest(context, config))
-        .then((key: string) => {
-          const item2 = context.file as any;
-          const item = this.state.fileList.find((m) => m.uid == item2.uid);
+    Promise
+      .resolve(uploadToServer(context, config))
+      .then((key: string) => {
+        if (item) {
           item.status = 'done';
           item.url = key;
-          context.onSuccess(item, null);
-        })
-        .catch((ex) => {
-          this.handleError(ex, context);
-        });
-    }
+        }
+        context.onSuccess(JSON.stringify({ url: key }));
+      })
+      .catch((ex) => context.onError(ex));
   };
 
-  handleError(error: Error, context: RcCustomRequestOptions) {
-    setTimeout(() => {
-      const item2 = context.file as any;
-      const item = this.state.fileList.find((m) => m.uid == item2.uid);
-      item.status = 'error';
-      item.error = error;
-      context.onError(error, error);
-    }, 20);
-  }
-
   // 渲染拖拽上传按钮
-  renderUploadButton() {
-    const { listType, children } = this.props;
+  const renderUploadButton = () => {
+    const { listType, children } = props;
     if (children) {
       return children;
     }
@@ -249,96 +127,72 @@ export default class AdvanceUpload extends React.Component<AdvanceUploadProps, A
       return (
         <Button type="primary">
           <PlusOutlined />
-          {this.props.uploadText || '浏览...'}
+          {props.uploadText || '浏览...'}
         </Button>
       );
     }
     return (
-      <ConfigProvider.ConfigContext.Consumer>
-        {
-          (ctx)=>(
-            <div className="default-upload-btn">
-              <PlusOutlined />
-              <div className={ctx.getPrefixCls('upload-text')}>
-                {this.props.uploadText || '上传'}
-              </div>
-            </div>
-          )
-        }
-      </ConfigProvider.ConfigContext.Consumer>
+      <div className="default-upload-btn">
+        <PlusOutlined />
+        <div className={configProvider?.getPrefixCls('upload-text')}>
+          {props.uploadText || '上传'}
+        </div>
+      </div>
     );
-  }
+  };
 
   // 渲染拖拽上传按钮
-  renderDraggerUpload() {
+  const renderDraggerUpload = () => {
     return (
-      <ConfigProvider.ConfigContext.Consumer>
-        {
-          (context)=>{
-            return (
-              <div className="dragger-button">
-                <p className={context.getPrefixCls('upload-drag-icon')}>
-                  <InboxOutlined />
-                </p>
-                <div className={context.getPrefixCls('upload-text')}>
-                  {this.props.uploadText || '点击或者拖拽文件到此区域,进行文件上传'}
-                </div>
-              </div>
-            );
-          }
-        }
-      </ConfigProvider.ConfigContext.Consumer>
+      <div className="dragger-button">
+        <p className={configProvider?.getPrefixCls('upload-drag-icon')}>
+          <InboxOutlined />
+        </p>
+        <div className={configProvider?.getPrefixCls('upload-text')}>
+          {props.uploadText || '点击或者拖拽文件到此区域,进行文件上传'}
+        </div>
+      </div>
     );
-  }
+  };
 
   // 渲染视图
-  render() {
-    const { fileList } = this.state;
-    const { maxCount, disabled, data, type, accept, acceptType, ...props } = this.props;
-    const showUpload = !(fileList.length >= maxCount || disabled === true);
-    const single = maxCount <= 1;
-    const dragger = type === 'drag';
-    const UploadFile = dragger ? Dragger : Upload;
-    const uploadButton = dragger ? this.renderDraggerUpload() : this.renderUploadButton();
-    const topClass = this.props.children ? 'has-children' : '';
-    return (
-      <AbstractProvider.Consumer>
-        {
-          (config) => {
-            const media = config?.upload?.media || AbstractProvider.defaultMediaDefinitions;
-            const realAccept = accept || media[acceptType]?.accept || '';
-            return (
-              <div
-                className={`clearfix advance-upload ${topClass} ${single ? 'single' : 'multiple'} ${this.props.className}`}
-              >
-                <div
-                  onDragStart={this.stopPropagation}
-                  onDragOver={this.stopPropagation}
-                >
-                  <UploadFile
-                    data={data}
-                    className={`${acceptType} ${dragger ? 'dragger' : ''} ${showUpload ? 'show' : 'upload-hide'}`}
-                    fileList={fileList}
-                    disabled={disabled}
-                    listType="picture-card"
-                    customRequest={(context) => this.uploadRequest(context, config.upload)}
-                    {...props}
-                    accept={realAccept}
-                    onRemove={(f) => this.handleRemove(f as UploadFileExtend, config.upload?.onRemove || props.onRemove)}
-                    beforeUpload={(file: RcFile, files: RcFile[]) => this.beforeUpload(file, files, config.upload)}
-                    onPreview={this.handlePreview}
-                    onChange={this.handleChange}
-                  >
-                    {showUpload ? uploadButton : null}
-                  </UploadFile>
-                </div>
-                <ItemPreview file={this.state.previewItem} onCancel={this.handleCancelPreview} config={config} accept={accept} />
-              </div>
-            );
-          }
-        }
-      </AbstractProvider.Consumer>
-    );
-  }
+  const { disabled, data, type, accept, ...rest } = props;
+  const showUpload = !(fileList.length >= maxCount || disabled === true);
+  const single = maxCount <= 1;
+  const dragger = type === 'drag';
+  const UploadFile = dragger ? Dragger : Upload;
+  const uploadButton = dragger ? renderDraggerUpload() : renderUploadButton();
+  const topClass = props.children ? 'has-children' : '';
+  const media = provider?.upload?.media || AbstractProvider.defaultMediaDefinitions;
+  const realAccept = accept || media[acceptType]?.accept || '';
+
+  return (
+    <div
+      className={`clearfix advance-upload ${topClass} ${single ? 'single' : 'multiple'} ${props.className}`}
+    >
+      <div
+        onDragStart={stopPropagation}
+        onDragOver={stopPropagation}
+      >
+        <UploadFile
+          data={data}
+          className={`${acceptType} ${dragger ? 'dragger' : ''} ${showUpload ? 'show' : 'upload-hide'}`}
+          disabled={disabled}
+          listType="picture-card"
+          {...rest}
+          fileList={fileList}
+          customRequest={customRequest}
+          accept={realAccept}
+          onRemove={doRemove}
+          beforeUpload={beforeUpload}
+          onPreview={setPreview}
+          onChange={onUploadChange}
+        >
+          {showUpload ? uploadButton : null}
+        </UploadFile>
+      </div>
+      <ItemPreview fileList={fileList} file={previewItem} onCancel={() => setPreview(null)} accept={accept} />
+    </div>
+  );
 }
 

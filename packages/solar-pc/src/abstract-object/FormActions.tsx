@@ -1,14 +1,15 @@
+/* eslint-disable react/prop-types */
 /**
  * @module FormActions
  * @description 底部操作按钮
  */
-import React from 'react';
+import React, { useEffect, useImperativeHandle, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Button, ButtonProps } from 'antd';
 import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
-import { AbstractActionItem, AbstractActionItemContext, AbstractRow } from '../interface';
+import { AbstractActionItem, AbstractActionItemContext } from '../interface';
 
-interface FormActionsProps<TRow> {
+export interface FormActionsProps<TRow> {
   okLoading: boolean
   isReadOnly: boolean
   showCancel: boolean
@@ -18,7 +19,6 @@ interface FormActionsProps<TRow> {
   handleCancel: () => void
   handleSubmit: () => void
   validateForms: () => Promise<void>
-  formValues: TRow
   record: TRow
   okEnable?: (values: TRow) => boolean
   actions: AbstractActionItem<TRow>[]
@@ -26,52 +26,41 @@ interface FormActionsProps<TRow> {
   container?: React.RefObject<HTMLElement>
 }
 
-interface FormActionsState<TRow> {
-  propsFormValues?: TRow
-  formValues?: TRow
+export interface FormActionsInstance<TRow> {
+  refresh: (model: TRow) => void
 }
 
-export default class FormActions<TRow> extends React.Component<FormActionsProps<TRow>, FormActionsState<TRow>> {
-  static getDerivedStateFromProps(props: FormActionsProps<AbstractRow>, state: FormActionsState<AbstractRow>) {
-    if (props.formValues != state.propsFormValues) {
-      return {
-        formValues: props.formValues,
-        propsFormValues: props.formValues,
-      };
-    }
-    return null;
-  }
+const useValue = (value: string, dv: string) => {
+  return value === null || value == undefined ? dv : value;
+};
 
-  state: FormActionsState<TRow> = {
-  };
+export default React.forwardRef(function FormActions<TRow>(props: FormActionsProps<TRow>, ref: React.RefObject<FormActionsInstance<TRow>>) {
+  const [updateId, setUpdateId] = useState(0);
+  const { container, record } = props;
+  const [formValues, setFormValues] = useState(record);
 
-  refresh(values: TRow) {
-    this.setState({ formValues: values });
-  }
+  useEffect(() => {
+    setFormValues(record || {} as TRow);
+  }, [props.record]);
 
-  useValue(value: string, dv: string) {
-    return value === null || value == undefined ? dv : value;
-  }
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setUpdateId(updateId + 1);
+    }, 100);
+    return () => clearTimeout(id);
+  }, []);
 
-  componentDidMount(): void {
-    this.delayUpdate();
-  }
+  useImperativeHandle(ref, () => {
+    return {
+      refresh: (values: TRow) => {
+        setFormValues(values);
+      },
+    };
+  });
 
-  componentDidUpdate(): void {
-    this.delayUpdate();
-  }
-
-  delayUpdate() {
-    const { container } = this.props;
-    if (container && !container.current) {
-      setTimeout(() => this.forceUpdate(), 100);
-    }
-  }
-
-  renderNode() {
-    const { okLoading, isReadOnly, handleSubmit, validateForms, handleCancel, showCancel, record, okEnable, showOk } = this.props;
-    const { btnSubmit, btnCancel, actions } = this.props;
-    const { formValues } = this.state;
+  const renderNode = () => {
+    const { okLoading, isReadOnly, handleSubmit, validateForms, handleCancel, showCancel, okEnable, showOk } = props;
+    const { btnSubmit, btnCancel, actions } = props;
     const showOkBtn = !(isReadOnly || !showOk);
     const ctx: AbstractActionItemContext = {
       bindValidate: (handler: Function) => {
@@ -81,11 +70,7 @@ export default class FormActions<TRow> extends React.Component<FormActionsProps<
         };
       },
     };
-    const model = {
-      ...(record || {}),
-      ...(formValues || {}),
-    } as TRow;
-    const isOkEnable = () => okEnable ? okEnable(model) : true;
+    const isOkEnable = () => okEnable ? okEnable(formValues) : true;
     return (
       <div className="object-view-footer">
         <div style={{ display: 'inline-block' }}>
@@ -98,7 +83,7 @@ export default class FormActions<TRow> extends React.Component<FormActionsProps<
                 icon={btnCancel?.icon || <MenuFoldOutlined />}
                 {...(btnCancel || {})}
               >
-                {this.useValue(btnCancel?.title, '返回')}
+                {useValue(btnCancel?.title, '返回')}
               </Button>
             )
           }
@@ -113,12 +98,12 @@ export default class FormActions<TRow> extends React.Component<FormActionsProps<
               icon={btnSubmit?.icon || <SaveFilled />}
               {...(btnSubmit || {})}
             >
-              {this.useValue(btnSubmit?.title, '确定')}
+              {useValue(btnSubmit?.title, '确定')}
             </Button>
           )}
           {
             actions?.map((render, i) => {
-              const node = render(model || {} as TRow, ctx);
+              const node = render(formValues || {} as TRow, ctx);
               return (
                 <span style={{ display: node ? 'inline' : 'none' }} className="footer-action-wrap" key={i}>{node}</span>
               );
@@ -127,14 +112,11 @@ export default class FormActions<TRow> extends React.Component<FormActionsProps<
         </div>
       </div>
     );
-  }
+  };
 
-  render(): React.ReactNode {
-    const { container } = this.props;
-    if (!container) {
-      return this.renderNode();
-    } else if (container.current) {
-      return ReactDOM.createPortal(this.renderNode(), container.current);
-    }
+  if (!container) {
+    return renderNode();
+  } else if (container.current) {
+    return ReactDOM.createPortal(renderNode(), container.current);
   }
-}
+});

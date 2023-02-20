@@ -1,5 +1,5 @@
 import './index.scss';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import RemoteIconView from './RemoteIconView';
 import { Button, Popover } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -26,57 +26,30 @@ export interface IconPickerProps {
   disabled?: boolean
 }
 
-export interface IconPickerState {
-  icon: string
-  valueIcon: string
-  visible: boolean
-  fontFamily: string
-}
+export default function IconPicker({ url = '', mode = 'normal', ...props }: IconPickerProps) {
+  const [icon, setIcon] = useState(props.value);
+  const [fontFamily, setFontFamily] = useState('');
+  const [visible, setVisible] = useState(false);
 
-export default class IconPicker extends React.Component<IconPickerProps, IconPickerState> {
-  static defaultProps: IconPickerProps = {
-    mode: 'normal',
-    url: '',
+  useEffect(() => {
+    setIcon(props.value);
+  }, [props.value]);
+
+  const onClear = ()=>{
+    setIcon('');
+    props.onChange('');
   };
 
-  static getDerivedStateFromProps(props: IconPickerProps, state: IconPickerState) {
-    if (props.value !== state.valueIcon) {
-      return {
-        valueIcon: props.value,
-        icon: props.value,
-      };
-    }
-    return null;
-  }
-
-  static Input = IconInput;
-
-  state: IconPickerState = {
-    icon: '',
-    valueIcon: '',
-    visible: false,
-    fontFamily: '',
-  };
-
-  onVisibleChange = (visible: boolean) => {
-    this.setState({ visible });
-  };
-
-  clear = ()=>{
-    this.props.onChange('');
-    this.setState({ icon: '' });
-  };
-
-  onCheckedIcon = (icon: string) => {
-    const value = this.props.mode == 'full' ? `${this.state.fontFamily} ${icon}` : icon;
-    const { onChange } = this.props;
+  const onCheckedIcon = (icon: string) => {
+    const value = mode == 'full' ? `${fontFamily} ${icon}` : icon;
+    const { onChange } = props;
     onChange && onChange(value);
-    this.setState({ visible: false, icon: icon });
+    setVisible(false);
+    setIcon(icon);
   };
 
-  renderCheckedIcon() {
-    const { renderIcon } = this.props;
-    const { fontFamily, icon } = this.state;
+  const renderCheckedIcon = () => {
+    const { renderIcon } = props;
     if (renderIcon) {
       return renderIcon(icon, fontFamily);
     }
@@ -84,64 +57,62 @@ export default class IconPicker extends React.Component<IconPickerProps, IconPic
     return (
       <Button shape="circle" type="primary" icon={iconView} ></Button>
     );
-  }
+  };
 
-  renderIconViewer() {
-    const { icon } = this.state;
-    const { mode } = this.props;
+  const renderIconViewer = () => {
     const value = mode == 'full' ? (icon || '').split(' ').pop() : icon;
     return (
       <RemoteIconView
-        onLoad={(fontFamily) => this.setState({ fontFamily: fontFamily })}
-        url={this.props.url}
+        onLoad={setFontFamily}
+        url={url}
         checkedIcon={value}
-        onClick={this.onCheckedIcon}
+        onClick={onCheckedIcon}
       />
     );
-  }
+  };
 
-  renderPopover() {
-    if (this.props.disabled) {
-      return this.renderCheckedIcon();
+  const renderPopover = () => {
+    if (props.disabled) {
+      return renderCheckedIcon();
     }
-    const { allowClear } = this.props;
-    const showClear =this.state.icon && allowClear;
+    const { allowClear } = props;
+    const showClear = icon && allowClear;
     return (
       <React.Fragment>
         <Popover
           trigger="click"
           title="图标库"
           placement="bottom"
-          visible={this.state.visible}
-          onVisibleChange={this.onVisibleChange}
-          content={this.renderIconViewer()}
+          visible={visible}
+          onVisibleChange={setVisible}
+          content={renderIconViewer()}
         >
-          {this.renderCheckedIcon()}
+          {renderCheckedIcon()}
         </Popover>
         <sub>
           {
             !showClear ? null : (
               <Button
                 type="link"
-                onClick={() => this.clear()}
+                onClick={onClear}
               >
-              清空
+                清空
               </Button>
             )
           }
         </sub>
       </React.Fragment>
     );
-  }
+  };
 
-  render() {
-    return (
-      <div className="icon-picker">
-        {this.renderPopover()}
-        <div style={{ display: 'none' }}>
-          {this.renderIconViewer()}
-        </div>
+  return (
+    <div className="icon-picker">
+      {renderPopover()}
+      <div style={{ display: 'none' }}>
+        {renderIconViewer()}
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+IconPicker.Input = IconInput;

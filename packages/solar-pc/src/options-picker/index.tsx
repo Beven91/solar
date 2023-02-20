@@ -5,7 +5,7 @@ import { PageQueryData } from '../interface';
 
 const cache: Record<string, Promise<Record<string, string>>> = {};
 
-interface OptionsViewProps {
+export interface OptionsViewProps {
   optionsKey: string
   value: string
   labelName?: string
@@ -13,9 +13,9 @@ interface OptionsViewProps {
   style?: React.CSSProperties
 }
 
-type AdvancePickerFilterdProps = Omit<AdvancePickerProps<any>, 'data' | 'api' | 'type' | 'query'>
+export type AdvancePickerFilterdProps = Omit<AdvancePickerProps<any, any>, 'data' | 'api' | 'type' | 'query'>
 
-interface OptionsPickerProps extends AdvancePickerFilterdProps {
+export interface OptionsPickerProps extends AdvancePickerFilterdProps {
   /**
    * 字典名称
    */
@@ -71,6 +71,5 @@ export function OptionsView({ labelName = 'label', valueName = 'value', value, o
     <span style={props.style}>{options[value]}</span>
   );
 }
-
 
 OptionsPicker.OptionsView = OptionsView;

@@ -67,6 +67,11 @@ const SALERS = [
 ];
 
 const PROV = [
+  { value: 1, label: '湖南省' },
+  { value: 2, label: '湖北省' },
+];
+
+const CITY = [
   { value: 1, label: '北京市' },
   { value: 2, label: '上海市' },
 ];
@@ -75,8 +80,9 @@ export default function App() {
   const formRef = useRef<FormInstance>();
 
   const rules: AbstractRules = {
-    activityId: [{ required: true, message: '请输入活动编码' }],
-    couponType: [{ required: true, message: '请输入优惠券类型' }],
+    'activityId': [{ required: true, message: '请输入活动编码' }],
+    'couponType': [{ required: true, message: '请输入优惠券类型' }],
+    'visual.name': [{ required: true, message: '请输入可视化名称' }],
   };
 
   const groups: AbstractGroups<ActivityModel> = [
@@ -112,7 +118,7 @@ export default function App() {
       title: '可视化',
       name: 'isVisual',
       render: <Switch />,
-      extra: (row)=> row.activityId + '----',
+      extra: (row) => row.activityId + '----',
     },
     { title: '可视化名称', name: 'visual.name', visible: (row) => row.isVisual, extra: '设置visible函数来控制组件是否可见' },
     {
@@ -137,8 +143,8 @@ export default function App() {
     {
       title: '截止时间',
       name: 'validateStartTime',
-      convert: () => 'moment',
-      render: <DatePicker />,
+      convert: () => ['moment', 'YYYY年MM月DD日'],
+      render: <DatePicker format="YYYY年MM月DD日" />,
       extra: '例如：像DatePicker会返回moment，如果希望返回成日期字符串，则可以设置convert参数来指定转换器',
     },
     {
@@ -156,13 +162,40 @@ export default function App() {
       title: '省份名称',
       name: 'provName',
     },
+    {
+      title: '派生表单',
+      name: 'cityId',
+      genericKeys: { cityId: 'value', cityName: 'label' },
+      render: <AdvancePicker valueMode="object" data={CITY} />,
+    },
+    {
+      title: '多级',
+      name: 'address[0].name',
+    },
   ];
+
+  const onFill = () => {
+    formRef.current.setFieldsValue({
+      activityId: 'a0001',
+      couponType: 1,
+      cityId: 1,
+      cityName: '北京市',
+      address: [
+        { name: 'sdfsf' },
+      ],
+    });
+  };
 
   return (
     <Form
       onFinish={(values) => console.log(values)}
       ref={formRef}
     >
+      <div
+        style={{ textAlign: 'right' }}
+      >
+        <Button onClick={onFill} type="primary">填充</Button>
+      </div>
       <AbstractForm autoFocus="activityId" groups={groups} rules={rules} form={formRef} />
       <div style={{ textAlign: 'center' }}>
         <Button type="primary" htmlType="submit" >提交</Button>

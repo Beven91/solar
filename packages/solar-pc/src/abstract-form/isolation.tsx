@@ -14,7 +14,8 @@ import { FormInstance } from 'antd/lib/form';
 import deepmerge from './deepmerge';
 
 export interface ISolationContextValue {
-  setValidator: (handler: () => Promise<boolean>) => void
+  setValidator: (handler: () => Promise<void>) => void
+  setMergeValidator: (handler: () => Promise<void>) => void
 }
 
 export const ISolationContext = React.createContext<ISolationContextValue>({} as ISolationContextValue);
@@ -39,7 +40,7 @@ export default function ISolation<TRow>({ onChange, ...props }: React.PropsWithC
     const model = deepmerge({ ...values }, changedValues) as TRow;
     onChange && onChange(model);
     props.onValuesChange && props.onValuesChange(changedValues, values);
-  }, [onChange]);
+  }, [onChange, props.onValuesChange]);
 
   useEffect(() => {
     const formInstance = useFormRef.current;
@@ -60,8 +61,7 @@ export default function ISolation<TRow>({ onChange, ...props }: React.PropsWithC
       form: useFormRef,
       record: props.value,
     };
-  }, []);
-
+  }, [context.isReadOnly, useFormRef, props.value]);
 
   return (
     <Form
@@ -76,7 +76,6 @@ export default function ISolation<TRow>({ onChange, ...props }: React.PropsWithC
         <Dynamic {...childContext} {...props} />
       </FormContext.Provider>
     </Form>
-
   );
 }
 

@@ -9,7 +9,7 @@
 ### 代码演示
 
 <AppCodebox 
-  src="src/overridable-page-header/demo/index" 
+  src="src/override-page-header/demo/index" 
   title="基本用法" 
   desc="通过OverridePageHeader的 Container, PageHeader 以及OverridePageHeader来组合使用。" 
 />

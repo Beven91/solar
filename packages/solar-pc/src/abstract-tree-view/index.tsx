@@ -3,13 +3,12 @@
  * @description 部门树控件
  */
 import './index.scss';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Spin, Tree } from 'antd';
 import { } from 'solar-core';
 import { AbstractAction, AbstractButtons, AbstractQueryType, PlainObject } from 'solar-pc/src/interface';
 import CellActions from 'solar-pc/src/abstract-table/parts/CellActions';
 import { TreeProps, DataNode } from 'antd/lib/tree';
-import memoize from 'memoize-one';
 import renders from '../abstract-table/util/cellRenders';
 import classify from './classify';
 
@@ -22,8 +21,10 @@ interface ClassifyNodes<TRow> {
 type getRootNodesFunc = (data: ClassifyNodes<DataNode>) => DataNode[]
 
 export interface TreeViewProps<TRow> extends TreeProps {
-  // 是否数据加载中
+  // 是否正在加载中
   loading?: boolean
+  // 采用数据模式
+  data?: TRow[]
   // 节点操作按钮
   buttons?: AbstractButtons<TRow>
   // 主键
@@ -31,7 +32,7 @@ export interface TreeViewProps<TRow> extends TreeProps {
   // 用于指定父级节点的唯一 属性名
   parentKey?: string
   // 展示的属性名
-  labelKey?:string
+  labelKey?: string
   // 自定义获取根节点
   getRootNodes: getRootNodesFunc
   // 点击节点时触发的action
@@ -46,77 +47,51 @@ export interface TreeViewProps<TRow> extends TreeProps {
   initQuery?: boolean
 }
 
-export interface TreeViewState<TRow> {
-  data: TRow[]
-}
+const stopPropagation = (ev: React.MouseEvent<HTMLDivElement>) => {
+  ev.stopPropagation();
+};
 
-export default class TreeView<TRow extends PlainObject> extends React.Component<TreeViewProps<TRow>, TreeViewState<TRow>> {
-  static defaultProps: Partial<TreeViewProps<any>> = {
-    loading: false,
-    initQuery: true,
-    rowKey: 'id',
-    labelKey: 'title',
-    parentKey: 'parentId',
+export default function TreeView<TRow extends PlainObject>(
+  {
+    initQuery = true,
+    rowKey = 'id',
+    labelKey = 'title',
+    parentKey = 'parentId',
+    getRootNodes,
+    ...props
+  }: TreeViewProps<TRow>
+) {
+  const [data, setData] = useState(props.data || []);
+  const [loading, setLoading] = useState(props.loading);
+
+  const requestQuery = async() => {
+    if (initQuery) {
+      setLoading(true);
+      const res = await props.onQuery({} as AbstractQueryType);
+      setData(res);
+      setLoading(false);
+    }
   };
 
-  constructor(props: TreeViewProps<TRow>) {
-    super(props);
-    this.state = {
-      data: [],
-    };
-  }
+  useEffect(() => {
+    setLoading(props.loading);
+  }, [props.loading]);
 
-  componentDidMount(): void {
-    this.initQuery();
-  }
+  useEffect(() => {
+    setData(props.data);
+  }, [props.data]);
 
-  async initQuery() {
-    if (this.props.initQuery) {
-      const res = await this.props.onQuery({} as AbstractQueryType);
-      this.setState({
-        data: res,
-      });
-    }
-  }
+  useEffect(() => {
+    requestQuery();
+  }, []);
 
-  handleSelect = (keys: string[], info: any) => {
+  const handleSelect = (keys: string[], info: any) => {
     const node = info.selectedNodes[0];
-    const { onActionRoute } = this.props;
+    const { onActionRoute } = props;
     onActionRoute && onActionRoute(renders.createAction({ id: node.key, action: 'update' }));
   };
 
-  stopPropagation = (ev: React.MouseEvent<HTMLDivElement>) => {
-    ev.stopPropagation();
-  };
-
-  renderNode = (node: DataNode) => {
-    const { itemRender, rowKey, disabled } = this.props;
-    return (
-      <div
-        className="abstract-tree-node"
-        onClick={this.stopPropagation}
-      >
-        <span className="abstract-node-title">
-          {!itemRender ? (node.title || node.key) : itemRender(node)}
-        </span>
-        <div className="node-actions">
-          {
-            disabled ? null : (
-              <CellActions
-                style={{ display: 'inline-block' }}
-                onAction={this.props.onActionRoute}
-                row={node}
-                rowId={(node as any)[rowKey]}
-                buttons={this.props.buttons}
-              />
-            )
-          }
-        </div>
-      </div>
-    );
-  };
-
-  getData = memoize((data: TRow[], parentKey: string, rowKey: string, labelKey:string, format: getRootNodesFunc) => {
+  const treeSource = useMemo(() => {
     if (!data) return [];
     const elements = data.map((item) => {
       return {
@@ -126,29 +101,53 @@ export default class TreeView<TRow extends PlainObject> extends React.Component<
       } as DataNode;
     });
     const tree = classify(elements, parentKey, rowKey) as ClassifyNodes<DataNode>;
-    return format(tree);
-  });
+    return getRootNodes(tree);
+  }, [data, parentKey, rowKey, labelKey, getRootNodes]);
 
-  render() {
-    const { parentKey, rowKey, labelKey, getRootNodes, ...props } = this.props;
+  const renderNode = (node: DataNode) => {
+    const { itemRender, disabled } = props;
+    const title = typeof node.title == 'function' ? node.title(node) : node.title;
     return (
-      <div>
-        <div className="abstract-tree-view">
-          <Spin
-            spinning={this.props.loading}
-          >
-            <Tree<DataNode>
-              showIcon
-              defaultExpandAll
-              onSelect={this.handleSelect}
-              titleRender={this.renderNode}
-              // switcherIcon={<DownOutlined />}
-              {...props}
-              treeData={this.getData(this.state.data, parentKey, rowKey, labelKey, getRootNodes)}
-            />
-          </Spin>
+      <div
+        className="abstract-tree-node"
+        onClick={stopPropagation}
+      >
+        <span className="abstract-node-title">
+          {itemRender?.(node) || (title || node.key)}
+        </span>
+        <div className="node-actions">
+          {
+            disabled ? null : (
+              <CellActions
+                style={{ display: 'inline-block' }}
+                onAction={props.onActionRoute}
+                row={node}
+                rowId={(node as any)[rowKey]}
+                buttons={props.buttons}
+              />
+            )
+          }
         </div>
       </div>
     );
-  }
+  };
+
+  return (
+    <div>
+      <div className="abstract-tree-view">
+        <Spin
+          spinning={loading}
+        >
+          <Tree<DataNode>
+            showIcon
+            defaultExpandAll
+            onSelect={handleSelect}
+            titleRender={renderNode}
+            {...props}
+            treeData={treeSource}
+          />
+        </Spin>
+      </div>
+    </div>
+  );
 }

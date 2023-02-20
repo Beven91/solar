@@ -131,7 +131,7 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   // 默认排序字段
   sort?: string,
   // 默认排序方式
-  order?: string,
+  order?: 'ascend' | 'descend',
   // 表格tabs
   filters?: AbstractFilters,
   // 渲染表格topbar 可以往按钮签追加内容
@@ -177,6 +177,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   };
   sortDirections?: SortOrder[]
   showSorterTooltip?: boolean
+  // 自定义顶部按钮渲染容器
+  getActionsContainer?: () => HTMLElement
 }
 
 

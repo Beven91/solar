@@ -1,21 +1,33 @@
+/* eslint-disable react/prop-types */
 /**
  * @name AbstractObject 后台系统对象编辑视图
  * @description
  *       提供一致的后台系统对象编辑与修改以及查看行为视图
  */
 import './index.scss';
-import React from 'react';
+import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Modal, Form, ButtonProps } from 'antd';
 import AbstractForm from '../abstract-form';
 import { AbstractActionItem, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import { Travel } from 'solar-core';
-import FormActions from './FormActions';
+import FormActions, { FormActionsInstance } from './FormActions';
 import CrashProvider from '../crash-provider';
-
-function NOOP(record: AbstractRow) { }
+import deepmerge from '../abstract-form/deepmerge';
+import { AbstractObjectContext } from './context';
 
 let formIdIndex = 0;
+
+const objectFilter = (values: any) => {
+  return Travel.travel(values, (v: any) => {
+    if (typeof v === 'string') {
+      return v.trim();
+    }
+    return v;
+  });
+};
+
+export const Context = AbstractObjectContext;
 
 export interface BaseObjectProps<TRow> {
   // 编辑页类型
@@ -71,171 +83,112 @@ export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
   onSubmit?: (record: TRow) => void;
 }
 
-export interface AbstractObjectState<TRow> {
-  modalDestory?: boolean;
-  visible?: boolean;
-  prevMode?: string;
-  values: TRow;
-  needFillValues: boolean;
+export interface AbstractObjectInstance {
+  handleSubmit: () => void,
+  handleCancel: () => void,
+  validateForms: () => Promise<void>,
 }
 
-export default class AbstractObject<TRow = AbstractRow> extends React.Component<
-  React.PropsWithChildren<AbstractObjectProps<TRow>>,
-  AbstractObjectState<TRow>
-> {
-  static getDerivedStateFromProps(
-    props: AbstractObjectProps<AbstractRow>,
-    state: AbstractObjectState<AbstractRow>
-  ) {
-    if (props.action !== state.prevMode) {
-      return {
-        modalDestory: false,
-        values: props.record,
-        visible: props.action !== 'none' && !!props.action,
-        prevMode: props.action,
-      };
-    } else if (props.record !== state.values) {
-      return {
-        needFillValues: true,
-        values: props.record,
-      } as AbstractObjectState<AbstractRow>;
-    }
-    return null;
-  }
+export default React.forwardRef(function AbstractObject<TRow = AbstractRow>({
+  type = 'normal',
+  primaryKey = 'id',
+  scrollToFirstError = true,
+  showActions,
+  record,
+  action,
+  footer = true,
+  ...props
+}: React.PropsWithChildren<AbstractObjectProps<TRow>>,
+ref: React.MutableRefObject<AbstractObjectInstance>
+) {
+  const [memo] = useState({ pendingReadOnly: null, cancelId: null, cancelSubmiting: false, isDestoryed: false });
+  const [formId] = useState(`abstract-form-${formIdIndex++}`);
+  const visible = useMemo(() => action !== 'none' && !!action, [action]);
+  const formRef = useRef<FormInstance>();
+  const footerRef = useRef<FormActionsInstance<TRow>>();
+  const headerRef = useRef<FormActionsInstance<TRow>>();
 
-  // 默认属性值
-  static defaultProps = {
-    width: null as any,
-    footer: true,
-    record: null as any,
-    title: '',
-    type: 'normal',
-    primaryKey: 'id',
-    buttons: 'ok-cancel',
-    fixedFooter: false,
-    scrollToFirstError: true,
-    onSubmit: NOOP,
-    onCancel: NOOP,
-  };
-
-  formId = '';
-
-  constructor(props: any) {
-    super(props);
-    this.formId = `abstract-form-${formIdIndex++}`;
-  }
-
-  footerRef = React.createRef<FormActions<TRow>>();
-
-  headerRef = React.createRef<FormActions<TRow>>();
-
-  childFormRefs = [] as React.RefObject<FormInstance>[];
-
-  cancelId: any;
-
-  cancelSubmiting: any;
-
-  isDestoryed = false;
-
-  state: AbstractObjectState<TRow> = {
-    values: null as TRow,
-    visible: false,
-    modalDestory: false,
-    needFillValues: false,
-  };
-
-  formRef = React.createRef<FormInstance>();
-
-  pendingReadOnly = null as boolean;
-
-  // 设置共享context数据
-  get formContext() {
-    return {
-      isReadOnly: this.isReadOnly,
-      form: this.formRef,
-      width: this.props.width,
-      // 提交
-      submitAction: this.handleSubmit,
-      // 取消
-      handleCancel: this.handleCancel,
-      record: this.props.record || {},
-      model: this.props.record || {},
+  useEffect(() => {
+    formRef.current?.resetFields();
+    formRef.current?.setFieldsValue(record);
+    return () => {
+      memo.isDestoryed = true;
+      resetFields();
+      clearTimeout(memo.cancelId);
     };
-  }
+  }, [action, record]);
 
   // 是否在只读模式下
-  get isReadOnly(): boolean {
-    if (this.pendingReadOnly !== null) {
+  const isReadOnly = useMemo(() => {
+    if (memo.pendingReadOnly !== null) {
       // 如果正在关闭中，这里需要临时使用关闭前的状态
-      return this.pendingReadOnly;
+      return memo.pendingReadOnly;
     }
-    return this.props.action === 'view' || !!this.props.isReadOnly;
-  }
+    return action === 'view' || !!props.isReadOnly;
+  }, [action, props.isReadOnly]);
 
   // 是否显示确定按钮
-  get showOk() {
-    return this.props.showActions == 'ok-cancel' || this.props.showActions == 'ok' || !this.props.showActions;
-  }
+  const showOk = useMemo(() => {
+    return showActions == 'ok-cancel' || showActions == 'ok' || !showActions;
+  }, [showActions]);
 
-  get showCancel() {
-    return this.props.showActions === 'cancel' || this.props.showActions === 'ok-cancel' || !this.props.showActions;
-  }
+  // 是否显示取消按钮
+  const showCancel = useMemo(() => {
+    return showActions === 'cancel' || showActions === 'ok-cancel' || !showActions;
+  }, [showActions]);
+
+  const resetFields = () => {
+    formRef.current?.resetFields?.();
+    const values = formRef.current?.getFieldsValue?.() || {} as TRow;
+    if (footerRef.current) {
+      footerRef.current.refresh(values);
+    }
+    if (headerRef.current) {
+      headerRef.current.refresh(values);
+    }
+  };
 
   // 处理冒泡命令
-  handleCommands = (ev: any) => {
+  const handleCommands = (ev: any) => {
     const target = ev.target as HTMLDivElement;
     const { dataset = {} } = target;
     switch (dataset.command) {
       case 'submit':
-        this.handleSubmit();
+        handleSubmit();
         break;
       case 'cancel':
-        this.handleCancel();
+        handleCancel();
         break;
       default:
         break;
     }
   };
 
-  validateForms = async() => {
-    const form = this.formRef.current;
-    const childFormRefs = this.childFormRefs;
+  const validateForms = async() => {
+    const form = formRef.current;
     await form.validateFields();
-    if (childFormRefs.length > 1) {
-      await Promise.all(
-        childFormRefs.map((form) => {
-          return form.current.validateFields().catch((result) => {
-            this.doFinishFailed(form.current, result.errorFields);
-            return Promise.reject(result);
-          });
-        })
-      );
-    }
   };
 
   // 处理提交操作
-  handleSubmit = () => {
-    if (this.isReadOnly) {
-      return this.handleCancel();
+  const handleSubmit = () => {
+    if (isReadOnly) {
+      return handleCancel();
     }
-    const form = this.formRef.current;
+    const form = formRef.current;
     return form.submit();
   };
 
   // 表单校验成功
-  onFinish = async(values: AbstractRow) => {
-    const { onSubmit, record, primaryKey } = this.props;
+  const onFinish = async(values: AbstractRow) => {
+    const { onSubmit } = props;
     if (typeof onSubmit === 'function') {
-      // record是null，默认值就不会生效
       if (record) {
-        // 移除副作用 ____member
-        delete (record as any).____member;
         const primaryValue = (record as any)[primaryKey];
         if (primaryValue) {
           values[primaryKey] = primaryValue;
         }
       }
-      values = this.objectFilter(values);
+      values = objectFilter(values);
       try {
         await Promise.resolve(onSubmit(values as TRow));
       } catch (ex) {
@@ -244,211 +197,198 @@ export default class AbstractObject<TRow = AbstractRow> extends React.Component<
     }
   };
 
-  objectFilter(values: any) {
-    return Travel.travel(values, (v: any) => {
-      if (typeof v === 'string') {
-        return v.trim();
-      }
-      return v;
-    });
-  }
-
-  onFinishFailed = (res: any) => {
-    const form = this.formRef.current;
-    this.doFinishFailed(form, res.errorFields);
+  const onFinishFailed = (res: any) => {
+    const form = formRef.current;
+    doFinishFailed(form, res.errorFields);
   };
 
-  doFinishFailed(form: FormInstance, errorFields: any) {
-    const { scrollToFirstError } = this.props;
+  const doFinishFailed = (form: FormInstance, errorFields: any) => {
     if (errorFields.length > 0 && scrollToFirstError) {
       setTimeout(() => form.scrollToField(errorFields[0].name), 200);
     }
-  }
+  };
 
   // 处理取消操作
-  handleCancel = () => {
-    const { onCancel } = this.props;
+  const handleCancel = () => {
+    const { onCancel } = props;
     let cancelable = true;
     if (typeof onCancel === 'function') {
       cancelable = onCancel() !== false;
     }
-    this.pendingReadOnly = this.isReadOnly;
+    memo.pendingReadOnly = isReadOnly;
     Promise.resolve(cancelable).then((cancel) => {
-      if (cancel && !this.isDestoryed) {
+      if (cancel && !memo.isDestoryed) {
         // 切换模式下，清除表单输入数据
-        this.resetFields();
-        this.cancelId = setTimeout(() => {
-          this.pendingReadOnly = null;
-          this.setState({ modalDestory: true });
+        resetFields();
+        memo.cancelId = setTimeout(() => {
+          memo.pendingReadOnly = null;
         }, 400);
       }
     });
   };
 
-  resetFields() {
-    if (this.formRef.current) {
-      this.formRef.current.resetFields();
+  const onValuesChange = (changedValues: TRow, allValues: TRow) => {
+    const { onValuesChange } = props;
+    const model = deepmerge(allValues, changedValues) as TRow;
+    if (footerRef.current) {
+      footerRef.current.refresh(model);
     }
-  }
-
-  onValuesChange = (changedValues: TRow, allValues: TRow) => {
-    const { onValuesChange } = this.props;
-    if (this.footerRef.current) {
-      this.footerRef.current.refresh({ ...allValues, ...changedValues });
-    }
-    if (this.headerRef.current) {
-      this.headerRef.current.refresh({ ...allValues, ...changedValues });
+    if (headerRef.current) {
+      headerRef.current.refresh(model);
     }
     onValuesChange && onValuesChange(changedValues, allValues);
   };
 
-  componentDidUpdate() {
-    if (this.state.needFillValues && this.formRef.current) {
-      this.setState({ needFillValues: false });
-      this.formRef.current.resetFields();
-      this.formRef.current.setFieldsValue(this.props.record);
-    }
-  }
+  // 设置共享context数据
+  const formContext = {
+    isReadOnly: isReadOnly,
+    form: formRef,
+    width: props.width,
+    // 提交
+    submitAction: handleSubmit,
+    // 取消
+    handleCancel: handleCancel,
+    // 校验表单
+    validateForms: validateForms,
+    record: record || {},
+    model: record || {},
+  };
 
-  componentWillUnmount() {
-    this.isDestoryed = true;
-    this.resetFields();
-    clearTimeout(this.cancelId);
-    clearTimeout(this.cancelSubmiting);
-  }
+  useImperativeHandle(ref, () => {
+    return {
+      handleSubmit: handleSubmit,
+      handleCancel: handleCancel,
+      validateForms: validateForms,
+    };
+  });
 
   // 非弹窗模式
-  renderObject() {
-    const { visible } = this.state;
-    const { action: mode, height, footer, className } = this.props;
+  const renderObject = () => {
+    const { height, className } = props;
     if (!visible) {
       return null;
     }
     const fixedCls = height ? 'fixed-footer' : '';
     return (
-      <div className={`abstract-object-wrap  abstract-object-view ${fixedCls} ${mode}`}>
-        <div
-          onClick={this.handleCommands}
-          style={{ height: height }}
-          className={`abstract-object ${className}`}
-        >
-          {this.renderHeader()}
-          <div className="object-view-body">
-            {this.renderContext()}
+      <AbstractObjectContext.Provider value={formContext}>
+        <div className={`abstract-object-wrap  abstract-object-view ${fixedCls} ${action}`}>
+          <div
+            onClick={handleCommands}
+            style={{ height: height }}
+            className={`abstract-object ${className}`}
+          >
+            {renderHeader()}
+            <div className="object-view-body">
+              {renderContext()}
+            </div>
+            {footer ? renderFooter() : null}
           </div>
-          {footer ? this.renderFooter() : null}
         </div>
-      </div>
+      </AbstractObjectContext.Provider>
     );
-  }
+  };
 
   // 渲染底部
-  renderFooter() {
-    const { btnSubmit, btnCancel, footActions, footer } = this.props;
-    if (!this.state.visible || !footer) return null;
+  const renderFooter = () => {
+    const { btnSubmit, btnCancel, footActions } = props;
+    if (!visible || !footer) return null;
     return (
       <FormActions
-        ref={this.footerRef}
+        ref={footerRef}
         btnCancel={btnCancel}
         btnSubmit={btnSubmit}
-        formValues={this.props.record}
-        showCancel={this.showCancel}
-        showOk={this.showOk}
-        record={this.props.record}
-        okEnable={this.props.okEnable}
-        isReadOnly={this.isReadOnly}
-        handleCancel={this.handleCancel}
-        handleSubmit={this.handleSubmit}
-        validateForms={this.validateForms}
-        okLoading={this.props.loading}
+        showCancel={showCancel}
+        showOk={showOk}
+        record={record}
+        handleCancel={handleCancel}
+        handleSubmit={handleSubmit}
+        validateForms={validateForms}
+        okEnable={props.okEnable}
+        isReadOnly={isReadOnly}
+        okLoading={props.loading}
         actions={footActions}
       />
     );
-  }
+  };
 
-  renderHeader() {
-    const { btnSubmit, btnCancel, headActions, headContainer } = this.props;
-    if (!this.state.visible || !headActions || headActions.length < 1) return null;
+  const renderHeader = () => {
+    const { btnSubmit, btnCancel, headActions, headContainer } = props;
+    if (!visible || !headActions || headActions.length < 1) return null;
     return (
       <FormActions
-        ref={this.headerRef}
+        ref={headerRef}
         btnCancel={btnCancel}
         btnSubmit={btnSubmit}
         container={headContainer}
-        formValues={this.props.record}
         showCancel={false}
         showOk={false}
-        record={this.props.record}
-        okEnable={this.props.okEnable}
-        isReadOnly={this.isReadOnly}
-        handleCancel={this.handleCancel}
-        handleSubmit={this.handleSubmit}
-        validateForms={this.validateForms}
-        okLoading={this.props.loading}
+        record={record}
+        handleCancel={handleCancel}
+        handleSubmit={handleSubmit}
+        validateForms={validateForms}
+        okEnable={props.okEnable}
+        isReadOnly={isReadOnly}
+        okLoading={props.loading}
         actions={headActions}
       />
     );
-  }
+  };
 
   // 弹窗模式
-  renderPopupObject() {
-    const { visible, modalDestory } = this.state;
-    const { title, width, height, action: mode, loading, className } = this.props;
-    if (modalDestory) {
-      return null;
-    }
+  const renderPopupObject = () => {
+    const { title, width, height, loading, className } = props;
     const fixedCls = height ? 'fixed-footer' : '';
+    const sizeCls = width > 0 ? '' : 'large';
     return (
-      <Modal
-        wrapClassName={`abstract-object-modal-wrap abstract-object-view ${fixedCls} ${className} ${width > 0 ? '' : 'large'
-        }`}
-        className={`abstract-object ${mode}`}
-        title={title}
-        visible={visible}
-        width={width}
-        maskClosable={this.isReadOnly}
-        confirmLoading={loading}
-        onOk={this.handleSubmit}
-        onCancel={this.handleCancel}
-        footer={this.renderFooter()}
-      >
-        {this.renderHeader()}
-        <div style={{ height: height }} className="object-view-body" onClick={this.handleCommands}>{this.renderContext()}</div>
-      </Modal>
+      <AbstractObjectContext.Provider value={formContext}>
+        <Modal
+          wrapClassName={`abstract-object-modal-wrap abstract-object-view ${fixedCls} ${className} ${sizeCls}`}
+          className={`abstract-object ${action}`}
+          title={title}
+          open={visible}
+          visible={visible}
+          width={width}
+          maskClosable={isReadOnly}
+          confirmLoading={loading}
+          onOk={handleSubmit}
+          onCancel={handleCancel}
+          destroyOnClose
+          footer={renderFooter()}
+        >
+          {renderHeader()}
+          <div style={{ height: height }} className="object-view-body" onClick={handleCommands}>
+            {renderContext()}
+          </div>
+        </Modal>
+      </AbstractObjectContext.Provider>
     );
-  }
+  };
 
   // 渲染表单内容
-  renderContext() {
-    const record = this.props.record || {};
+  const renderContext = () => {
     return (
       <CrashProvider errorProps={{ hideActions: true }} >
         <Form
-          key={this.props.action}
-          name={this.formId}
-          ref={this.formRef}
-          onValuesChange={this.onValuesChange}
-          onFinish={this.onFinish}
-          onFinishFailed={this.onFinishFailed}
-          initialValues={record}
+          key={action}
+          name={formId}
+          ref={formRef}
+          onValuesChange={onValuesChange}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          initialValues={record || {}}
         >
-          <AbstractForm.Context.Provider value={this.formContext}>
-            {this.props.children}
+          <AbstractForm.Context.Provider value={formContext}>
+            {props.children}
           </AbstractForm.Context.Provider>
         </Form>
       </CrashProvider>
     );
-  }
+  };
 
-  // 渲染视图
-  render() {
-    const { type } = this.props;
-    switch (type) {
-      case 'modal':
-        return this.renderPopupObject();
-      default:
-        return this.renderObject();
-    }
+  switch (type) {
+    case 'modal':
+      return renderPopupObject();
+    default:
+      return renderObject();
   }
-}
-
+});

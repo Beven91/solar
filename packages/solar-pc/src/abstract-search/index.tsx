@@ -4,7 +4,7 @@
  *       提供通用的搜索视图
  */
 import './index.scss';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, ButtonProps, Col, Form, Input } from 'antd';
 import { AbstractQueryType, PlainObject, AbstractSField, RecordModel, AbstractRow } from '../interface';
@@ -13,6 +13,8 @@ import AdvancePicker from '../advance-picker';
 import AbstractForm from '../abstract-form';
 
 export interface AbstractSearchProps<TRow> {
+  // 获取表单实例
+  formRef?: React.RefObject<FormInstance>
   // 容器样式名
   className?: string
   // 搜搜按钮容器样式
@@ -36,202 +38,190 @@ export interface AbstractSearchProps<TRow> {
   onClean?: () => void,
   // 搜索表单项样式类名
   formItemCls?: string
-}
-
-export interface AbstractSearchState {
+  // 清空模式
+  // \n all：清空时无视默认值全部清空，
+  // \n initial:清空时保留默认值
+  resetMode?: 'all' | 'initial'
+  // 搜索值发生改变
+  onChange?: (allValues: Record<string, any>) => void
+  // 搜索项style
+  itemStyle?: React.CSSProperties
 }
 
 const FormItem = Form.Item;
 
-export default class AbstractSearch<TRow = AbstractRow> extends React.Component<PropsWithChildren<AbstractSearchProps<TRow>>, AbstractSearchState> {
-  static defaultProps: AbstractSearchProps<any> = {
-    span: 8,
-    onQuery: () => { },
-    fields: [],
-  };
-
-  // 构造函数
-  constructor(props: AbstractSearchProps<TRow>) {
-    super(props);
-    this.handleSearch = this.handleSearch.bind(this);
-    this.handleReset = this.handleReset.bind(this);
-    this.state = {};
+// 获取搜索表单
+const renderSearchInput = (field: AbstractSField, record: RecordModel) => {
+  const api = field.api;
+  if (typeof field.render === 'function') {
+    return field.render(record);
+  } else if (field.render) {
+    return field.render;
+  } else if (field.enums) {
+    return <AdvancePicker allowClear allOption type="local" data={field.enums as any} />;
+  } else if (field.api) {
+    return <AdvancePicker allowClear allOption labelName={api[1]} valueName={api[2]} api={api[0]} />;
   }
+  return <Input placeholder={field.placeholder} />;
+};
 
-  formRef = React.createRef<FormInstance>();
-
-  delayTimerId: any;
-
-  get isNewline() {
-    return this.props.actionStyle === 'newline';
-  }
-
-  get fields() {
-    const { fields = [], span } = this.props;
-    return fields.map((item) => {
-      return {
-        ...item,
-        span: item.span || span,
-        render: (record: RecordModel) => this.renderSearchInput(item, record),
-      };
-    });
-  }
-
-  getQueryValues() {
-    if (this.formRef.current) {
-      return this.formRef.current.getFieldsValue();
+/**
+ * 过滤为空的选项
+ */
+const renderQuery = (query: PlainObject) => {
+  return Object.keys(query).reduce((newQuery: PlainObject, k) => {
+    let v = query[k];
+    if (v === null || v === undefined || v.toString().trim() === '') {
+      return newQuery;
     }
-    return {};
-  }
-
-  // 获取搜索表单
-  renderSearchInput = (field: AbstractSField, record: RecordModel) => {
-    const api = field.api;
-    if (typeof field.render === 'function') {
-      return field.render(record);
-    } else if (field.render) {
-      return field.render;
-    } else if (field.enums) {
-      return <AdvancePicker allowClear allOption type="local" data={field.enums as any} />;
-    } else if (field.api) {
-      return <AdvancePicker allowClear allOption labelName={api[1]} valueName={api[2]} api={api[0]} />;
+    if (typeof v === 'string') {
+      v = v.trim();
     }
-    return <Input placeholder={field.placeholder} />;
-  };
+    newQuery[k] = v;
+    return newQuery;
+  }, {});
+};
+
+const useValue = (value: string, dv: string) => {
+  return value === null || value == undefined ? dv : value;
+};
+
+const useFormRef = (formRef: React.MutableRefObject<FormInstance>) => {
+  if (formRef) {
+    return formRef;
+  }
+  return useRef<FormInstance>();
+};
+
+export default function AbstractSearch<TRow = AbstractRow>({
+  span = 8,
+  onQuery = () => { },
+  resetMode = 'all',
+  ...props
+}: PropsWithChildren<AbstractSearchProps<TRow>>) {
+  const formRef = useFormRef(props.formRef);
+  const [delayTimerId, setDelayTimerId] = useState<ReturnType<typeof setTimeout>>();
+  const isNewline = props.actionStyle == 'newline';
+
+  const fields = useMemo(() => {
+    return (props.fields || []).map((item) => ({
+      ...item,
+      span: item.span || span,
+      render: (record: RecordModel) => renderSearchInput(item, record),
+    }));
+  }, [props.fields, span]);
+
 
   // 处理搜索
-  handleSearch(values: PlainObject) {
-    clearTimeout(this.delayTimerId);
-    const { onQuery: onSearch } = this.props;
+  const handleSearch = (values: PlainObject) => {
+    clearTimeout(delayTimerId);
     const query = values || {};
-    if (typeof onSearch === 'function') {
-      onSearch(this.renderQuery(query) as AbstractQueryType);
-    }
-  }
-
-  /**
-   * 过滤为空的选项
-   */
-  renderQuery(query: PlainObject) {
-    return Object.keys(query).reduce((newQuery: PlainObject, k) => {
-      let v = query[k];
-      if (v === null || v === undefined || v.toString().trim() === '') {
-        return newQuery;
-      }
-      if (typeof v === 'string') {
-        v = v.trim();
-      }
-      newQuery[k] = v;
-      return newQuery;
-    }, {});
-  }
-
-
-  // 重置表单
-  handleReset() {
-    const form = this.formRef.current;
-    const { onClean } = this.props;
-    form.resetFields();
-    this.handleSearch({});
-    onClean && onClean();
-  }
-
-  // 处理输入项onChange时，执行搜索
-  handleInputChanged = (changedValues: PlainObject, allValues: any) => {
-    const key = Object.keys(changedValues)[0];
-    const fields = this.props.fields || [];
-    const field = fields.find((f) => f.name == key);
-    if (field) {
-      const onChange = field.onChange;
-      if (typeof onChange === 'function') {
-        onChange(changedValues[key]);
-      }
-      if (field.auto) {
-        clearTimeout(this.delayTimerId);
-        this.delayTimerId = setTimeout(() => this.handleSearch(allValues), 200);
-      }
-    }
+    onQuery?.(renderQuery(query) as AbstractQueryType);
   };
 
-  useValue(value: string, dv: string) {
-    return value === null || value == undefined ? dv : value;
-  }
+  // 重置表单
+  const handleReset = () => {
+    formRef.current?.resetFields();
+    if (resetMode !== 'initial') {
+      const emptyValues = {} as Record<string, any>;
+      Object.keys(props.initialValues || {}).forEach((k) => {
+        emptyValues[k] = null;
+      });
+      formRef.current?.setFieldsValue?.(emptyValues);
+    }
+    const values = formRef.current?.getFieldsValue?.() || {};
+    handleSearch(values);
+    props.onClean?.();
+  };
+
+  // 处理输入项onChange时，执行搜索
+  const handleInputChanged = useCallback((changedValues: PlainObject, allValues: any) => {
+    const key = Object.keys(changedValues)[0];
+    const fields = props.fields || [];
+    const field = fields.find((f) => f.name == key);
+    const model = { ...allValues, ...changedValues };
+    if (field) {
+      field.onChange?.(changedValues[key]);
+      if (field.auto) {
+        clearTimeout(delayTimerId);
+        const id = setTimeout(() => handleSearch(model), 200);
+        setDelayTimerId(id);
+      }
+    }
+    props.onChange?.(model);
+  }, [props.fields, delayTimerId, props.onChange]);
 
   // 渲染搜索按钮
-  renderSearchActions() {
+  const renderSearchActions = () => {
     return (
       <FormItem >
-        <div className={this.props.actionsCls}>
+        <div className={props.actionsCls}>
           <Button
             type="primary"
             htmlType="submit"
             icon={<SearchOutlined />}
-            {...(this.props.btnQuery || {})}
+            {...(props.btnQuery || {})}
           >
-            {this.useValue(this.props.btnQuery?.title, '查询')}
+            {useValue(props.btnQuery?.title, '查询')}
           </Button>
           <Button
             style={{ marginLeft: 8 }}
             icon={<DeleteOutlined />}
-            onClick={this.handleReset}
-            {...(this.props.btnCancel || {})}
+            onClick={handleReset}
+            {...(props.btnCancel || {})}
           >
-            {this.useValue(this.props.btnCancel?.title, '清空')}
+            {useValue(props.btnCancel?.title, '清空')}
           </Button>
         </div>
       </FormItem>
     );
-  }
+  };
 
-  renderNewlineActions() {
-    if (!this.isNewline) return null;
+  const renderNewlineActions = () => {
+    if (!isNewline) return null;
     return (
       <div className={'search-newline-btn'}>
-        {this.renderSearchActions()}
+        {renderSearchActions()}
       </div>
     );
-  }
+  };
 
-  renderInlineActions() {
-    if (this.isNewline) return null;
-    const { span } = this.props;
+  const renderInlineActions = () => {
+    if (isNewline) return null;
     return (
       <Col
         span={span - 1}
         key="table-search-buttons"
         className="search-buttons abstract-search-item"
       >
-        {this.renderSearchActions()}
+        {renderSearchActions()}
       </Col>
     );
-  }
+  };
 
   // 渲染
-  render() {
-    const { fields = [] } = this.props;
-    const len = fields.length;
-    if (len < 1) {
-      return React.Children.only(this.props.children);
-    }
-    return (
-      <div className={'abstract-search-form abstract-form '}>
-        <Form
-          className={`abstract-search-form-container ${this.props.className || ''}`}
-          ref={this.formRef}
-          initialValues={this.props.initialValues}
-          onValuesChange={this.handleInputChanged}
-          onFinish={this.handleSearch}
-        >
-          <AbstractForm
-            form={this.formRef}
-            groups={this.fields}
-            formItemCls={`${this.props.formItemCls || ''} abstract-search-form-item`}
-            formChildren={this.renderInlineActions()}
-          />
-          {this.renderNewlineActions()}
-        </Form>
-        {this.props.children}
-      </div>
-    );
+  if (fields.length < 1) {
+    return React.Children.only(props.children) as React.ReactElement;
   }
+  return (
+    <div className={'abstract-search-form abstract-form '}>
+      <Form
+        className={`abstract-search-form-container ${props.className || ''}`}
+        ref={formRef}
+        initialValues={props.initialValues}
+        onValuesChange={handleInputChanged}
+        onFinish={handleSearch}
+      >
+        <AbstractForm
+          form={formRef}
+          groups={fields}
+          itemStyle={props.itemStyle}
+          formItemCls={`${props.formItemCls || ''} abstract-search-form-item`}
+          formChildren={renderInlineActions()}
+        />
+        {renderNewlineActions()}
+      </Form>
+      {props.children}
+    </div>
+  );
 }

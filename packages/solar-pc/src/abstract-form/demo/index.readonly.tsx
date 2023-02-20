@@ -27,7 +27,7 @@ export default function App() {
     couponType: 1,
     isVisual: true,
     code: 'AD0009',
-    validateStartTime: '2011-0-09 10:20:20',
+    validateStartTime: '2011-01-09 10:20:20',
   });
 
   const groups: AbstractGroups<CommodityModel> = [

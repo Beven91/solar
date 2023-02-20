@@ -13,7 +13,7 @@
 <AppCodebox 
   src="src/xlsx-picker/demo/index.mapping" 
   title="高级映射" 
-  desc="可以通过制定mappings来进行细节定制。" 
+  desc="可以通过设置mappings来进行细节定制。" 
 />
 
 ```props

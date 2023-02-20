@@ -1,10 +1,11 @@
 import React from 'react';
 import { AbstractAction } from '../interface';
 
-export interface AbstractTableContext {
+export interface AbstractTableContextValue {
   onAction: (action: AbstractAction<any>) => void
+  getActionsContainer?: () => HTMLElement
 }
 
-const Context = React.createContext<AbstractTableContext>({ onAction: null });
+const AbstractTableContext = React.createContext<AbstractTableContextValue>({ onAction: null });
 
-export default Context;
+export default AbstractTableContext;

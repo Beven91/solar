@@ -16,3 +16,10 @@
   title="其他" 
   desc="多个搜索条件。" 
 />
+
+<AppCodebox 
+  console="true"
+  src="src/abstract-search/demo/index.auto" 
+  title="自动搜索" 
+  desc="通过设置指定搜索项auto=true,则该搜索项在值发生变化时自动触发onQuery" 
+/>

@@ -2,7 +2,7 @@
  * @module AbstractPermission
  * @description 权限上下文组件
  */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Permission, { PermissionProps } from './permission';
 import { Spin } from 'antd';
 import PermissionContext, { PermissionContextModel, PermissionUser } from './context';
@@ -23,91 +23,84 @@ export interface AbstractPermissionState {
   user: PermissionUser
 }
 
-export default class AbstractPermission extends React.Component<React.PropsWithChildren<AbstractPermissionProps>, AbstractPermissionState> {
-  // 权限控制组件
-  static Permission = Permission;
+export default function AbstractPermission(props: React.PropsWithChildren<AbstractPermissionProps>) {
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(props.user);
 
-  static Context = PermissionContext;
-
-  static Consumer = PermissionContext.Consumer;
-
-  constructor(props: AbstractPermissionProps) {
-    super(props);
-    this.state.loading = !!props.initPermission;
-  }
-
-  get permissionContext() {
-    const user = this.props.user || this.state.user as PermissionUser;
-    return {
-      loading: this.state.loading,
-      user: user,
-      failRotueRender: this.props.failRotueRender,
-      failRender: this.props.failRender,
-      refresh: () => {
-        this.loadPermissions();
-      },
-      hasPermission(...roles: string[]) {
-        const userRoles = user?.roles || {};
-        return !!roles.find((role) => !!userRoles[role]);
-      },
-      updateUser: (user: PermissionUser) => {
-        this.setState({ user });
-      },
-    } as PermissionContextModel;
-  }
-
-  state: AbstractPermissionState = {
-    loading: true,
-    user: null as PermissionUser,
+  const permissionContext: PermissionContextModel = {
+    loading: loading,
+    user: user,
+    failRotueRender: props.failRotueRender,
+    failRender: props.failRender,
+    refresh: () => {
+      loadPermissions();
+    },
+    hasPermission(...roles: string[]) {
+      const userRoles = user?.roles || {};
+      return !!roles.find((role) => !!userRoles[role]);
+    },
+    updateUser: (user: PermissionUser) => {
+      setUser(user);
+    },
   };
 
-  /**
-   * 创建一个带授权验证的组件
-   * @param Component
-   * @returns
-   */
-  static createPermissionView<T>(Component: React.FC | React.ComponentClass, isRoute = false) {
-    return function PermissionWrapView({ roles, ...props }: T & { roles: PermissionProps['roles'] }) {
-      const context = useContext(PermissionContext);
-      const failRender = isRoute ? context.failRotueRender : context.failRender;
-      return (
-        <AbstractPermission.Permission failRender={failRender} roles={roles} >
-          {<Component {...props} />}
-        </AbstractPermission.Permission>
-      );
-    };
-  }
+  const loadPermissions = () => {
+    const { initPermission } = props;
+    if (!initPermission) return;
+    setLoading(true);
+    Promise
+      .resolve(initPermission())
+      .then((user: PermissionUser) => {
+        setUser(user);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  };
 
-  loadPermissions() {
-    const { initPermission } = this.props;
-    if (initPermission) {
-      this.setState({ loading: true });
-      Promise
-        .resolve(initPermission())
-        .then((user: PermissionUser) => this.setState({ loading: false, user }))
-        .catch(() => this.setState({ loading: false }));
-    } else {
-      this.setState({ loading: false });
-    }
-  }
+  useEffect(() => {setUser(props.user);}, [props.user]);
+  useEffect(()=>{loadPermissions();}, []);
 
-  componentDidMount() {
-    this.loadPermissions();
-  }
 
-  renderLoading() {
+  const renderLoading = ()=> {
     return (
       <Spin style={{ paddingTop: 120, height: '100%', width: '100%' }} spinning></Spin>
     );
-  }
+  };
 
-  render() {
-    return (
-      <PermissionContext.Provider
-        value={this.permissionContext}
-      >
-        {this.state.loading ? this.renderLoading() : this.props.children}
-      </PermissionContext.Provider>
-    );
-  }
+  return (
+    <PermissionContext.Provider
+      value={permissionContext}
+    >
+      {loading ? renderLoading() : props.children}
+    </PermissionContext.Provider>
+  );
 }
+
+/**
+ * 权限容器子组件，改组件可配置，当前组件内容在什么角色可见
+ */
+AbstractPermission.Permission = Permission;
+
+/**
+ * 权限数据上下文
+ */
+AbstractPermission.Context = PermissionContext;
+
+AbstractPermission.Consumer = PermissionContext.Consumer;
+
+/**
+ * 创建一个带授权验证的组件
+ * @param Component
+ * @returns
+ */
+AbstractPermission.createPermissionView = function createPermissionView<T>(Component: React.FC | React.ComponentClass, isRoute = false) {
+  return function PermissionWrapView({ roles, ...props }: T & { roles: PermissionProps['roles'] }) {
+    const context = useContext(PermissionContext);
+    const failRender = isRoute ? context.failRotueRender : context.failRender;
+    return (
+      <AbstractPermission.Permission failRender={failRender} roles={roles} >
+        {<Component {...props} />}
+      </AbstractPermission.Permission>
+    );
+  };
+};

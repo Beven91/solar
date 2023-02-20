@@ -3,10 +3,9 @@
  * @name Dynamic
  * @description 一个表单生成视图
  */
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Tabs, Input, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form';
-import memoizeOne from 'memoize-one';
 import FormGroup from '../form-group';
 import FormItem from './Item';
 import {
@@ -19,7 +18,7 @@ export interface DynamicProps<TRow> {
   // 是否使用外包裹
   wrapper?: boolean
   // 数据
-  model: TRow
+  model?: TRow
   // 默认跨列数
   span?: number
   // 表单配置
@@ -80,77 +79,76 @@ const defaultFormItemLayout2: FormItemLayout = {
   },
 };
 
-export default class Dynamic<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<DynamicProps<TRow>>, DynamicState> {
-  static defaultProps = {
-    rules: {},
-    model: {},
-    wrapper: true,
-    formItemLayout: null as any,
-    isReadOnly: false,
-  };
+export default function Dynamic<TRow extends AbstractRow>({
+  rules = {},
+  model = {} as TRow,
+  wrapper = true,
+  ...props
+}: React.PropsWithChildren<DynamicProps<TRow>>) {
+  const groups = props.groups || [];
+  const [plainFields] = useState<Record<string, number>>({});
+  const [accessedKeys] = useState<Record<string, boolean>>({});
+  const [memo] = useState({ callback: () => { } });
+  const [activeIndex, setActiveIndex] = useState(props.defaultActiveIndex || 0);
 
-  plainFields = {} as Record<string, number>;
-
-  accessedKeys = {} as Record<string, boolean>;
-
-  timerId: ReturnType<typeof setTimeout>;
-
-  state: DynamicState = {
-    activeIndex: 0,
-  };
-
-  constructor(props: DynamicProps<TRow>) {
-    super(props);
-    this.state.activeIndex = props.defaultActiveIndex || 0;
-  }
+  useEffect(() => {
+    if (memo.callback) {
+      memo.callback();
+      memo.callback = null;
+    }
+  }, [activeIndex]);
 
   // 是否为只读模式
-  getIsReadOnly(group:AbstractFormGroupItemType<TRow>) {
-    return this.props.isReadOnly || group?.readonly;
-  }
+  const getIsReadOnly = (group: AbstractFormGroupItemType<TRow>) => {
+    return props.isReadOnly || group?.readonly;
+  };
 
-  getDefaultFormLayout() {
-    const width = this.props.containerWidth;
-    if (width > 0 && width <= 500) {
-      return defaultFormItemLayout2;
-    }
-    return defaultFormItemLayout;
-  }
+  const getDefaultFormLayout = () => {
+    const width = props.containerWidth;
+    const isMini = width > 0 && width <= 500;
+    return isMini ? defaultFormItemLayout2 : defaultFormItemLayout;
+  };
 
-  get controlRules() {
-    return [
-      (form: FormInstance) => {
-        return {
-          validator: () => {
-            return new Promise<void>((resolve, reject) => {
-              clearTimeout(this.timerId);
-              this.timerId = setTimeout(() => {
-                const ok = this.checkTabsValidator(form);
-                ok ? resolve() : reject('tab validator');
-              }, 20);
-            });
-          },
-        };
-      },
-    ];
-  }
+  const controlRules = [
+    (form: FormInstance) => {
+      return {
+        validator: () => {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(() => {
+              const ok = checkTabsValidator(form);
+              ok ? resolve() : reject('tab validator');
+            }, 20);
+          });
+        },
+      };
+    },
+  ];
 
-  checkTabsValidator(form: FormInstance) {
+  const toggleActiveIndex = (index: string | number) => {
+    accessedKeys[index.toString()] = true;
+    setActiveIndex(Number(index));
+  };
+
+  const checkTabsValidator = (form: FormInstance) => {
     const errorField = form.getFieldsError().filter((m) => m.errors?.length > 0)[0];
-    const key = Object.keys(this.accessedKeys).find((k) => this.accessedKeys[k] == false);
+    const key = Object.keys(accessedKeys).find((k) => accessedKeys[k] == false);
     if (!key && !errorField) {
       return true;
     }
     if (errorField) {
-      this.toggleActiveIndex(this.plainFields[errorField.name.join('.')]);
+      toggleActiveIndex(plainFields[errorField.name.join('.')]);
     } else if (key) {
-      this.toggleActiveIndex(key, () => form.submit());
+      memo.callback = () => {
+        setTimeout(() => form.submit?.(), 20);
+      };
+      toggleActiveIndex(key);
     }
     return false;
-  }
+  };
 
   // 获取tabs风格的分组表单
-  getTabGroups = memoizeOne((groups: AbstractGroups<TRow>, rules: AbstractRules) => {
+  const tabGroups = useMemo(() => {
+    if (props.groupStyle != 'tabs') return [];
     const normal = [] as Array<AbstractFormItemType<TRow>>;
     const tabs = [{ group: '', items: normal }] as AbstractFormGroupItemType<TRow>[];
     groups.forEach((group) => {
@@ -160,26 +158,25 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
         normal.push(group as AbstractFormItemType<TRow>);
       }
     });
+    Object.keys(accessedKeys).forEach((k) => {
+      delete accessedKeys[k];
+    });
     const tabGroups = tabs.filter((tab) => tab.items?.length > 0);
     tabGroups.forEach((group, index) => {
       group.items.forEach((item) => {
-        this.plainFields[item.name?.toString()] = index;
+        plainFields[item.name?.toString()] = index;
       });
-      this.accessedKeys[index] = index == this.state.activeIndex;
+      accessedKeys[index] = index == activeIndex;
     });
     return tabGroups;
-  });
+  }, [props.groupStyle, groups.map((g: any) => g.group || g.name).join('-')]);
 
-  toggleActiveIndex(index: string | number, callback?: () => void) {
-    this.accessedKeys[index.toString()] = true;
-    this.setState({ activeIndex: Number(index) }, callback);
-  }
 
   // 渲染分组
-  renderGroup(groupItem: AbstractFormGroupItemType<TRow>, index: number) {
+  const renderGroup = (groupItem: AbstractFormGroupItemType<TRow>, index: number) => {
     const { group, items, span } = groupItem;
     if (!('group' in groupItem)) {
-      return this.renderFormItem(groupItem as any, this.props.span, null, index);
+      return renderFormItem(groupItem as any, props.span, null, index);
     }
     const classNames = [] as string[];
     if (index == 0) {
@@ -197,19 +194,19 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
         key={`from-group-${groupItem.group}-${index}`}
       >
         <FormGroup
-          noLeftPadding={this.props.groupStyle == 'normal'}
-          mode={groupItem.mode || this.props.groupStyle}
+          noLeftPadding={props.groupStyle == 'normal'}
+          mode={groupItem.mode || props.groupStyle}
           icon={groupItem.icon}
           group={groupItem}
           title={group}
-          form={this.props.form}
-          model={this.props.model}
+          form={props.form}
+          model={model}
           className={`abstract-form-group ${classNames.join(' ')}`}
         >
           <Row gutter={24}>
-            {items?.map((item, i) => this.renderFormItem(
+            {items?.map((item, i) => renderFormItem(
               item,
-              span || this.props.span,
+              span || props.span,
               groupItem,
               i
             ))}
@@ -217,42 +214,42 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
         </FormGroup>
       </Col>
     );
-  }
+  };
 
   // 渲染表单
-  renderFormItem(item: AbstractGroupItem<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, index?: number) {
+  const renderFormItem = (item: AbstractGroupItem<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, index?: number) => {
     if (typeof item === 'function') {
-      return this.renderFreeFunction(item, group, index);
+      return renderFreeFunction(item, group, index);
     }
-    return this.renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, group, index);
-  }
+    return renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, group, index);
+  };
 
   // 渲染一个自定义布局表单
-  renderFreeFunction(item: FunctionItemType<TRow>, group: AbstractFormGroupItemType<TRow>, index: number) {
+  const renderFreeFunction = (item: FunctionItemType<TRow>, group: AbstractFormGroupItemType<TRow>, index: number) => {
     return (
       <Col
         key={`form-group-item-${index || 0}-${item.name}`}
         span={24}
       >
-        {item(this.props.model as TRow, this.getIsReadOnly(group))}
+        {item(model, getIsReadOnly(group))}
       </Col>
     );
-  }
+  };
 
   // 渲染常规布局表单
-  renderNormalLayoutInput(item: AbstractFormItemType<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, i?: number) {
-    const { formItemLayout, rules } = this.props;
+  const renderNormalLayoutInput = (item: AbstractFormItemType<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, i?: number) => {
+    const { formItemLayout } = props;
     const title = item.render2 ? '' : item.title;
     const layout = group?.layout;
     const itemStyle = group?.itemStyle;
-    const layout2 = title ? item.layout || layout || formItemLayout || this.getDefaultFormLayout() : {};
+    const layout2 = title ? item.layout || layout || formItemLayout || getDefaultFormLayout() : {};
     const num = 24 / span;
     const name = item.name instanceof Array ? item.name.join('.') : item.name;
-    const itemRules = rules[name];
+    const itemRules = (rules || {})[name];
     const colOption = {
       span: item.span || span || 24,
       offset: item.offset,
-      className: `${num <= 3 ? 'three' : 'than-three'} ${this.props.formItemCls}`,
+      className: `${num <= 3 ? 'three' : 'than-three'} ${props.formItemCls}`,
     };
     return (
       <React.Fragment
@@ -264,68 +261,69 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
         <FormItem
           layout={layout2}
           item={item}
-          autoFocusAt={this.props.autoFocus}
+          autoFocusAt={props.autoFocus}
           colOption={colOption}
-          onValuesChange={this.props.onValuesChange}
-          isReadOnly={this.getIsReadOnly(group)}
-          form={this.props.form}
+          onValuesChange={props.onValuesChange}
+          isReadOnly={getIsReadOnly(group)}
+          form={props.form}
           rules={itemRules}
-          validateFirst={this.props.validateFirst}
-          model={this.props.model}
+          validateFirst={props.validateFirst}
+          model={model}
           style={{
-            ...(this.props.itemStyle || {}),
+            ...(props.itemStyle || {}),
             ...(itemStyle || {}),
+            ...((item as any).itemStyle || {}),
           }}
         />
       </React.Fragment>
     );
-  }
+  };
 
-  renderStyle() {
-    switch (this.props.groupStyle) {
+  const renderStyle = () => {
+    switch (props.groupStyle) {
       case 'tabs':
-        return this.renderTabs();
+        return renderTabs();
       default:
-        return this.renderNorml();
+        return renderNorml();
     }
-  }
+  };
 
-  renderTabs() {
-    const { tabPosition, tabType, groups, rules, tabBarGutter } = this.props;
-    const tabGroups = this.getTabGroups(groups, rules);
+  const renderTabs = () => {
+    const { tabPosition, tabType, tabBarGutter } = props;
+    const items = tabGroups.map((group, index) => {
+      return {
+        key: `${index}`,
+        label: <div>{group.icon}{group.group || index}</div>,
+        children: (
+          <Row className="tabs-group-form-inner" gutter={8}>
+            {group.items?.map((item) => renderFormItem(item, group.span || props.span, group, index))}
+          </Row>
+        ),
+      };
+    });
     return (
       <React.Fragment>
         <Tabs
           className="abstract-form-tabs"
           tabBarStyle={{ paddingLeft: 20 }}
-          activeKey={this.state.activeIndex.toString()}
+          activeKey={activeIndex.toString()}
           type={tabType}
           tabPosition={tabPosition}
           tabBarGutter={tabBarGutter}
-          onChange={(activeKey) => this.toggleActiveIndex(activeKey)}
+          onChange={(activeKey) => toggleActiveIndex(activeKey)}
+          items={items}
         >
-          {
-            tabGroups.map((group, index) => {
-              return (
-                <Tabs.TabPane tab={<div>{group.icon}{group.group || index}</div>} key={index}>
-                  <Row className="tabs-group-form-inner" gutter={8}>
-                    {group.items?.map((item) => this.renderFormItem(item, group.span || this.props.span, group, index))}
-                  </Row>
-                </Tabs.TabPane>
-              );
-            })
-          }
         </Tabs>
-        <Form.Item name="tabsValidator" rules={this.controlRules} style={{ display: 'none' }} >
+        <Form.Item name="tabsValidator" rules={controlRules} style={{ display: 'none' }} >
           <Input type="hidden" />
         </Form.Item>
       </React.Fragment>
     );
-  }
+  };
 
-  renderNorml() {
-    const { wrapper, groups = [], children } = this.props;
-    const node = groups.map((groupItem, index) => this.renderGroup(groupItem as any, index));
+  const renderNorml = () => {
+    const { groups = [], children } = props;
+    const node = groups.map((groupItem, index) => renderGroup(groupItem as any, index));
     if (!wrapper) {
       return node;
     }
@@ -333,20 +331,18 @@ export default class Dynamic<TRow extends AbstractRow> extends React.Component<R
       <React.Fragment>
         <Row className="abstract-form-normal-inner" gutter={8}>
           {node}
-          {this.props.formChildren}
+          {props.formChildren}
         </Row>
         {children}
       </React.Fragment>
     );
-  }
+  };
 
   // 渲染
-  render() {
-    return (
-      <div className={`abstract-form ${this.props.isReadOnly ? 'readonly' : ''}`}>
-        {this.renderStyle()}
-      </div>
-    );
-  }
+  return (
+    <div className={`abstract-form ${props.isReadOnly ? 'readonly' : ''}`}>
+      {renderStyle()}
+    </div>
+  );
 }
 

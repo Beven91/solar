@@ -4,13 +4,12 @@
  * @description
  *       表格操作列视图,用于渲染操作列中的按钮
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { Popconfirm, Button, Tooltip } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
 import renders from '../util/cellRenders';
 import AbstractPermission from '../../abstract-permission';
-import { PermissionContextModel } from '../../abstract-permission/context';
 
 const Noop = (a: any) => a;
 
@@ -27,44 +26,42 @@ export interface CellActionsProps<TRow> {
   style?: React.CSSProperties
 }
 
-export default class CellActions<TRow = AbstractRow> extends React.Component<CellActionsProps<TRow>> {
-  // 默认属性
-  static defaultProps = {
-    buttons: [] as AbstractButton<AbstractRow>[],
-    row: null as any,
-    rowId: null as any,
-  };
+// 判断是否可点击
+function isEnable<TRow>(button: AbstractButton<TRow>, row: TRow, index: number) {
+  const { visible: enable = true } = button;
+  return typeof enable === 'function' ? enable(row, index) : enable;
+}
 
-  // 判断是否可点击
-  isEnable(button: AbstractButton<TRow>, row: TRow) {
-    const { visible: enable = true } = button;
-    const index = this.props.rowIndex;
-    return typeof enable === 'function' ? enable(row, index) : enable;
-  }
+function isDisabled<TRow>(button: AbstractButton<TRow>, row: TRow, index: number) {
+  const { disabled = false } = button;
+  return typeof disabled === 'function' ? disabled(row, index) : disabled;
+}
 
-  isDisabled(button: AbstractButton<TRow>, row: TRow) {
-    const { disabled = false } = button;
-    const index = this.props.rowIndex;
-    return typeof disabled === 'function' ? disabled(row, index) : disabled;
-  }
+export default function CellActions<TRow = AbstractRow>({
+  buttons = [],
+  style,
+  row,
+  rowId,
+  ...props
+}: CellActionsProps<TRow>) {
+  const permissionCtx = useContext(AbstractPermission.Context);
 
-  onClick(row: TRow, rowId: any, e: any, button: AbstractButton<TRow>) {
+  const onClick = (row: TRow, rowId: any, e: any, button: AbstractButton<TRow>) => {
     const click = button.click || Noop;
-    const { onAction } = this.props;
+    const { onAction } = props;
     if (button.click) {
       click(row as any, rowId, e);
     } else if (button.action && onAction) {
       const action = renders.createAction<TRow>({ action: button.action, model: row, id: rowId });
       onAction(action, button);
     }
-  }
+  };
 
   // 渲染单个按钮
-  renderNormal(button: AbstractButton<TRow>, i: number, confirm?: boolean) {
-    const { row, rowId } = this.props;
+  const renderNormal = (button: AbstractButton<TRow>, i: number, confirm?: boolean) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     const { icon, render, tip, action, type, select, visible, click, disabled, title, ...props } = button;
-    const buttonClick = confirm ? null : (e: any) => this.onClick(row, rowId, e, button);
+    const buttonClick = confirm ? null : (e: any) => onClick(row, rowId, e, button);
     const href = 'href' in button ? button.href : undefined;
 
     const createButton = (href: string, onClick: any) => {
@@ -96,41 +93,39 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
       );
     }
     return createButton(href, buttonClick);
-  }
+  };
 
   // 渲染需要确认提示的操作按钮
-  renderConfirm(button: AbstractButton<TRow>, index: number) {
-    const { row, rowId } = this.props;
+  const renderConfirm = (button: AbstractButton<TRow>, index: number) => {
     const { confirm } = button;
-    const buttonClick = (e: any) => this.onClick(row, rowId, e, button);
+    const buttonClick = (e: any) => onClick(row, rowId, e, button);
     return (
       <Popconfirm okText="确定" cancelText="取消" key={`cell-operator-${index}`} title={confirm} onConfirm={buttonClick}>
-        {this.renderNormal(button, index, true)}
+        {renderNormal(button, index, true)}
       </Popconfirm>
     );
-  }
+  };
 
   // 根据类型渲染按钮
-  renderButton(button: AbstractButton<TRow>, index: number) {
-    const { row } = this.props;
-    const isEnable = this.isEnable(button, row);
-    const isDisabled = this.isDisabled(button, row);
+  const renderButton = (button: AbstractButton<TRow>, index: number) => {
+    const enable = isEnable(button, row, props.rowIndex);
+    const disabled = isDisabled(button, row, props.rowIndex);
     // 可以传自定义的不可点击的button
-    if (!isDisabled && (isEnable || button.render)) {
-      return button.confirm ? this.renderConfirm(button, index) : this.renderNormal(button, index);
-    } else if (isDisabled) {
+    if (!disabled && (enable || button.render)) {
+      return button.confirm ? renderConfirm(button, index) : renderNormal(button, index);
+    } else if (disabled) {
       return (<a className="cell-operator" key={`cell-button-operator-${index}`}>{button.title}</a>);
     }
     return '';
-  }
+  };
 
   // 渲染tooltip
-  renderTooltip(button: AbstractButton<TRow>, index: number, context: PermissionContextModel) {
-    if (button.roles && !context.hasPermission(button.roles)) {
+  const renderTooltip = (button: AbstractButton<TRow>, index: number) => {
+    if (button.roles && !permissionCtx.hasPermission(button.roles)) {
       // 如果没有权限
       return;
     }
-    const children = this.renderButton(button, index);
+    const children = renderButton(button, index);
     if (children && button.tip) {
       return (
         <Tooltip
@@ -143,21 +138,11 @@ export default class CellActions<TRow = AbstractRow> extends React.Component<Cel
       );
     }
     return children;
-  }
+  };
 
-  // 渲染组件
-  render() {
-    const { buttons = [], style } = this.props;
-    return (
-      <div className="table-operators" style={style}>
-        <AbstractPermission.Consumer>
-          {
-            (context) => {
-              return buttons.map((button, i) => this.renderTooltip(button, i, context));
-            }
-          }
-        </AbstractPermission.Consumer>
-      </div>
-    );
-  }
+  return (
+    <div className="table-operators" style={style}>
+      {buttons.map((button, i) => renderTooltip(button, i))}
+    </div>
+  );
 }

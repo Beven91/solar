@@ -1,5 +1,5 @@
 import './index.scss';
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Button } from 'antd';
 import icon500 from './images/500.svg';
 import icon404 from './images/404.svg';
@@ -27,75 +27,59 @@ export interface ExceptionProps {
   // 自定义异常图片
   img?: string
   // 是否隐藏actions
-  hideActions?:boolean
+  hideActions?: boolean
 }
 
-export default class Exception extends React.PureComponent<ExceptionProps> {
-  static defaultProps:Partial<ExceptionProps> = {
-    btnText: '返回首页',
-    redirect: '/',
-    hideActions: false,
-  };
+export default function Exception({ btnText = '返回首页', redirect = '/', hideActions = false, ...props }: ExceptionProps) {
+  const containerRef = useRef<HTMLDivElement>();
 
-  containerRef = React.createRef<HTMLDivElement>();
-
-  navigate = () => {
-    const { onClick, redirect } = this.props;
-    if (onClick) {
-      onClick();
+  const navigate = useCallback(() => {
+    if (props.onClick) {
+      props.onClick();
     } else if (redirect) {
       location.replace(redirect);
     }
-  };
+  }, [props.onClick, redirect]);
 
-  refresh() {
-    const container = this.containerRef.current;
+  const refresh = useCallback(() => {
+    const container = containerRef.current;
     const width = container.clientWidth;
     const range = [480, 576, 1200];
-    for (let i=0, k=range.length; i<k; i++) {
+    for (let i = 0, k = range.length; i < k; i++) {
       if (width <= range[i]) {
         container.setAttribute('max-width', range[i].toString());
         break;
       }
     }
-  }
+  }, [containerRef.current]);
 
-  componentDidMount() {
-    this.refresh();
-  }
+  useEffect(() => {refresh();});
 
-  componentDidUpdate(): void {
-    this.refresh();
-  }
-
-  render() {
-    const { btnText, title, desc, type, img, hidden } = this.props;
-    if (hidden === true) return null;
-    return (
-      <div className="exception" ref={this.containerRef} >
-        <div className="img-block">
-          <div
-            className="img-ele"
-            style={{ backgroundImage: `url(${img || images[type]})` }}
-          />
-        </div>
-        <div className="content">
-          <h1>{title}</h1>
-          <div className="desc">{desc}</div>
-          {
-            this.props.hideActions ? null : (
-              <div className="actions">
-                <Button
-                  onClick={this.navigate}
-                  type="primary"
-                >
-                  {btnText}
-                </Button>
-              </div>
-            )
-          }
-        </div>
+  if (props.hidden === true) return null;
+  return (
+    <div className="exception" ref={containerRef} >
+      <div className="img-block">
+        <div
+          className="img-ele"
+          style={{ backgroundImage: `url(${props.img || images[props.type]})` }}
+        />
       </div>
-    );
-  }
+      <div className="content">
+        <h1>{props.title}</h1>
+        <div className="desc">{props.desc}</div>
+        {
+          hideActions ? null : (
+            <div className="actions">
+              <Button
+                onClick={navigate}
+                type="primary"
+              >
+                {btnText}
+              </Button>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  );
 }

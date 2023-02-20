@@ -5,12 +5,12 @@
 
 import React, { useContext, useRef } from 'react';
 import Context, { ActionsContext } from './context';
-import AbstractObject, { BaseObjectProps } from '../abstract-object';
+import AbstractObject, { AbstractObjectInstance, BaseObjectProps } from '../abstract-object';
 import AbstractForm from '../abstract-form';
 import { Drawer } from 'antd';
 import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
-import FormActions from '../abstract-object/FormActions';
+import FormActions, { FormActionsInstance } from '../abstract-object/FormActions';
 
 interface ActionProps {
   action?: string
@@ -50,6 +50,7 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
       onSubmit: onSubmit,
       onCancel: onCancel,
       isSubAction: false,
+      headContainer: { current: context.getActionsContainer?.() },
     };
   } else if (props.subAction && subAction == props.subAction) {
     return {
@@ -59,6 +60,7 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
       onSubmit: onSubSubmit,
       onCancel: onSubCancel,
       isSubAction: true,
+      headContainer: { current: context.getActionsContainer?.() },
     };
   }
 };
@@ -66,56 +68,42 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
 export function ActionIfHook(props: ActionProps) {
   const { use, children, className, style } = props;
   const ActionInternal = use;
+  const context = useContext(Context);
+  const finalContext = getMatchContext(context, props);
+  if (!finalContext) return null;
   return (
-    <Context.Consumer>
-      {
-        (c) => {
-          const useContext = getMatchContext(c, props);
-          if (!useContext) return null;
-          return (
-            <div className={`abstract-actions-if ${useContext.action} ${className || ''}`} style={style}>
-              {ActionInternal ? <ActionInternal {...props} {...(useContext || {})} /> : children}
-            </div>
-          );
-        }
-      }
-    </Context.Consumer>
+    <div className={`abstract-actions-if ${finalContext.action} ${className || ''}`} style={style}>
+      {ActionInternal ? <ActionInternal {...props} {...(finalContext || {})} /> : children}
+    </div>
   );
 }
 
 export function ObjectIfHook<TRow = AbstractRow>(props: ObjectActionProps<TRow>) {
   const { use, children, oClassName, className, style } = props;
   const ActionInternal = use;
+  const context = useContext(Context);
+  const finalContext = getMatchContext(context, props);
+  if (!finalContext) return null;
+  if (props.type != 'modal') {
+    context.shouldHiddenList(true, finalContext.isSubAction);
+  }
+  const markCls = finalContext.isSubAction ? 'sub-action' : 'action-current';
   return (
-    <Context.Consumer>
-      {
-        (context) => {
-          const useContext = getMatchContext(context, props);
-          if (!useContext) return null;
-          if (props.type != 'modal') {
-            context.shouldHiddenList(true, useContext.isSubAction);
+    <div className={`${oClassName || 'abstract-actions-object'} ${className || ''} ${finalContext.action} ${markCls}`} style={style}>
+      <AbstractObject
+        type={props.type}
+        {...finalContext}
+        {...props}
+        record={finalContext.isSubAction ? finalContext.subRecord : finalContext.record}
+        action={finalContext.action}
+      >
+        <AbstractForm.Context.Consumer>
+          {
+            (formContext) => ActionInternal ? <ActionInternal {...props} {...finalContext} {...formContext} record={finalContext.record} /> : children
           }
-          const markCls = useContext.isSubAction ? 'sub-action' : 'action-current';
-          return (
-            <div className={`${oClassName || 'abstract-actions-object'} ${className || ''} ${useContext.action} ${markCls}`} style={style}>
-              <AbstractObject
-                type={props.type}
-                {...useContext}
-                {...props}
-                record={useContext.isSubAction ? useContext.subRecord : useContext.record}
-                action={useContext.action}
-              >
-                <AbstractForm.Context.Consumer>
-                  {
-                    (formContext) => ActionInternal ? <ActionInternal {...props} {...useContext} {...formContext} record={useContext.record} /> : children
-                  }
-                </AbstractForm.Context.Consumer>
-              </AbstractObject>
-            </div>
-          );
-        }
-      }
-    </Context.Consumer>
+        </AbstractForm.Context.Consumer>
+      </AbstractObject>
+    </div>
   );
 }
 
@@ -132,8 +120,8 @@ export function PopupIfHook<TRow = AbstractRow>(props: ObjectActionProps<TRow>) 
 export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>) {
   const { use, children, drawer, placement, width, className, style, ...others } = props;
   const ActionInternal = use;
-  const objectRef = useRef<AbstractObject>();
-  const actionsRef = useRef<FormActions<TRow>>();
+  const objectRef = useRef<AbstractObjectInstance>();
+  const actionsRef = useRef<FormActionsInstance<TRow>>();
   const c = useContext(Context);
   const realtime = props.realtime == true;
   const context = getMatchContext(c, props);
@@ -172,12 +160,11 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
         <div className="abstract-actions-drawer-footer">
           {
             footerVisible && (
-              <FormActions<any>
+              <FormActions
                 ref={actionsRef}
                 validateForms={validateForms}
                 btnCancel={props.btnCancel}
                 btnSubmit={props.btnSubmit}
-                formValues={c.record}
                 record={c.record}
                 showCancel={showCancel}
                 showOk={showOk}
@@ -230,22 +217,15 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
 
 export function ListHook(props: ListActionProps) {
   const { className, style } = props;
+  const c = useContext(Context);
+  c.action = c.action == '' ? 'list' : c.action;
+  const context = getMatchContext(c, { action: 'list', ...props });
+  if (context) {
+    context.shouldHiddenList(false, false);
+  }
   return (
-    <Context.Consumer>
-      {
-        (context) => {
-          context.action = context.action == '' ? 'list' : context.action;
-          const useContext = getMatchContext(context, { action: 'list', ...props });
-          if (useContext) {
-            context.shouldHiddenList(false, false);
-          }
-          return (
-            <div ref={context.listRef} className={`abstract-actions-list ${className || ''}`} style={style}>
-              {props.children}
-            </div>
-          );
-        }
-      }
-    </Context.Consumer>
+    <div ref={c.listRef} className={`abstract-actions-list ${className || ''}`} style={style}>
+      {props.children}
+    </div>
   );
 }

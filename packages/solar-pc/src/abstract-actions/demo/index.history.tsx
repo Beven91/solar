@@ -103,7 +103,7 @@ export default function App() {
       onCancel={() => setAction({ action: '', id: '' })}
     >
       <AbstractActions.List>
-        <AbstractTable<ActivityModel>
+        <AbstractTable
           columns={columns}
           data={data}
           buttons={buttons}

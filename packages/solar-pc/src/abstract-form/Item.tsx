@@ -2,40 +2,16 @@
  * @module Item
  * @description 动态antd FormItem
  */
-import React, { } from 'react';
-import { Col, Form } from 'antd';
-import { FormInstance, Rule } from 'antd/lib/form';
-import InputWrap from './InputWrap';
+import React, { useContext, useMemo, useState } from 'react';
+import { Col, Form, Input } from 'antd';
+import { FormInstance, Rule, RuleObject } from 'antd/lib/form';
+import InputWrap, { getAllValues } from './InputWrap';
 import { AbstractFormItemType, AbstractFormLayout, AbstractRow, onValuesChangeHandler } from '../interface';
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { ISolationContextValue } from './isolation';
 
-
-interface ExtraViewProps<TRow> {
-  model: TRow
-  form: React.RefObject<FormInstance>
-  item: AbstractFormItemType<TRow>
-}
-
-class ExtraView<TRow> extends React.Component<ExtraViewProps<TRow>> {
-  // 设置extra
-  renderExtra() {
-    const { item, form, model } = this.props;
-    if (typeof item.extra == 'function') {
-      const formValues = form?.current?.getFieldsValue() || model;
-      return item.extra(formValues || {});
-    }
-    return item.extra;
-  }
-
-  render(): React.ReactNode {
-    return (
-      <span>{this.renderExtra()}</span>
-    );
-  }
-}
-
 const FormItem = Form.Item;
+
 const isVisible = (item: AbstractFormItemType<AbstractRow>, data: AbstractRow) => {
   if (typeof item.visible === 'function') {
     return item.visible(data);
@@ -97,144 +73,150 @@ export interface AbstractItemState {
   forceUpdate: boolean
 }
 
-export default class Item<TRow extends AbstractRow = AbstractRow> extends React.Component<AbstractItemProps<TRow>> {
-  // 默认属性值
-  static defaultProps = {
-    layout: {},
-    item: {},
-    model: {},
-    rules: [] as Rule[],
-  };
+interface ContextOriginalValue {
+  isolationValidator: Parameters<ISolationContextValue['setValidator']>[0]
+  mergeValidator: Parameters<ISolationContextValue['setMergeValidator']>[0]
+}
 
-  static getDerivedStateFromProps(nextProps: AbstractItemProps<AbstractRow>, state: AbstractItemState) {
-    const { item } = nextProps;
-    const getRecord = () => {
-      const { model, form } = nextProps;
-      const formRef = form || { current: null };
-      const values = formRef.current ? formRef.current.getFieldsValue() : {};
-      return {
-        ...(model || {}),
-        ...values,
-      };
-    };
-
-    if (state.forceUpdate || item.visible != state.visibleFunction || item.disabled !== state.disabledFunction) {
-      const record = getRecord();
-      return {
-        disabledFunction: item.disabled,
-        disabled: isDisabled(item, record),
-        visibleFunction: item.visible,
-        visible: isVisible(item, record),
-      };
-    }
-    return null;
+function getValue<TRow extends AbstractRow = AbstractRow>(name: string[], curValues: TRow) {
+  let value = curValues;
+  if (name.length <= 1) {
+    return curValues[name[0]];
   }
-
-  // 当前组件状态
-  state: AbstractItemState = {
-    // visible函数
-    visibleFunction: null as any,
-    // 当前表单是否可见
-    visible: true,
-    disabledFunction: null as any,
-    disabled: false,
-    forceUpdate: false,
-  };
-
-  private timerId: any;
-
-  inputWrapRef = React.createRef<InputWrap<TRow>>();
-
-  extraRef = React.createRef<ExtraView<TRow>>();
-
-  formatUpdate = false;
-
-  getValue(name: string[], curValues: TRow) {
-    let value = curValues;
-    if (name.length <= 1) {
-      return curValues[name[0]];
+  for (let i = 0, k = name.length; i < k; i++) {
+    value = value[name[i]];
+    if (value === undefined || value === null) {
+      break;
     }
-    for (let i = 0, k = name.length; i < k; i++) {
-      value = value[name[i]];
-      if (!value) {
-        break;
-      }
-    }
-    return value;
   }
+  return value;
+}
 
-  isolationRuler = {
-    validator: () => {
-      return new Promise<void>((resolve, reject) => {
-        if (!this.isolationValidator) {
-          return resolve();
-        }
-        Promise.resolve(this.isolationValidator()).then(() => {
-          resolve();
-        }).catch((ex)=>{
-          reject();
+function useExtraNode<TRow>(extra: AbstractFormItemType<TRow>['extra'], formRef: React.MutableRefObject<FormInstance>, model: TRow) {
+  if (typeof extra == 'function') {
+    const formValues = formRef.current?.getFieldsValue() || model;
+    return extra(formValues || {});
+  }
+  return extra;
+}
+
+export default function Item<TRow extends AbstractRow = AbstractRow>(props: AbstractItemProps<TRow>) {
+  const item = props.item;
+  const context = useContext(ConfigConsumer.Context);
+  const model = useMemo(() => getAllValues(props), [props.model, props.form?.current]);
+  const [visible, setVisible] = useState(isVisible(item, model));
+  const [disabled, setDisabled] = useState(isDisabled(item, model));
+  const [updateId, setUpdateId] = useState<number>(0);
+  const [updater] = useState({ formatUpdate: false });
+  const extraNode = useExtraNode(item.extra, props.form, model);
+  const [contextOriginal] = useState<ContextOriginalValue>({} as ContextOriginalValue);
+
+  const name = useMemo(() => {
+    if (item.name instanceof Array) return item.name;
+    const items = item.name?.split('.') || [];
+    const keys = [] as string[];
+    items.forEach((key) => {
+      if (key.indexOf('[') > -1) {
+        key.split('[').forEach((k) => {
+          k = k.replace(']', '');
+          keys.push(k);
         });
-      });
-    },
-  };
+      } else {
+        keys.push(key);
+      }
+    });
+    return keys;
+  }, [item.name]);
 
-  isolationValidator = null as (() => Promise<boolean>);
+  const isolationRuler = useMemo(() => {
+    return {
+      validator: () => {
+        return new Promise<void>((resolve, reject) => {
+          if (!contextOriginal.isolationValidator) {
+            return resolve();
+          }
+          Promise.resolve(contextOriginal.isolationValidator()).then(() => {
+            resolve();
+          }).catch((ex) => {
+            reject();
+          });
+        });
+      },
+    };
+  }, [contextOriginal]);
 
-  isolationContext: ISolationContextValue = {
-    setValidator: (handler) => {
-      this.isolationValidator = handler;
-    },
-  };
+  const mergeValidatorRuler = useMemo(() => {
+    return {
+      validator: (rule: RuleObject) => {
+        return new Promise<void>((resolve, reject) => {
+          if (!contextOriginal.mergeValidator) {
+            return resolve();
+          }
+          Promise.resolve(contextOriginal.mergeValidator()).then(() => {
+            resolve();
+          }).catch((message: string) => {
+            rule.message = message;
+            reject();
+          });
+        });
+      },
+    };
+  }, [contextOriginal]);
 
-  shouldUpdate = (prevValues: any, curValues: any) => {
-    const form = this.props.form.current;
+  const rules = useMemo(() => {
+    return visible ? [...(props.rules || []), isolationRuler, mergeValidatorRuler] : null;
+  }, [visible, props.rules, isolationRuler, mergeValidatorRuler]);
+
+  const isolationContext = useMemo(() => {
+    return {
+      setValidator: (handler) => {
+        contextOriginal.isolationValidator = handler;
+      },
+      setMergeValidator: (handler) => {
+        contextOriginal.mergeValidator = handler;
+      },
+    } as ISolationContextValue;
+  }, [contextOriginal]);
+
+
+  const shouldUpdate = (prevValues: TRow, curValues: TRow, info: { source: string }) => {
+    if (!info.source) return false;
+    const form = props.form.current;
     const anyForm = form as any;
-    const item = this.props.item;
-    const visible = isVisible(item, curValues);
-    const disabled = isDisabled(item, curValues);
-    const name = this.normalizeKey(item);
+    const item = props.item;
+    const innerVisible = isVisible(item, curValues);
+    const innerDisabled = isDisabled(item, curValues);
     const updateKeys = anyForm?.updateKeys || {};
     const keyName = name.join('.');
-    const prevValue = this.getValue(name, prevValues);
-    const curValue = this.getValue(name, curValues);
-    const changed = this.state.visible !== visible || disabled !== this.state.disabled || prevValue !== curValue;
+    const prevValue = getValue(name, prevValues);
+    const curValue = getValue(name, curValues);
+    const changed = visible !== innerVisible || innerDisabled !== disabled || prevValue !== curValue;
     if ((typeof item.render === 'function' && !changed)) {
-      // 这里保证函，动态组件，必须渲染
-      clearTimeout(this.timerId);
-      this.timerId = setTimeout(() => {
-        const current = this.inputWrapRef.current;
-        if (current) current.forceUpdate();
-      }, 10);
+      // // 这里保证函，动态组件，必须渲染
+      setUpdateId(updateId + 1);
       return false;
     }
     if (keyName in updateKeys) {
       return true;
     }
-
-    // if (form && !visible) {
-    //   form.resetFields([name]);
-    // }
-    const formatUpdate = this.formatUpdate;
-    if (item.format && !this.formatUpdate) {
+    if (item.format && updater.formatUpdate == false) {
       const v = item.format(curValues);
-      this.formatUpdate = true;
+      updater.formatUpdate = true;
       form?.setFieldsValue({ [item.name as string]: v });
     }
     if (changed) {
-      this.setState({ visible, disabled });
+      setDisabled(innerDisabled);
+      setVisible(innerVisible);
     }
-    this.formatUpdate = false;
-    if (formatUpdate) {
-      return true;
-    }
+    updater.formatUpdate = false;
     if (typeof item.extra == 'function') {
-      this.extraRef?.current?.forceUpdate();
+      setUpdateId(updateId + 1);
     }
   };
 
-  normalize = (value: TRow, prevValue: TRow, prevValues: TRow) => {
-    const item = this.props.item;
-    const form = this.props.form.current;
+  const normalize = (value: TRow, prevValue: TRow, prevValues: TRow) => {
+    const item = props.item;
+    const form = props.form.current;
     if (item.cascade && form) {
       const model = {
         ...(item.cascade(value, prevValues, prevValue)),
@@ -242,13 +224,10 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
       (form as any).updateKeys = model;
       form.setFieldsValue(model);
       (form as any).updateKeys = {};
-      const name = this.normalizeKey(item);
-      const selfValue = this.getValue(name, model as TRow);
+      const selfValue = getValue(name, model as TRow);
       if (selfValue !== undefined) {
         value = selfValue;
       }
-      // console.log(this.updateKeys);
-      // this.updateKeys = {}
     }
     if (item.normalize) {
       return item.normalize(value, prevValue, prevValue);
@@ -256,11 +235,8 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
     return value;
   };
 
-  normalizeKey(item: AbstractFormItemType<TRow>) {
-    return item.name instanceof Array ? item.name : (item.name || '').split('.');
-  }
 
-  useInitialValue(record: TRow, name: Array<string>) {
+  const useInitialValue = (record: TRow, name: Array<string>) => {
     let iterator = record;
     if (!record) {
       return true;
@@ -272,116 +248,76 @@ export default class Item<TRow extends AbstractRow = AbstractRow> extends React.
       }
     }
     return iterator === undefined;
-  }
-
-  componentDidMount() {
-    if (!this.props.form?.current) {
-      this.setState({ forceUpdate: true });
-    }
-  }
+  };
 
   // 渲染
-  renderItem() {
-    const { layout, item, rules, autoFocusAt, model: record, validateFirst } = this.props;
+  const renderItem = () => {
+    const { layout = {}, item, autoFocusAt, model: record, validateFirst } = props;
     const initialValue = item.initialValue;
-    const visible = this.state.visible;
-    const visibleCls = this.state.visible ? 'visible' : 'hidden';
-    const name = this.normalizeKey(item);
-    const items = this.useInitialValue(record, name) ? { initialValue } : {};
-    const shouldUpdate = item.dependencies ? undefined : this.shouldUpdate;
+    const visibleCls = visible ? 'visible' : 'hidden';
+    const items = useInitialValue(record, name) ? { initialValue } : {};
     const title = item.render2 ? '' : item.title || '';
     const type = item.render2 ? 'input-full' : '';
-    const isReadOnly = this.state.disabled || this.props.isReadOnly;
+    const isReadOnly = disabled || props.isReadOnly;
     const readonlyCls = isReadOnly ? 'readonly-item' : '';
+    const id = item.name instanceof Array ? item.name.join(',') : item.name;
+    const genericKeys = Object.keys(item.genericKeys || {}).filter((m) => m !== id);
     const wrapperCol = {
-      ...(layout.wrapperCol || {}),
+      ...(layout?.wrapperCol || {}),
       className: `${layout.wrapperCol?.className || ''} ${isReadOnly ? 'readonly-wrapper' : ''}`,
     };
-    const extra = typeof item.extra == 'function' ? <ExtraView ref={this.extraRef} item={item} form={this.props.form} model={this.props.model} /> : item.extra;
     return (
       <ISolation.Context.Provider
-        value={this.isolationContext}
+        value={isolationContext}
       >
-        <ConfigConsumer.Consumer>
-          {
-            (context) => (
-              <FormItem
-                shouldUpdate={shouldUpdate}
-                {...layout}
-                wrapperCol={wrapperCol}
-                {...items}
-                style={this.props.style}
-                label={title}
-                colon={item.colon !== false}
-                name={name}
-                rules={visible ? [...(rules || []), this.isolationRuler] : null}
-                validateFirst={validateFirst}
-                extra={extra}
-                dependencies={item.dependencies}
-                normalize={this.normalize}
-                className={`${visibleCls} abstract-form-item ${readonlyCls} abstract-input-${item.name} ${type} ${item.className || ''}`}
-                hasFeedback={item.hasFeedback}
-              >
-                {
-                  <InputWrap
-                    item={item}
-                    autoFocus={autoFocusAt && autoFocusAt == item.name}
-                    ref={this.inputWrapRef}
-                    onValuesChange={this.props.onValuesChange}
-                    valueFormatter={context.valueFormatter}
-                    record={record}
-                    form={this.props.form}
-                    isReadOnly={isReadOnly}
-                  />
-                }
-              </FormItem>
-            )
-          }
-        </ConfigConsumer.Consumer>
+        <FormItem
+          shouldUpdate={item.dependencies ? undefined : shouldUpdate}
+          {...layout}
+          wrapperCol={wrapperCol}
+          {...items}
+          style={props.style}
+          label={title}
+          colon={item.colon !== false}
+          name={name}
+          rules={rules}
+          validateFirst={validateFirst}
+          extra={extraNode}
+          dependencies={item.dependencies}
+          normalize={normalize}
+          className={`${visibleCls} abstract-form-item ${readonlyCls} abstract-input-${item.name} ${type} ${item.className || ''}`}
+          hasFeedback={item.hasFeedback}
+        >
+          <InputWrap
+            item={item}
+            autoFocus={autoFocusAt && autoFocusAt == item.name}
+            onValuesChange={props.onValuesChange}
+            valueFormatter={context.valueFormatter}
+            record={record}
+            form={props.form}
+            isReadOnly={isReadOnly}
+          />
+        </FormItem>
+        {
+          genericKeys?.map((name) => <FormItem key={`__generic-${name}`} name={name} style={{ display: 'none' }}><Input type="hidden" /></FormItem>)
+        }
       </ISolation.Context.Provider>
 
     );
-  }
+  };
 
-  renderSlot() {
-    const { item, style, model: record } = this.props;
-    const hasAfter = item.after;
-    if (hasAfter) {
-      return (
-        <FormItem
-          style={style}
-          className={hasAfter ? 'has-after' : ''}
-        >
-          {this.renderItem()}
-          {
-            (item.after) && (
-              <div className="form-item-after">
-                {item.after(record)}
-              </div>
-            )
-          }
-        </FormItem>
-      );
-    }
-    return this.renderItem();
+  const { colOption } = props;
+  if (colOption) {
+    return (
+      <Col
+        span={colOption.span}
+        offset={colOption.offset}
+        data-id={props.item.id}
+        data-name={props.item.name?.toString()}
+        className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
+      >
+        {renderItem()}
+      </Col>
+    );
   }
-
-  render() {
-    const { colOption } = this.props;
-    if (colOption) {
-      const visible = this.state.visible;
-      return (
-        <Col
-          span={colOption.span}
-          offset={colOption.offset}
-          data-id={this.props.item.id}
-          data-name={this.props.item.name?.toString()}
-          className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
-        >
-          {this.renderSlot()}
-        </Col>
-      );
-    }
-    return this.renderSlot();
-  }
+  return renderItem();
 }

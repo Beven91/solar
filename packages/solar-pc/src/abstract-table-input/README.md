@@ -26,14 +26,14 @@
 />
 
 <AppCodebox 
-  src="src/abstract-table-input/demo/index" 
-  title="多行编辑" 
-  desc="可快速通过配置实现一个可录入的表格。" 
-/>
-
-<AppCodebox 
   src="src/abstract-table-input/demo/index.move" 
   title="移动行" 
   console="true"
   desc="通过配置moveable属性，开启行位置调整功能" 
+/>
+
+<AppCodebox 
+  src="src/abstract-table-input/demo/index.large" 
+  title="大量数据测试" 
+  desc="当数据量比较大的情况下，可以通过开启分页来解决性能问题。" 
 />

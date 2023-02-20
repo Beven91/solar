@@ -36,6 +36,22 @@ $width:5px;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+  &.scrollable {
+    overflow:auto;
+    .ant-table-body {
+      overflow: hidden !important;
+      margin-right: 4px;
+    }
+    &.table-scrollable {
+      &::-webkit-scrollbar-thumb{
+        background-color: transparent;
+      }
+      .ant-table-body {
+        overflow: auto scroll !important;
+        margin-right: 0;
+      } 
+    }
+  }
 
 
   &.auto-height {
@@ -51,7 +67,7 @@ $width:5px;
     display: flex;
     flex-direction: column;
     flex: 1;
-    overflow:auto;
+    // overflow:auto;
   }
 
   .table-operators {

@@ -51,6 +51,7 @@ Config.setup({
 <AppCodebox 
   src="src/advance-upload/demo/index.multiple" 
   title="批量上传" 
+  console="true"
   desc="通过设置multiple可以同时选择多张图片上传" 
 />
 

@@ -8,11 +8,33 @@ interface ActivityModel {
   price: number
 }
 
-const demoRows = [
+const originRows = [
   { id: 1, name: 'Surface Book3', price: 17800 },
   { id: 2, name: 'Mac Book Pro3', price: 20000 },
   { id: 3, name: 'Thinkpad', price: 10000 },
+  { id: 4, name: 'Surface Book3', price: 17800 },
+  { id: 5, name: 'Mac Book Pro3', price: 20000 },
+  { id: 6, name: 'Thinkpad', price: 10000 },
+  { id: 7, name: 'Surface Book3', price: 17800 },
+  { id: 8, name: 'Mac Book Pro3', price: 20000 },
+  { id: 9, name: 'Thinkpad', price: 10000 },
+  { id: 10, name: 'Surface Book3', price: 17800 },
 ];
+
+const generate = (demo:typeof originRows, total:number)=>{
+  const rows = [];
+  for (let i =0; i<total; i++) {
+    const item = demo[(i % originRows.length)];
+    rows.push({
+      id: i,
+      name: item.name + '-'+i,
+      price: i * 100,
+    });
+  }
+  return rows;
+};
+
+const demoRows = generate(originRows, 300);
 
 export default function App() {
   const columns: AbstractColumns<ActivityModel> = [
@@ -39,7 +61,7 @@ export default function App() {
 
   return (
     <div
-      style={{ height: 360 }}
+      style={{ height: 530 }}
     >
       <AbstractTable
         rowKey="id"

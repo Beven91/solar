@@ -31,6 +31,18 @@
 />
 
 <AppCodebox 
+  src="src/abstract-object/demo/index.header" 
+  title="追加顶部按钮" 
+  desc="通过headActions属性来设置当前页面额外的操作按钮展示在顶部。" 
+/>
+
+<AppCodebox 
+  src="src/abstract-object/demo/index.header.portal" 
+  title="追加顶部按钮,控制展示位置" 
+  desc="通过设置headContainer来控制headActions展示位置" 
+/>
+
+<AppCodebox 
   console="true"
   src="src/abstract-object/demo/index.ok.enable" 
   title="确认按钮disabled控制" 

@@ -12,14 +12,14 @@ const rules = {
   age: [{ required: true, message: '请设置年龄' }],
 };
 
-function NestedApp(props:{ value?:any, onChange?:(value:any)=>void }) {
+function NestedApp(props: { disabled?: boolean, value?: any, onChange?: (value: any) => void }) {
   const groups: AbstractGroups<CommodityModel> = [
     { title: '编号', name: 'id' },
     { title: '年龄', name: 'age' },
   ];
 
   return (
-    <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
+    <AbstractForm.ISolation isReadOnly={props.disabled} rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
   );
 }
 
@@ -47,7 +47,6 @@ export default function App() {
     },
     {
       group: '条码配置',
-      readonly: true,
       items: [
         { title: '条码信息', name: 'skuId', initialValue: '' },
         { title: '条码信息', name: 'skuId2' },
@@ -56,6 +55,7 @@ export default function App() {
     },
     {
       group: '库存配置',
+      readonly: true,
       items: [
         { title: '数量', name: 'num', initialValue: '' },
         { title: '预警库存数', name: 'num2' },
@@ -64,7 +64,7 @@ export default function App() {
   ];
 
   return (
-    <Form onFinish={()=>message.success('已提交')} ref={formRef}>
+    <Form onFinish={() => message.success('已提交')} ref={formRef}>
       <AbstractForm groupStyle={groupStyle} groups={groups} rules={rules} form={formRef} />
       <div style={{ marginTop: 40 }}>
         <FormItem label="分组样式" >

@@ -19,7 +19,7 @@ export default function App() {
   return (
     <div style={{ width: 300 }}>
       <h4>多选</h4>
-      <AdvancePicker onChange={setMultiple} data={data} mode="multiple" />
+      <AdvancePicker value={multiple} onChange={setMultiple} data={data} mode="multiple" />
       <h4 style={{ marginTop: 10 }}>标签</h4>
       <AdvancePicker onChange={setTag} data={data} mode="tags" />
       <h4 style={{ marginTop: 10 }}>单选标签</h4>

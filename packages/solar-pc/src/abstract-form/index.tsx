@@ -3,7 +3,7 @@
  * @description 一个表单生成视图
  */
 import './index.scss';
-import React from 'react';
+import React, { useContext } from 'react';
 import Dynamic from './dynamic';
 import register, { ConverterRegistry, ValueConverter } from './register';
 import { AbstractGroups, AbstractFormLayout, AbstractRules as AbstractRules, FormGroupStyle, onValuesChangeHandler, AbstractRow } from '../interface';
@@ -52,54 +52,40 @@ export interface AbstractFormProps<TRow> {
   validateFirst?: boolean | 'parallel'
 }
 
-export default class AbstractForm<TRow extends AbstractRow> extends React.Component<React.PropsWithChildren<AbstractFormProps<TRow>>> {
-  // 表单上下文
-  static Context = FormContext;
+export default function AbstractForm<TRow extends AbstractRow>(props: React.PropsWithChildren<AbstractFormProps<TRow>>) {
+  const config = useContext(AbstractProvider.Context);
+  const formContext = useContext(FormContext);
 
-  // 使用一个隔离的抽象表单组
-  static ISolation = ISolation;
+  formContext.cacheGroups = props.groups;
 
-  /**
-   * 注册指定组件的propValueName
-   * @param {*} component
-   * @param {*} name
-   */
-  static register(component: React.ComponentType, name: string) {
-    register.register(component, name);
-  }
-
-  static registerConverter(name: string, converter: ValueConverter) {
-    ConverterRegistry.register({
-      ...converter,
-      name,
-    });
-  }
-
-  // 渲染
-  render() {
-    return (
-      <AbstractProvider.Consumer>
-        {
-          (config) => {
-            return (
-              <FormContext.Consumer>
-                {(context) => {
-                  context.cacheGroups = this.props.groups;
-                  return (
-                    <Dynamic
-                      formItemLayout={config.formItemLayout}
-                      {...context}
-                      {...this.props}
-                      containerWidth={context.width}
-                    />
-                  );
-                }}
-              </FormContext.Consumer>
-            );
-          }
-        }
-      </AbstractProvider.Consumer>
-    );
-  }
+  return (
+    <Dynamic
+      formItemLayout={config.formItemLayout}
+      {...formContext}
+      {...props}
+      containerWidth={formContext.width}
+    />
+  );
 }
 
+// 表单上下文
+AbstractForm.Context = FormContext;
+
+// 使用一个隔离的抽象表单组
+AbstractForm.ISolation = ISolation;
+
+/**
+ * 注册指定组件的propValueName
+ * @param {*} component
+ * @param {*} name
+ */
+AbstractForm.register = (component: React.ComponentType, name: string) => {
+  register.register(component, name);
+};
+
+AbstractForm.registerConverter = (name: string, converter: ValueConverter) => {
+  ConverterRegistry.register({
+    ...converter,
+    name,
+  });
+};

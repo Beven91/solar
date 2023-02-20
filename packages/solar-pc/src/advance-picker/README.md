@@ -15,7 +15,14 @@
   console="true"
   src="src/advance-picker/demo/index.api" 
   title="远程数据" 
-  desc="同意通过设置api参数来分页获取远程选项数据。" 
+  desc="通过设置api参数来分页获取远程选项数据。" 
+/>
+
+<AppCodebox 
+  console="true"
+  src="src/advance-picker/demo/index.initQuery" 
+  title="关闭默认加载行为" 
+  desc="通过设置initQuery=false来关闭默认加载行为" 
 />
 
 <AppCodebox 
@@ -24,7 +31,6 @@
   title="选择模式" 
   desc="可以设置mode属性来设置多选，和单选以及标签形式" 
 />
-
 
 <AppCodebox 
   console="true"
@@ -38,4 +44,11 @@
   src="src/advance-picker/demo/index.icon" 
   title="带图标" 
   desc="可通过设置prefix来指定前缀图标" 
+/>
+
+<AppCodebox 
+  console="true"
+  src="src/advance-picker/demo/index.label" 
+  title="自定义展示标题" 
+  desc="通过formatLabel函数来自定义每行标题展示" 
 />

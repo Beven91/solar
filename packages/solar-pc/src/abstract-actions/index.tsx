@@ -3,12 +3,12 @@
  * @description 后台操作动作
  */
 import './index.scss';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Context, { ActionsContext } from './context';
 import { AbstractRow, InitialAction, SubmitAction } from '../interface';
 import { OnActionRoute } from '../abstract-table/types';
 import cellRenders from '../abstract-table/util/cellRenders';
-import TableContext, { AbstractTableContext } from '../abstract-table/context';
+import TableContext, { AbstractTableContextValue } from '../abstract-table/context';
 import { ActionIfHook, ObjectIfHook, PopupIfHook, ListHook, DrawerIfHook } from './action';
 
 const runtime = {
@@ -68,113 +68,122 @@ export interface AbstractActionsProps<TRow> {
   onSubmit?: (data: SubmitAction<TRow>) => void
   // 当有值发生改变时触发,优先级低于具体Action的同名属性
   onValuesChange?: (action: string, values: TRow, prevValues: TRow) => void
+  // 定义:列表操作按钮与表单操作按钮渲染容器位置
+  getActionsContainer?: () => HTMLElement
   children?: React.ReactNode
   [x: string]: any
 }
 
-export interface AbstractActionsState {
+type Reason = 'none' | 'submited' | 'yes'
 
-}
+const normalizeUrl = (url: string) => {
+  const query = location.search.slice(1);
+  const hashQuery = location.hash.split('?').slice(1);
+  const isHash = !!location.hash;
+  const useQuery = isHash ? hashQuery : query;
+  const joinChar = useQuery ? '?' : '';
+  return url + joinChar + useQuery;
+};
 
-export default class AbstractActions<TRow extends AbstractRow> extends React.Component<AbstractActionsProps<TRow>, AbstractActionsState> {
-  // 动作
-  static If = ActionIfHook;
+export default function AbstractActions<TRow extends AbstractRow>(props: AbstractActionsProps<TRow>) {
+  const { onCancel, onSubCancel, subModel, subAction, action, className, style, onSubmit, model: record } = props;
+  const listRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>();
+  const [memo] = useState({
+    preRouteAction: null as InitialAction,
+    reason: 'none' as Reason,
+    reasonAction: '',
+    shouldHideList: false,
+    shouldHideObject: false,
+    mounted: false,
+  });
 
-  // 带表单的动作
-  static Object = ObjectIfHook;
+  useEffect(() => {
+    const { route, onRoute } = props;
+    if (route && onRoute && route.params?.action) {
+      memo.reasonAction = route.params?.action;
+      onRoute(route.params as InitialAction);
+    }
+  }, []);
 
-  // 弹窗类型
-  static Popup = PopupIfHook;
+  useEffect(() => {
+    if (memo.mounted) {
+      fallbackActions();
+      if (containerRef.current) {
+        const name = memo.shouldHideObject ? 'add' : 'remove';
+        containerRef.current.classList[name]('sub-covered');
+      }
+      if (!listRef.current) return;
+      listRef.current.style.display = memo.shouldHideList ? 'none' : 'block';
+    }
+    memo.mounted = true;
+  });
 
-  // 列表动作
-  static List = ListHook;
+  const actionContext = {
+    record,
+    subRecord: subModel,
+    ...props,
+    onMatch: (action) => {
+    },
+    onCancel: () => {
+      onCancel && onCancel();
+      memo.reason = 'none';
+      memo.reasonAction = action;
+      navigateBack();
+    },
+    onSubmit: (values: TRow) => {
+      memo.reason = 'submited';
+      memo.reasonAction = action;
+      onSubmit && onSubmit({ action, model: values });
+    },
+    onSubSubmit: (values: TRow) => {
+      onSubmit && onSubmit({ action: subAction, model: values });
+    },
+    onSubCancel: () => {
+      onSubCancel && onSubCancel();
+    },
+    onValuesChange: (changedValues: TRow, previous: TRow) => {
+      const { onValuesChange } = props;
+      if (onValuesChange) {
+        onValuesChange(action, changedValues, previous);
+      }
+    },
+    getActionsContainer: () => {
+      return props.getActionsContainer?.();
+    },
+    listRef: listRef,
+    subConfirmLoading: props.subConfirmLoading,
+    confirmLoading: props.confirmLoading,
+    action: props.action,
+    subAction,
+    shouldHiddenList: (hidden: boolean, isSubAction) => {
+      memo.shouldHideList = hidden;
+      memo.shouldHideObject = isSubAction;
+    },
+  } as ActionsContext<TRow>;
 
-  // Drawer表单
-  static Drawer = DrawerIfHook;
+  const tableContext = {
+    onAction: (action) => {
+      const { onRoute, route } = props;
+      const data = cellRenders.createAction(action);
+      const url = data.create(route.path || '', { ...(route.params || {}), ...action });
+      runtime.isInitialize = false;
+      props?.history?.push(normalizeUrl(url));
+      memo.reasonAction = action?.action;
+      onRoute && onRoute(action);
+    },
+    getActionsContainer: () => {
+      const showList = (action == '' || action == 'list');
+      if (!showList) {
+        return null;
+      }
+      return props.getActionsContainer?.();
+    },
+  } as AbstractTableContextValue;
 
-  preRouteAction: InitialAction;
-
-  reason: 'none' | 'submited' | 'yes';
-
-  reasonAction: string;
-
-  listRef = React.createRef<HTMLDivElement>();
-
-  containerRef = React.createRef<HTMLDivElement>();
-
-  shouldHideList = false;
-
-  shouldHideObject = false;
-
-  get actionContext() {
-    const { onCancel, onSubCancel, subModel, subAction, action, onSubmit, model: record, ...props } = this.props;
-    return {
-      record,
-      subRecord: subModel,
-      onMatch: (action) => {
-      },
-      onCancel: () => {
-        onCancel && onCancel();
-        this.reason = 'none';
-        this.reasonAction = action;
-        this.navigateBack();
-      },
-      onSubmit: (values: TRow) => {
-        this.reason = 'submited';
-        this.reasonAction = action;
-        onSubmit && onSubmit({ action, model: values });
-      },
-      onSubSubmit: (values: TRow) => {
-        onSubmit && onSubmit({ action: subAction, model: values });
-      },
-      onSubCancel: () => {
-        onSubCancel && onSubCancel();
-      },
-      ...props,
-      onValuesChange: (changedValues: TRow, previous: TRow) => {
-        const { onValuesChange } = this.props;
-        if (onValuesChange) {
-          onValuesChange(action, changedValues, previous);
-        }
-      },
-      listRef: this.listRef,
-      subConfirmLoading: this.props.subConfirmLoading,
-      confirmLoading: this.props.confirmLoading,
-      action: this.props.action,
-      subAction,
-      shouldHiddenList: (hidden: boolean, isSubAction) => {
-        this.shouldHideList = hidden;
-        this.shouldHideObject = isSubAction;
-      },
-    } as ActionsContext<TRow>;
-  }
-
-  get tableContext() {
-    return {
-      onAction: (action) => {
-        const { onRoute, route } = this.props;
-        const data = cellRenders.createAction(action);
-        const url = data.create(route.path || '', { ...(route.params || {}), ...action });
-        runtime.isInitialize = false;
-        this.props?.history?.push(this.normalizeUrl(url));
-        this.reasonAction = action?.action;
-        onRoute && onRoute(action);
-      },
-    } as AbstractTableContext;
-  }
-
-  normalizeUrl(url: string) {
-    const query = location.search.slice(1);
-    const hashQuery = location.hash.split('?').slice(1);
-    const isHash = !!location.hash;
-    const useQuery = isHash ? hashQuery : query;
-    const joinChar = useQuery ? '?' : '';
-    return url + joinChar + useQuery;
-  }
-
-  navigateBack() {
-    const { onRouteBack, route } = this.props;
-    const action = this.reasonAction;
+  const navigateBack = () => {
+    const { onRouteBack, route } = props;
+    const action = memo.reasonAction;
     const needBack = action == route?.params?.action;
     if (!needBack) return;
     if (onRouteBack) {
@@ -185,63 +194,57 @@ export default class AbstractActions<TRow extends AbstractRow> extends React.Com
       const empty = { ...route?.params, action: '', id: '' };
       const data = cellRenders.createAction({ action: '', id: '' });
       const initUrl = data.create(route?.path || '', empty);
-      this.props.history?.replace(this.normalizeUrl(initUrl));
+      props.history?.replace(normalizeUrl(initUrl));
     } else {
-      this.props.history?.goBack();
+      props.history?.goBack();
     }
-  }
+  };
 
-  componentDidMount() {
-    const { route, onRoute } = this.props;
-    if (route && onRoute) {
-      this.reasonAction = route.params?.action;
-      onRoute(route.params as InitialAction);
-    }
-  }
-
-  fallbackActions() {
-    const { subAction, onSubCancel, onRoute, route } = this.props;
-    const routeAction = route?.params?.action;
-    switch (this.reason) {
+  const fallbackActions = () => {
+    const { subAction, onSubCancel, onRoute, route } = props;
+    const routeAction = route?.params?.action || '';
+    switch (memo.reason) {
       case 'submited':
-        if (this.reasonAction != this.props.action) {
+        if (memo.reasonAction != props.action) {
           subAction && onSubCancel && onSubCancel();
-          this.navigateBack();
-          this.reason = 'none';
+          navigateBack();
+          memo.reason = 'none';
         }
         break;
       default:
-        if (this.reasonAction != routeAction) {
-          this.reasonAction = routeAction;
-          onRoute && onRoute({ ...route.params, action: this.reasonAction || '' } as any);
-          this.reason = 'none';
+        if (memo.reasonAction != routeAction) {
+          memo.reasonAction = routeAction;
+          onRoute && onRoute({ ...route.params, action: memo.reasonAction || '' } as any);
+          memo.reason = 'none';
         }
     }
   };
 
-  componentDidUpdate() {
-    this.fallbackActions();
-    if (this.containerRef.current) {
-      const name = this.shouldHideObject ? 'add' : 'remove';
-      this.containerRef.current.classList[name]('sub-covered');
-    }
-    if (!this.listRef.current) return;
-    this.listRef.current.style.display = this.shouldHideList ? 'none' : 'block';
-  }
-
   // 渲染视图
-  render() {
-    const { className, style } = this.props;
-    return (
-      <div ref={this.containerRef} className={`abstract-actions ${className || ''}`} style={style}>
-        <Context.Provider value={this.actionContext}>
-          <TableContext.Provider
-            value={this.tableContext}
-          >
-            {this.props.children}
-          </TableContext.Provider>
-        </Context.Provider>
-      </div>
-    );
-  }
+  return (
+    <div ref={containerRef} className={`abstract-actions ${className || ''}`} style={style}>
+      <Context.Provider value={actionContext}>
+        <TableContext.Provider
+          value={tableContext}
+        >
+          {props.children}
+        </TableContext.Provider>
+      </Context.Provider>
+    </div>
+  );
 }
+
+// 动作
+AbstractActions.If = ActionIfHook;
+
+// 带表单的动作
+AbstractActions.Object = ObjectIfHook;
+
+// 弹窗类型
+AbstractActions.Popup = PopupIfHook;
+
+// 列表动作
+AbstractActions.List = ListHook;
+
+// Drawer表单
+AbstractActions.Drawer = DrawerIfHook;

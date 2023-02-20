@@ -79,7 +79,7 @@ export default function App() {
       onCancel={() => setAction({ action: '', id: '' })}
     >
       <AbstractActions.List>
-        <AbstractTable<ActivityModel>
+        <AbstractTable
           columns={columns}
           data={data}
           buttons={buttons}
@@ -89,7 +89,7 @@ export default function App() {
       </AbstractActions.List>
 
       <AbstractActions.Popup title="新增活动" width={500} action="add" use={ActivityView} />
-      <AbstractActions.Drawer realtime title="修改活动" width={500} action="update" use={ActivityView} />
+      <AbstractActions.Drawer title="修改活动" width={500} action="update" use={ActivityView} />
 
     </AbstractActions>
   );

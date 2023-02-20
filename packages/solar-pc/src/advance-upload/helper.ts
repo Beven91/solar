@@ -1,10 +1,11 @@
+import { UploadFile } from 'antd';
+import { Rectangle } from 'solar-core';
 import memoize from 'memoize-one';
-import { AdvanceUploadProps, FileList, UploadedValueOrList, UploadFileValue } from './type';
+import AbstractProvider from '../abstract-provider';
+import { AbstractUploadConfig } from '../interface';
+import { AdvanceUploadProps, FileList, ProcessUploadInterceptor, UploadedValueOrList, UploadFileExtend, UploadFileValue } from './type';
 
-/**
- * 返回标准的filelist
- */
-export const getFileList = memoize((value, format, fileList, props: AdvanceUploadProps) => {
+export const getFileList = memoize((value, format, fileList, props: AdvanceUploadProps): FileList => {
   value = value instanceof Array ? value : value ? [value] : [];
   if (props.selectOnly) {
     return [...value];
@@ -69,3 +70,52 @@ function createAdvanceObj(url: string, item: UploadFileValue) {
     type: item.type,
   };
 }
+
+export const stopPropagation = (e: React.DragEvent<HTMLDivElement>) => e.stopPropagation();
+
+export const getExtension = (type: string, path: string) => {
+  const [id, name] = (type || '').toString().split('/');
+  const ext = (path || '').split('.').pop();
+  const useExt = (ext || name);
+  switch (id.toLowerCase()) {
+    case 'image':
+      return '.jpg';
+    default:
+      return '.' + useExt;
+  }
+};
+
+export const checkUpload = (file: File, acceptType: AdvanceUploadProps['acceptType'], maxSize: number, config: AbstractUploadConfig) => {
+  const defaultMax = 3 * 1024 * 1024;
+  const media = config?.media || AbstractProvider.defaultMediaDefinitions;
+  const data = media[acceptType] || { max: defaultMax };
+  const max = maxSize || data.max || defaultMax;
+  const isLt = file.size < max;
+  if (!isLt) {
+    const value = max / (1024 * 1024);
+    return new Error(`上传不能超过 ${value}MB!`);
+  }
+};
+
+const interceptors: ProcessUploadInterceptor[] = [
+  // 获取上传图片宽度与高度
+  async(type, item, props) => {
+    const file = item.originFileObj;
+    if (file instanceof File && props.valueMode == 'object' && /image\//.test(type) && !(item.width > 0)) {
+      const result = await Rectangle.getRectangle(item.originFileObj);
+      item.width = result.width;
+      item.height = result.height;
+    }
+  },
+];
+
+export const processUploadInteceptors = async(fileList: UploadFile[], props: AdvanceUploadProps) => {
+  fileList = fileList || [];
+  for (let i = 0, k = fileList.length; i < k; i++) {
+    const item = fileList[i];
+    if (!item.originFileObj) continue;
+    for (let j = 0, m = interceptors.length; j < m; j++) {
+      await interceptors[j](item.originFileObj.type, item as UploadFileExtend, props);
+    }
+  }
+};

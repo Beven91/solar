@@ -21,7 +21,7 @@ const demoRows: ActivityModel[] = [
 ];
 
 export default function App() {
-  const [code, setCode] = useState<string>('');
+  const [code, setCode] = useState<string>(demoRows[0].code);
 
   const columns: AbstractEColumns<ActivityModel> = [
     { title: '商品名', name: 'name' },
@@ -33,7 +33,7 @@ export default function App() {
   ];
 
   const onChange = (value: string, row: ActivityModel) => {
-    console.log('selected code:', value, '\n', row);
+    console.log('selected code:', value, '\n');
     setCode(value);
   };
 

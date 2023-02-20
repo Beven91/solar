@@ -34,6 +34,13 @@
 
 <AppCodebox 
   console="true"
+  src="src/abstract-table/demo/index.sort" 
+  title="列排序" 
+  desc="通过设置column.sort来设置该列进行排序" 
+/>
+
+<AppCodebox 
+  console="true"
   src="src/abstract-table/demo/index.select" 
   title="选择表格" 
   desc="通过设置select属性，可以让表格进入选择模式，选择后会触发onSelectRows事件,实际业务场景推荐使用AbstractTablePicker" 

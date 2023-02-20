@@ -12,66 +12,66 @@ import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
 
 export interface HLanguages {
-  tsx:string
-  typescript:string
-  html:string
-  xml:string
-  css:string
-  atom:string
-  clike:string
-  javascript:string
-  js:string
-  markup:string
-  mathtml:string
-  rss:string
-  ssml:string
-  svg:string
-  text:string
-  ts:string
+  tsx: string
+  typescript: string
+  html: string
+  xml: string
+  css: string
+  atom: string
+  clike: string
+  javascript: string
+  js: string
+  markup: string
+  mathtml: string
+  rss: string
+  ssml: string
+  svg: string
+  text: string
+  ts: string
 }
 
 export interface CodeHighlightProps {
   /**
    * 使用的语言
    */
-  language:keyof HLanguages
+  language: keyof HLanguages
 
   /**
    * 类名称
    */
-  className?:string
+  className?: string
 
   /**
    * 样式
    */
-  style?:React.CSSProperties
+  style?: React.CSSProperties
 
   /**
    * 要高亮的代码
    */
-  code?:string
+  code?: string
 
   /**
    * 要展示的远程代码
    */
-   url?:string
+  url?: string
 }
 
-export default function CodeHighlight(props:CodeHighlightProps) {
+export default function CodeHighlight(props: CodeHighlightProps) {
   const [html, setHtml] = useState('');
   const [loading, setLoading] = useState(false);
-  const highlight = (code:string)=> Prism.highlight(code || '', Prism.languages[props.language], props.language);
+  const highlight = (code: string) => Prism.highlight(code || '', Prism.languages[props.language], props.language);
   useEffect(
-    ()=>{
+    () => {
       if (!props.url) return setHtml(highlight(props.code));
       // 如果是远程请求代码展示
       setLoading(true);
       (new Network()).get(props.url).text().then(
-        (code)=> {
+        (code) => {
           setLoading(false);
           setHtml(highlight(code));
         },
-        ()=> setLoading(false)
+        () => setLoading(false)
       );
     },
     [props.code, props.language, props.url]

@@ -109,23 +109,28 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
+              comments: true,
               babelrc: false,
-              presets: ['module:metro-react-native-babel-preset'],
-              plugins: [
-                ['@babel/plugin-proposal-decorators', { 'legacy': true }],
-                'transform-react-remove-prop-types',
+              configFile: false,
+              presets: [
                 [
-                  'refer-import',
+                  '@babel/preset-env',
                   {
-                    modules: [
-                      { 'libraryName': 'solar-core', 'style': false, 'libraryDirectory': 'src' },
-                      { 'libraryName': '$service$', 'style': false, 'libraryDirectory': 'src', 'camel2DashComponentName': false },
-                      { 'libraryName': 'solar-pc', 'style': false, 'libraryDirectory': 'src' },
-                      { 'libraryName': 'antd', 'style': 'css' },
-                      { 'libraryName': '@ant-design/icons', 'libraryDirectory': '', 'style': false, 'camel2DashComponentName': false },
-                    ],
+                    'useBuiltIns': 'usage',
+                    'modules': 'commonjs',
+                    'corejs': require('core-js/package.json').version,
                   },
                 ],
+                '@babel/preset-react',
+                '@babel/preset-typescript',
+              ],
+              plugins: [
+                ['@babel/plugin-proposal-decorators', { 'legacy': true }],
+                ['import', { 'libraryName': 'solar-core', 'style': false, 'libraryDirectory': 'src' }, 'solar-core'],
+                ['import', { 'libraryName': '$service$', 'style': false, 'libraryDirectory': 'src', 'camel2DashComponentName': false }, '$service$'],
+                ['import', { 'libraryName': 'solar-pc', 'style': false, 'libraryDirectory': 'src' }, 'solar-pc'],
+                ['import', { 'libraryName': '@ant-design/icons', 'libraryDirectory': '', 'style': false, 'camel2DashComponentName': false }, '@ant-design/icons'],
+                ['import', { 'libraryName': 'antd', 'style': false }, 'antd'],
                 isProduction ? false : 'react-refresh/babel',
               ].filter(Boolean),
             },

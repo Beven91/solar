@@ -1,3 +1,5 @@
+import { AbstractMenuType } from '../interface';
+
 type Handler = () => void
 
 const pushState = history.pushState;
@@ -25,6 +27,62 @@ function removeListen(handler: Handler) {
     handlers.splice(index, 1);
   }
   window.removeEventListener('popstate', handler);
+}
+
+export function levelMatch(href: string, route: string) {
+  // 如果是子系统，则进行前缀匹配
+  const segments = route.split('/');
+  segments.pop();
+  while (segments.length > 0) {
+    const url = segments.join('/');
+    if (href.indexOf(url) > -1) {
+      return segments.length;
+    }
+    segments.pop();
+  }
+}
+
+export function systemRouteMatch(route: string, flatMenus: AbstractMenuType[]) {
+  const best = { length: 0, menu: null as AbstractMenuType };
+  flatMenus.forEach((menu) => {
+    const length = levelMatch(menu.href || '', route);
+    if (length > 0 && best.length < length) {
+      best.length = length;
+      best.menu = menu;
+    }
+  });
+  return best.menu;
+}
+
+export function defaultUrlMatch(menu: AbstractMenuType, route: string) {
+  if (menu.href == '') {
+    return false;
+  }
+  if (menu.href === route) {
+    return true;
+  }
+  const path = route.replace('#', '');
+  const url = menu.href?.split('/').map((v) => {
+    return v[0] == ':' ? '(\\w|\\d|-)+' : v;
+  }).join('/');
+  return new RegExp('^' + url).test(path);
+};
+
+export function flat(menus: AbstractMenuType[], parent?: AbstractMenuType, root?: AbstractMenuType) {
+  const elements = [] as AbstractMenuType[];
+  menus.forEach((menu) => {
+    menu.parent = parent;
+    menu.root = root;
+    menu.label = menu.title;
+    elements.push(menu);
+    if (menu.children && menu.children.length > 0) {
+      root = root ? root : menu;
+      elements.push(...flat(menu.children, menu, root));
+      menu.children = menu.children.filter((m) => m.virtual != true);
+      menu.children = menu.children.length < 1 ? undefined : menu.children;
+    }
+  });
+  return elements;
 }
 
 export default {

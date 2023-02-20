@@ -87,6 +87,7 @@ export default function App() {
         setAction({ action: '', id: '' });
         break;
       case 'addproduct':
+        alert('子动作提交'+JSON.stringify(item.model, null, 2));
         // 退出子动作
         setSubAction('');
         break;
@@ -113,7 +114,7 @@ export default function App() {
       onCancel={() => setAction({ action: '', id: '' })}
     >
       <AbstractActions.List>
-        <AbstractTable<ActivityModel>
+        <AbstractTable
           columns={columns}
           data={data}
           buttons={buttons}

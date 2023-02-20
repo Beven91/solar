@@ -57,10 +57,11 @@ export function enums(data: any) {
       values[item.value] = item.label || item.name;
     });
   } else {
-    values = Object.keys(data).reduce((all, k) => {
-      all[data[k]] = k;
-      return all;
-    }, {} as any);
+    values = data || {};
+    // values = Object.keys(data).reduce((all, k) => {
+    //   all[data[k]] = k;
+    //   return all;
+    // }, {} as any);
   }
   return (value: any) => {
     const v = values[value];

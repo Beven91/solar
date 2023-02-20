@@ -3,7 +3,7 @@
  * @description 对象选择
  */
 import './index.scss';
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Button } from 'antd';
 import AbstractTable from '../abstract-table';
@@ -20,7 +20,7 @@ export interface ObjectPickerProps<TRow> extends AbstractTableProps<TRow> {
   // 选择按钮文案
   btnText?: React.ReactNode
   // 弹窗宽度
-  width: number
+  width?: number
   // 弹窗高度
   height?: number
 }
@@ -32,164 +32,137 @@ export interface AbstractTablePickerState {
   prevValue?: any
 }
 
-export default class ObjectPicker<TRow = AbstractRow> extends React.Component<React.PropsWithChildren<ObjectPickerProps<TRow>>, AbstractTablePickerState> {
-  // 默认属性值
-  static defaultProps = {
-    width: 1080,
-    rowKey: 'id',
-    select: 'multiple',
-    operation: { fixed: false },
-    value: [] as any,
-  };
+const defaultFilters: AbstractFilters = {
+  name: '@@mode',
+  tabs: [
+    { label: '全部', value: 'normal' },
+    { label: '已选择', value: 'checked' },
+  ],
+};
 
-  tableRef = React.createRef<AbstractTable<TRow>>();
-
-  // 状态改变配置
-  static getDerivedStateFromProps(props: ObjectPickerProps<AbstractRow>, state: AbstractTablePickerState) {
-    if (props.value !== state.prevValue) {
-      return {
-        prevValue: props.value,
-        selectedRows: props.value || [],
-      };
-    }
-    return null;
-  }
+export default function ObjectPicker<TRow = AbstractRow>(
+  {
+    width = 1080,
+    rowKey = 'id',
+    select = 'multiple',
+    operation = { fixed: false },
+    value = [],
+    buttons,
+    ...props
+  }: React.PropsWithChildren<ObjectPickerProps<TRow>>
+) {
+  const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<TRow[]>(value);
+  const { searchFields, height, pageSize, title, children, ...rest } = props;
+  const filters = select == 'single' ? undefined : defaultFilters;
 
   // 当前操作按钮;
-  get buttons() {
-    const { buttons } = this.props;
+  const useButtons = useMemo(() => {
     return [
       ...(buttons || []),
       {
         target: 'cell',
         title: '选择',
-        click: (row: AbstractRow) => {
-          const rows = this.state.selectedRows;
-          if (this.props.select === 'single') {
+        click: (row: TRow) => {
+          const rows = selectedRows;
+          if (select === 'single') {
             rows.length = 0;
           }
           if (rows.indexOf(row) < 0) {
             rows.push(row);
           }
-          this.setState({ selectedRows: [...rows] });
-          this.handleSubmit();
+          setSelectedRows([...rows]);
+          handleSubmit(rows);
         },
       },
     ] as AbstractButton<TRow>[];
-  }
+  }, [buttons, selectedRows]);
 
-  filters: AbstractFilters = {
-    name: '@@mode',
-    tabs: [
-      { label: '全部', value: 'normal' },
-      { label: '已选择', value: 'checked' },
-    ],
-  };
 
-  state = {
-    submiting: false,
-    selectedRows: [] as AbstractRows,
-    visible: false,
-  };
-
-  onQuery = (data: AbstractQueryType) => {
-    const { onQuery } = this.props;
+  const onTableQuery = useCallback((data: AbstractQueryType) => {
+    const { onQuery } = props;
     if (!onQuery) return;
-    if (this.props.filters) {
+    if (props.filters) {
       return onQuery(data);
     }
     const query = data.query || data;
     if (query['@@mode'] == 'checked') {
-      const rows = [...(this.state.selectedRows || [])];
+      const rows = [...(selectedRows || [])];
       return Promise.resolve({
         count: rows.length,
         models: rows,
       });
     }
     return onQuery(data);
-  };
-
-  toggle(visible:boolean) {
-    this.setState({ visible });
-  }
+  }, [props.onQuery, props.filters, selectedRows]);
 
   // 确认选择
-  handleSubmit = () => {
-    const { onChange } = this.props;
-    const { selectedRows = [] } = this.state;
-    const promise = onChange && onChange(selectedRows as TRow[]);
-    this.setState({ submiting: true });
+  const handleSubmit = useCallback((rows: TRow[]) => {
+    const { onChange } = props;
+    const promise = onChange && onChange((rows) as TRow[]);
+    setLoading(true);
     Promise.resolve(promise).then(() => {
-      this.setState({ visible: false, submiting: false });
+      setLoading(false);
+      setVisible(false);
     });
-  };
+  }, [props.onChange, selectedRows]);
 
   // 选中行发生改变
-  handleSelectRows = (selectedRows: AbstractRows) => {
-    this.setState({ selectedRows }, ()=>{
-      if (this.props.select == 'single') {
-        this.handleSubmit();
-      }
-    });
-  };
-
-  // 点击区域打开选择窗口
-  handleOnClick = () => {
-    this.setState({ visible: true });
-  };
+  const handleSelectRows = useCallback((selectedRows: TRow[]) => {
+    setSelectedRows(selectedRows);
+    if (select == 'single') {
+      handleSubmit(selectedRows);
+    }
+  }, [select]);
 
   // 取消选择
-  handleCancel = () => {
-    this.setState({ visible: false, selectedRows: this.props.value || [] });
-  };
+  const handleCancel = useCallback(() => {
+    setVisible(false);
+    setSelectedRows(value || []);
+  }, [value]);
 
   // 渲染按钮
-  renderButton = (children: React.ReactNode) => {
+  const renderButton = (children: React.ReactNode) => {
     if (children) {
       return <div>{children}</div>;
     }
-    return <Button type="primary" icon={<PlusOutlined />}>{this.props.btnText || '请选择...'}</Button>;
+    return <Button type="primary" icon={<PlusOutlined />}>{props.btnText || '请选择...'}</Button>;
   };
 
-  // 渲染组件
-  render() {
-    const { width, searchFields, height, pageSize, title, children, ...props } = this.props;
-    const { visible, selectedRows = [] } = this.state;
-    const filters = props.select == 'single' ? undefined : this.filters;
-    return (
-      <div>
-        <div onClick={this.handleOnClick}>
-          {this.renderButton(children)}
-        </div>
-        <Modal
-          wrapClassName="object-picker-modal"
-          title={title || '请选择'}
-          visible={visible}
-          okText="确定选择"
-          cancelText="取消"
-          width={width}
-          style={{ height: height }}
-          onOk={this.handleSubmit}
-          onCancel={this.handleCancel}
-          okButtonProps={
-            { loading: this.state.submiting }
-          }
-        >
-          <div className="object-picker-container">
-            <AbstractTable
-              filters={filters}
-              {...props}
-              ref={this.tableRef}
-              onQuery={this.onQuery}
-              pageSize={pageSize}
-              selectedRows={selectedRows}
-              searchFields={searchFields}
-              onSelectRows={this.handleSelectRows}
-              buttons={this.buttons}
-            />
-          </div>
-        </Modal>
+  return (
+    <div>
+      <div onClick={() => setVisible(true)}>
+        {renderButton(children)}
       </div>
-    );
-  }
+      <Modal
+        wrapClassName="object-picker-modal"
+        title={title || '请选择'}
+        visible={visible}
+        okText="确定选择"
+        cancelText="取消"
+        width={width}
+        style={{ height: height }}
+        onOk={() => handleSubmit(selectedRows)}
+        onCancel={handleCancel}
+        okButtonProps={{ loading: loading }}
+      >
+        <div className="object-picker-container">
+          <AbstractTable
+            filters={filters}
+            {...rest}
+            select={select}
+            rowKey={rowKey}
+            operation={operation}
+            onQuery={onTableQuery}
+            pageSize={pageSize}
+            selectedRows={selectedRows}
+            searchFields={searchFields}
+            onSelectRows={handleSelectRows}
+            buttons={useButtons}
+          />
+        </div>
+      </Modal>
+    </div>
+  );
 }

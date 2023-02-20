@@ -38,7 +38,9 @@ ConverterRegistry.register({
     return v ? v.format(fmt) : null;
   },
   setInput: (v, fmt = 'YYYY-MM-DD HH:mm:ss') => {
-    return v ? moment(v, fmt) : null;
+    if (!v) return null;
+    const value = moment(v, fmt);
+    return value.isValid() ? value : null;
   },
 });
 
