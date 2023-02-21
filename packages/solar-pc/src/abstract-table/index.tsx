@@ -181,8 +181,8 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const columns = useMemo(() => {
     const columns = [...(props.columns || [])];
     if (cellOperators.length > 0) {
-      // 添加操作列
-      columns.push(operatorColumn);
+      const index = props.operation?.index;
+      index >= 0 ? columns.splice(index, 0, operatorColumn) : columns.push(operatorColumn);
     }
     const { sort, cellWidth } = props;
     const element = tableInnerRef.current;

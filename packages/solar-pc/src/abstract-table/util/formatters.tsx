@@ -65,7 +65,7 @@ export function enums(data: any) {
   }
   return (value: any) => {
     const v = values[value];
-    return v === undefined ? '未知' : v;
+    return v === undefined ? '-' : v;
   };
 }
 

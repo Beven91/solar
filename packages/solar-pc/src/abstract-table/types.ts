@@ -143,7 +143,7 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   // 默认选择的行数据
   selectedRows?: TRow[]
   // 操作列配置
-  operation?: ColumnType<TRow>
+  operation?: ColumnType<TRow> & { index?: number }
   // 默认的分页下标
   initialPageIndex?: number
   // 分页size

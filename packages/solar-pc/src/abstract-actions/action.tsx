@@ -168,6 +168,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                 record={c.record}
                 showCancel={showCancel}
                 showOk={showOk}
+                className={props.className ? `${props.className}-footer` : ''}
                 okEnable={props.okEnable}
                 isReadOnly={props.action === 'view' || props.isReadOnly}
                 handleCancel={onCancel}

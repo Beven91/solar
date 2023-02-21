@@ -246,7 +246,7 @@ export interface SubmitAction<TRow> {
 }
 
 export interface InitialAction {
-  id: string
+  id: string | number
   action: string
 }
 

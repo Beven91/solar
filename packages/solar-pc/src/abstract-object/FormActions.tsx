@@ -22,6 +22,7 @@ export interface FormActionsProps<TRow> {
   record: TRow
   okEnable?: (values: TRow) => boolean
   actions: AbstractActionItem<TRow>[]
+  className?: string
   // 按钮渲染目标容器
   container?: React.RefObject<HTMLElement>
 }
@@ -72,7 +73,7 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
     };
     const isOkEnable = () => okEnable ? okEnable(formValues) : true;
     return (
-      <div className="object-view-footer">
+      <div className={`object-view-footer ${props.className || ''}`}>
         <div style={{ display: 'inline-block' }}>
           {
             showCancel && (

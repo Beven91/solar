@@ -300,6 +300,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         showCancel={showCancel}
         showOk={showOk}
         record={record}
+        className={props.className ? `${props.className}-footer` : ''}
         handleCancel={handleCancel}
         handleSubmit={handleSubmit}
         validateForms={validateForms}
@@ -323,6 +324,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         showCancel={false}
         showOk={false}
         record={record}
+        className={props.className ? `${props.className}-header` : ''}
         handleCancel={handleCancel}
         handleSubmit={handleSubmit}
         validateForms={validateForms}

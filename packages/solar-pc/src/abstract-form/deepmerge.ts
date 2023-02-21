@@ -3,7 +3,7 @@ export default function merge(target: Record<string, any>, from: Record<string, 
   Object.keys(from || {}).forEach((key) => {
     const value = target[key];
     if (typeof value == 'object' && value) {
-      merge(value, from[key]);
+      merge({ ...value }, from[key]);
     } else {
       target[key] = from[key];
     }
