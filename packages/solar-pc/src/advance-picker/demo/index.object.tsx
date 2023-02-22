@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdvancePicker } from 'solar-pc';
+import { AdvancePicker } from 'fluxy-pc';
 import { Form } from 'antd';
 
 const data = [

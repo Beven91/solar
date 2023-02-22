@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns } from 'solar-pc';
-import { AbstractAction, AbstractGroups, AbstractResponseModel, AbstractRules } from 'solar-pc/src/interface';
+import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns } from 'fluxy-pc';
+import { AbstractAction, AbstractGroups, AbstractResponseModel, AbstractRules } from 'fluxy-pc/src/interface';
 import { Button, PageHeader } from 'antd';
 
 interface ActivityModel {
@@ -66,6 +66,7 @@ export default function App() {
   const buttons: AbstractButtons<ActivityModel> = [
     { title: '修改', action: 'update', target: 'cell' },
     { title: '新增', action: 'add' },
+    { title: '弹窗', action: 'popup' },
   ];
 
   // 提交动作
@@ -141,6 +142,14 @@ export default function App() {
           ]}
         />
         <AbstractActions.Object title="添加商品" width={600} subAction="addproduct" use={CommodityPicker} />
+        <AbstractActions.Popup
+          title="新增活动" width={500}
+          action="popup"
+          use={ActivityView}
+          headActions={[
+            ()=> <Button key="1" type="primary">提交</Button>,
+          ]}
+        />
 
       </AbstractActions>
     </div>

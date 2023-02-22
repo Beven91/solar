@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns } from 'solar-pc';
-import { AbstractAction, AbstractGroups, AbstractResponseModel, AbstractRules } from 'solar-pc/src/interface';
+import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns } from 'fluxy-pc';
+import { AbstractAction, AbstractGroups, AbstractResponseModel, AbstractRules } from 'fluxy-pc/src/interface';
 
 interface ActivityModel {
   id: number

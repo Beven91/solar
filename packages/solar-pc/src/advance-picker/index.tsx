@@ -6,7 +6,7 @@
 import './index.scss';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConfigProvider, Select, Spin } from 'antd';
-import { Network } from 'solar-core';
+import { Network } from '-core';
 import { SelectProps, SelectValue } from 'antd/lib/select';
 import { AbstractResponseModel, OptionObject, PageQueryData, PlainObject } from '../interface';
 
@@ -104,7 +104,7 @@ function createSource<TRow extends PlainObject>(data: Array<TRow> | TRowModel, v
     // 本地配置枚举对象初始化数据
     return Object.keys(data).map((k) => {
       const item = data[k];
-      return ({ original: item, value: `${k}`, originalValue: item, label: `${item}` }) as any as OptionRow<TRow>;
+      return ({ original: item, value: `${k}`, originalValue: k, label: `${item}` }) as any as OptionRow<TRow>;
     });
   }
   return [];

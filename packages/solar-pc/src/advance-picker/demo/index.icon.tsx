@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdvancePicker } from 'solar-pc';
+import { AdvancePicker } from '-pc';
 import { UserOutlined } from '@ant-design/icons';
 
 const data = [

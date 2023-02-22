@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdvancePicker } from 'solar-pc';
+import { AdvancePicker } from '-pc';
 
 const data = [
   { value: 1, label: '苹果' },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdvancePicker, PageQueryData } from 'solar-pc';
+import { AdvancePicker, PageQueryData } from '-pc';
 
 const data = [
   { value: 1, label: '苹果' },
