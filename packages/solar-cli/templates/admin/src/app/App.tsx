@@ -11,7 +11,7 @@ const Provider = store.Provider;
 
 export default function FluxyAdminApp() {
   return (
-    <div className="top-container $projectName$-root">
+    <div className="app-root-view $projectName$-root">
       <Provider store={store.store}>
         <ConfigProvider locale={zhCN}>
           <CrashProvider>

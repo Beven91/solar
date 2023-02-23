@@ -12,7 +12,7 @@ const Provider = store.Provider;
 export default class SolarAdminApp extends React.Component {
   render() {
     return (
-      <div className="top-container $projectName$-root">
+      <div className="app-root-view $projectName$-root">
         <Provider store={store.store}>
           <ConfigProvider locale={zhCN}>
             <CrashProvider>

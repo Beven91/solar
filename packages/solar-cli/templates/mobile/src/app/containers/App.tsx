@@ -6,7 +6,7 @@ import Router from './router';
 export default class App extends React.Component {
   render() {
     return (
-      <div className="top-container">
+      <div className="app-root-view">
         <CrashProvider>
           <Router />
         </CrashProvider>

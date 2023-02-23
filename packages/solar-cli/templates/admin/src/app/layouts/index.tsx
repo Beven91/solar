@@ -53,6 +53,12 @@ export default function SolarLayout(props: React.PropsWithChildren) {
     };
   });
 
+  const onMenuActived = (info: any) => {
+    setActiveMenu(info);
+    const isMini = document.documentElement.clientWidth < 540;
+    isMini && setCollapsed(true);
+  };
+
   return (
     <Layout className="solar-layout">
       <Sider
@@ -69,7 +75,7 @@ export default function SolarLayout(props: React.PropsWithChildren) {
         <AbstractMenu
           theme="dark"
           mode="inline"
-          onSelect={setActiveMenu as any}
+          onSelect={onMenuActived}
           loadMenus={() => menus}
         />
       </Sider>
