@@ -6,7 +6,7 @@
 import './index.scss';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConfigProvider, Select, Spin } from 'antd';
-import { Network } from '-core';
+import { Network } from 'solar-core';
 import { SelectProps, SelectValue } from 'antd/lib/select';
 import { AbstractResponseModel, OptionObject, PageQueryData, PlainObject } from '../interface';
 

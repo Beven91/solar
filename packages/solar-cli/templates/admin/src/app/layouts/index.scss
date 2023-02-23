@@ -165,14 +165,14 @@ body,
 }
 
 @media screen and (max-width: 539px) {
-  .fluxy-layout {
-    .fluxy-sider {
+  .solar-layout {
+    .solar-sider {
       display: none;
       z-index: -1;
       left: -1000px;
       width: 0;
 
-      &.fluxy-expanded {
+      &.solar-expanded {
         display: block;
         position: absolute;
         z-index: 100;
