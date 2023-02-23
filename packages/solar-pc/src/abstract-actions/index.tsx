@@ -3,7 +3,7 @@
  * @description 后台操作动作
  */
 import './index.scss';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Context, { ActionsContext } from './context';
 import { AbstractRow, InitialAction, SubmitAction } from '../interface';
 import { OnActionRoute } from '../abstract-table/types';
@@ -119,6 +119,19 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
     memo.mounted = true;
   });
 
+  const getActionsContainer = useMemo(() => {
+    return () => {
+      const container = props.getActionsContainer?.();
+      const wrapperClas = 'abstract-actions-hide-top-operators';
+      if (container) {
+        const isList = action == '' || action == 'list';
+        const name = isList ? 'remove' : 'add';
+        container.classList[name](wrapperClas);
+      }
+      return container;
+    };
+  }, [props.getActionsContainer, action]);
+
   const actionContext = {
     record,
     subRecord: subModel,
@@ -148,9 +161,7 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
         onValuesChange(action, changedValues, previous);
       }
     },
-    getActionsContainer: () => {
-      return props.getActionsContainer?.();
-    },
+    getActionsContainer: getActionsContainer,
     listRef: listRef,
     subConfirmLoading: props.subConfirmLoading,
     confirmLoading: props.confirmLoading,
@@ -172,13 +183,7 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
       memo.reasonAction = action?.action;
       onRoute && onRoute(action);
     },
-    getActionsContainer: () => {
-      const showList = (action == '' || action == 'list');
-      if (!showList) {
-        return null;
-      }
-      return props.getActionsContainer?.();
-    },
+    getActionsContainer: getActionsContainer,
   } as AbstractTableContextValue;
 
   const navigateBack = () => {

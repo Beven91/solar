@@ -5,7 +5,7 @@
  */
 import ReactDOM from 'react-dom';
 import React, { ReactNode, useContext } from 'react';
-import { Button, Popconfirm, Row, Col } from 'antd';
+import { Button, Popconfirm, Row, Col, Space } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
 import renders from '../util/cellRenders';
@@ -158,10 +158,10 @@ export default function TopActions<TRow = AbstractRow>({
   const children = (
     <Row className={'search-tool-bar abstract-table-top-actions'}>
       <Col span={24} style={{ textAlign: 'right' }}>
-        <div className={`table-operators ${props.className || ''}`}>
+        <Space className={`table-operators ${props.className || ''}`}>
           {renderTopBar()}
           {!buttons ? null : buttons.map((btn, index) => renderButton(btn, index))}
-        </div>
+        </Space>
       </Col>
     </Row>
   );

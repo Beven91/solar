@@ -76,16 +76,8 @@ $width:5px;
     overflow: hidden;
     user-select: none;
 
-    .operator:first-child {
-      margin: 0px 5px 0px 0px;
-    }
-
     .operator-confirm {
       display: flex !important;
-    }
-
-    .operator {
-      margin: 0px 5px;
     }
   }
 

@@ -3,7 +3,7 @@
  * @description 操作动作
  */
 
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useMemo, useRef } from 'react';
 import Context, { ActionsContext } from './context';
 import AbstractObject, { AbstractObjectInstance, BaseObjectProps } from '../abstract-object';
 import AbstractForm from '../abstract-form';
@@ -133,6 +133,12 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const validateForms = () => objectRef.current?.validateForms();
   const footerVisible = false !== props.footer && visible && !realtime;
 
+  const myStyle = useMemo(() => {
+    return {
+      maxWidth: '100%',
+    };
+  }, []);
+
   const onSubmit = async(values: any) => {
     const { onSubmit } = context;
     onSubmit && onSubmit(values);
@@ -184,6 +190,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       {...(drawer || {})}
       {...(realtime ? { mask: true, maskClosable: true } : {})}
       style={style}
+      contentWrapperStyle={myStyle}
       width={finalWidth}
       className={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
       title={props.title || ''}
