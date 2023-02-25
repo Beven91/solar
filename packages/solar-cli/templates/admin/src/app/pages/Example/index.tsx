@@ -63,6 +63,7 @@ function ExamplePageView(props:ModelProps) {
       onSubmit={props.onSubmit}
       onCancel={props.onCancel}
       confirmLoading={props.confirmLoading}
+      getActionsContainer={() => document.getElementById('PAGE_HEAD_ACTIONS')}
     >
       <AbstractActions.List>
         <AbstractTable

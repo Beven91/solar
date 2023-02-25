@@ -11,6 +11,7 @@ import { UserOutlined, SettingOutlined, LoginOutlined, MenuUnfoldOutlined, MenuF
 import { SelectMenuInfo } from 'solar-pc/src/abstract-menu';
 import menus from './menu';
 import logoIcon from './images/logo.svg';
+import { useMiniLayout } from './hooks';
 
 const defaultAvatar = logoIcon;
 const { Content, Header, Sider } = Layout;
@@ -45,7 +46,7 @@ function NavMenus() {
 
 export default function SolarLayout(props: React.PropsWithChildren) {
   const [activeMenu, setActiveMenu] = useState<SelectMenuInfo>(null);
-  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const { requestMiniCollapsed, collapsed, setCollapsed } = useMiniLayout();
   const routes = activeMenu?.paths.map((item) => {
     return {
       path: item.href,
@@ -55,8 +56,7 @@ export default function SolarLayout(props: React.PropsWithChildren) {
 
   const onMenuActived = (info: any) => {
     setActiveMenu(info);
-    const isMini = document.documentElement.clientWidth < 540;
-    isMini && setCollapsed(true);
+    requestMiniCollapsed();
   };
 
   return (
@@ -96,13 +96,14 @@ export default function SolarLayout(props: React.PropsWithChildren) {
             <sub className="app-version">{process.env.VERSION || ''}</sub>
           </div>
         </Header>
-        <Content className="solar-content" onClick={() => setCollapsed(true)}>
+        <Content className="solar-content" onClick={requestMiniCollapsed}>
           <OverridePageHeader.Container>
             <OverridePageHeader.PageHeader
               className="page-header"
-              title={activeMenu?.menu?.name || ''}
+              title={activeMenu?.menu?.title || ''}
               subTitle={activeMenu?.menu?.desc || ''}
               breadcrumb={{ routes }}
+              extra={<div id="PAGE_HEAD_ACTIONS"></div>}
             />
             <CrashProvider>
               <div className="solar-inner-content">{props.children}</div>
