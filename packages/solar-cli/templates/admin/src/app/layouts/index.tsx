@@ -65,7 +65,7 @@ export default function SolarLayout(props: React.PropsWithChildren) {
         theme="dark"
         width={280}
         collapsedWidth={104}
-        className={`solar-sider ${collapsed ? 'solar-collapsed' : ''}`}
+        className={`solar-sider ${collapsed ? 'collapsed' : 'expanded'}`}
         collapsed={collapsed}
         onCollapse={setCollapsed}
       >
@@ -96,7 +96,7 @@ export default function SolarLayout(props: React.PropsWithChildren) {
             <sub className="app-version">{process.env.VERSION || ''}</sub>
           </div>
         </Header>
-        <Content className="solar-content">
+        <Content className="solar-content" onClick={() => setCollapsed(true)}>
           <OverridePageHeader.Container>
             <OverridePageHeader.PageHeader
               className="page-header"

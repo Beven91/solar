@@ -83,6 +83,7 @@ $width:5px;
 
   td .table-operators {
     float: none;
+    flex-wrap: wrap;
     padding: 0px;
   }
 
@@ -93,10 +94,14 @@ $width:5px;
     white-space: nowrap;
   }
 
+  .table-operators-wrapper {
+    overflow-x: auto;
+  }
+
   .table-operators {
     display:flex;
+    flex-wrap: nowrap;
     flex-direction: row;
-    flex-wrap: wrap;
     align-items: center;
     .cell-operator {
       padding:0px;

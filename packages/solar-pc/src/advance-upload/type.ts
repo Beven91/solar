@@ -1,7 +1,6 @@
 import type { UploadProps, UploadFile } from 'antd/lib/upload/interface';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import type React from 'react';
-import { OssUploadOptions } from 'solar-core/src/oss';
 import type { AbstractUploadConfig } from '../interface';
 
 export interface UploadFileExtend extends UploadFile {
@@ -32,8 +31,12 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
    * public:  公有云
    **/
   bucketType?: 'private' | 'public'
+  // 是否保留原始名字上传,注意指定次参数后，还需要设定storeDir参数
+  sameKeep?: boolean
   // 上传参数
-  params?: OssUploadOptions
+  params?: Record<string, any>
+  // 再设置了sameKeep后需要指定文件的存放目录
+  storeDir?: string
   // 业务id
   bizId?: string
   // 值模式
@@ -60,6 +63,8 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
   uploadText?: React.ReactNode
   // 选择模式, 不进行上传，仅选择文件
   selectOnly?: boolean
+  // 是否返回完整url
+  returnAbsolute?: boolean
   // 自定义上传
   customRequest?: (options: RcCustomRequestOptions, config: AbstractUploadConfig) => Promise<string>
 }

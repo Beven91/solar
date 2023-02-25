@@ -6,7 +6,7 @@
 import './index.scss';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { Upload, Button, ConfigProvider } from 'antd';
+import { Upload, Button, ConfigProvider, message } from 'antd';
 import { Oss } from 'solar-core';
 import { checkUpload, getExtension, getFileList, normalizeValue, processUploadInteceptors, stopPropagation } from './helper';
 import AbstractProvider from '../abstract-provider';
@@ -84,14 +84,18 @@ export default function AdvanceUpload(
       context.onProgress({ percent });
     };
     const type = getExtension(file.type, file.name);
+    const overlaySameFile = props.sameKeep === true;
+    const storeDir = props.storeDir;
     const options = {
+      storeDir,
+      overlaySameFile,
       fileType: type,
       bizId, bucketType,
       ...(params || {}),
     };
     const data = await Oss.uploadToAliOss(context.file as File, options, onProgress);
     if (data.success) {
-      return formatUrl ? formatUrl(data.result, all) : data.result;
+      return props.returnAbsolute && formatUrl ? formatUrl(data.result, all) : data.result;
     }
     return Promise.reject(new Error(data.errorMsg));
   };
@@ -103,7 +107,8 @@ export default function AdvanceUpload(
     const item = fileList.find((m) => m.uid == (context.file as any).uid);
     const error = checkUpload(context.file as File, acceptType, props.maxSize, config);
     if (error) {
-      return context.onError(error);
+      message.error(error?.message || '上传失败');
+      return setTimeout(() => context.onError(error), 40);
     }
     Promise
       .resolve(uploadToServer(context, config))

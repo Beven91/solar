@@ -14,12 +14,12 @@ Config.setup({
     // 该参数可以用来全局指定调用上传接口时的额外参数
     data: { bizId: 'doctorSubmit' },
     // 文件上传地址
-    uploadUrl: 'http://file-gw.dev.shantaijk.cn/file/uploadFileReturnKey',
+    uploadUrl: 'http://www.oss.cn/upload',
     urls: {
       // 私有云访问地址
-      private: 'http://file-gw.dev.shantaijk.cn/file/privateDownPicByKey',
+      private: 'http://www.oss.cn/private',
       // 共有云访问地址
-      public: 'http://oss-pub.dev.shantaijk.cn/file-gateway'
+      public: 'http://www.oss.cn/public'
     }
   }
 });

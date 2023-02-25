@@ -157,7 +157,7 @@ export default function TopActions<TRow = AbstractRow>({
   const container = props.getContainer?.();
   const children = (
     <Row className={'search-tool-bar abstract-table-top-actions'}>
-      <Col span={24} style={{ textAlign: 'right' }}>
+      <Col span={24} style={{ textAlign: 'right' }} className="table-operators-wrapper">
         <Space className={`table-operators ${props.className || ''}`}>
           {renderTopBar()}
           {!buttons ? null : buttons.map((btn, index) => renderButton(btn, index))}
