@@ -94,11 +94,11 @@ function generate(answers) {
     .shouldFormat((id) => false) // !/service\/index|build\//.test(id))
     .shouldFilter((file)=>/index\.dll\.ts|\.main\.(tsx|js)/.test(file))
     .setTemplate({
-      'src/app/': `${context.projectName}/`,
-      'src/app-provider/': `${name}-provider/`,
-      'src/app-ui/': `${name}-ui/`,
-      'src/service/': `${context.service}/`,
-      'src/configs/': `${context.configs}/`,
+      'app/': `${context.projectName}/`,
+      'app-provider/': `${name}-provider/`,
+      'app-ui/': `${name}-ui/`,
+      'service/': `${context.service}/`,
+      'configs/': `${context.configs}/`,
     })
     .compile(context);
 
