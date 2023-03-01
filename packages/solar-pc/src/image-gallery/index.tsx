@@ -1,9 +1,9 @@
 import './index.scss';
 import React from 'react';
 import { Image } from 'antd';
-import GwImage, { GwImageProps } from '../gw-image';
+import BucketImage, { BucketImageProps } from '../bucket-image';
 
-export type RuntimeProps = Omit<GwImageProps, 'src'> & {
+export type RuntimeProps = Omit<BucketImageProps, 'src'> & {
   value?: string[] | string
 
 }
@@ -15,7 +15,7 @@ export default function ImageGallery({ width = 100, height = 100, value, ...prop
       <Image.PreviewGroup >
         {
           items.filter(Boolean).map((item, index) => {
-            return <GwImage className="image-view" {...props} width={width} height={height} src={item} key={index} />;
+            return <BucketImage className="image-view" {...props} width={width} height={height} src={item} key={index} />;
           })
         }
       </Image.PreviewGroup>
