@@ -4,9 +4,9 @@
  *       支持图片等资源上传，同时提供图片上传链接配置
  */
 import './index.scss';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { Upload, Button, ConfigProvider, message } from 'antd';
+import { Upload, Button, ConfigProvider } from 'antd';
 import { Oss } from 'solar-core';
 import { checkUpload, getExtension, getFileList, normalizeValue, processUploadInteceptors, stopPropagation } from './helper';
 import AbstractProvider from '../abstract-provider';
@@ -107,7 +107,6 @@ export default function AdvanceUpload(
     const item = fileList.find((m) => m.uid == (context.file as any).uid);
     const error = checkUpload(context.file as File, acceptType, props.maxSize, config);
     if (error) {
-      message.error(error?.message || '上传失败');
       return setTimeout(() => context.onError(error), 40);
     }
     Promise
@@ -116,6 +115,7 @@ export default function AdvanceUpload(
         if (item) {
           item.status = 'done';
           item.url = key;
+          (item as any).key = key;
         }
         context.onSuccess(JSON.stringify({ url: key }));
       })
@@ -170,6 +170,9 @@ export default function AdvanceUpload(
   const topClass = props.children ? 'has-children' : '';
   const media = provider?.upload?.media || AbstractProvider.defaultMediaDefinitions;
   const realAccept = accept || media[acceptType]?.accept || '';
+  const previewFormatUrl = useMemo(() => {
+    return (key: string) => formatUrl(key, all);
+  }, [formatUrl, all]);
 
   return (
     <div
@@ -196,7 +199,7 @@ export default function AdvanceUpload(
           {showUpload ? uploadButton : null}
         </UploadFile>
       </div>
-      <ItemPreview fileList={fileList} file={previewItem} onCancel={() => setPreview(null)} accept={accept} />
+      <ItemPreview fileList={fileList} formatUrl={previewFormatUrl} file={previewItem} onCancel={() => setPreview(null)} accept={accept} />
     </div>
   );
 }

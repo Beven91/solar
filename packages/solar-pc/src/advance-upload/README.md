@@ -14,12 +14,12 @@ Config.setup({
     // 该参数可以用来全局指定调用上传接口时的额外参数
     data: { bizId: 'doctorSubmit' },
     // 文件上传地址
-    uploadUrl: 'http://www.oss.cn/upload',
+    uploadUrl: 'http://file-gw.dev.shantaijk.cn/file/uploadFileReturnKey',
     urls: {
       // 私有云访问地址
-      private: 'http://www.oss.cn/private',
+      private: 'http://file-gw.dev.shantaijk.cn/file/privateDownPicByKey',
       // 共有云访问地址
-      public: 'http://www.oss.cn/public'
+      public: 'http://oss-pub.dev.shantaijk.cn/file-gateway'
     }
   }
 });
@@ -66,4 +66,10 @@ Config.setup({
   src="src/advance-upload/demo/index.file" 
   title="支持docx、pptx、xlsx、pdf、文本、图片、视频(mp4)等文件" 
   desc="通过accept指定文件类型" 
+/>
+
+<AppCodebox 
+  src="src/advance-upload/demo/index.web" 
+  title="Web直传方案" 
+  desc="通过配置参数web:true,来开启web直传方案，可用于上传大文件。" 
 />

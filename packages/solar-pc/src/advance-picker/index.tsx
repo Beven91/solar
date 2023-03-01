@@ -139,6 +139,16 @@ export default function AdvancePicker<TRow = PlainObject>({
   const [tagsValue, setTagsValue] = useState('');
   const [internalValue, setInternalValue] = useState<any>();
   const [timerId, setTimerId] = useState<TimerId>();
+  const allOptions = useMemo(() => {
+    const rows = [...options];
+    if (valueMode == 'object') {
+      const value = props.value;
+      const valueRows = ((value as any) instanceof Array ? value : [value].filter(Boolean)) as TRow[];
+      rows.unshift(...valueRows.map((item) => createOption<TRow>(item, valueName, labelName)));
+      return uniqueRows(rows);
+    }
+    return rows;
+  }, [options, props.value, valueMode, valueName, labelName]);
 
   const nativeValue = useMemo(() => {
     const value = props.value == undefined ? internalValue : props.value;
@@ -223,7 +233,7 @@ export default function AdvancePicker<TRow = PlainObject>({
   const createValue = (value: ValueType) => {
     const isArray = value instanceof Array;
     const findOrigin = (data: ValueType) => {
-      const row = options.find((r) => r.value.toString() === data);
+      const row = allOptions.find((r) => r.value.toString() === data);
       return row?.original || { [valueName]: data, [labelName]: data };
     };
     switch (valueMode) {
@@ -250,7 +260,7 @@ export default function AdvancePicker<TRow = PlainObject>({
     if (valueMode == 'object') {
       return onChange && onChange(nativeValue);
     }
-    const row = options.find((r) => r.value.toString() === value) || { originalValue: undefined as any };
+    const row = allOptions.find((r) => r.value.toString() === value) || { originalValue: undefined as any };
     onChange && onChange(row.originalValue);
   };
 
@@ -288,7 +298,7 @@ export default function AdvancePicker<TRow = PlainObject>({
   const onSearch = realType === 'remote' ? thottleSearch : NOOP;
   const filterOption = realType === 'local' ? handleLocal : NOOP;
   const showSearch = realType !== 'none';
-  const allRows = allOption ? [allOptionItem, ...options] : [...options];
+  const allRows = allOption ? [allOptionItem, ...allOptions] : [...allOptions];
   if (pagination.hasMore && pagination.loading && allRows.length > 0) {
     allRows.push({ loading: true, original: {} as TRow, originalValue: null, value: '-------------------', label: '加载中...' });
   }

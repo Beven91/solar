@@ -5,11 +5,13 @@ export default function App() {
   const onUploaded = (value: string) => {
     console.log(value);
   };
-  const value = { width: 300, url: 'solar-ssss.jpg' };
   return (
     <div>
       <div className="flex-row">
-        <AdvanceUpload onChange={onUploaded} valueMode="object" maxCount={3} value={value} />
+        <div className="center">
+          <AdvanceUpload bucketType="private" params={{ web: true }} onChange={onUploaded} value="" />
+          <h5>大文件web直传私有云</h5>
+        </div>
       </div>
     </div>
   );

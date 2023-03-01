@@ -13,6 +13,7 @@ export interface ItemPreviewProps {
   file: UploadFile
   fileList: FileList
   accept: string
+  formatUrl: (key: string) => string
 }
 
 export default function ItemPreview(props: ItemPreviewProps) {
@@ -40,7 +41,8 @@ export default function ItemPreview(props: ItemPreviewProps) {
       >
         {
           urls.map((url, index) => {
-            return <Image key={index} src={url} style={{ display: 'none' }} />;
+            const absUrl = props.formatUrl ? props.formatUrl(url) : url;
+            return <Image key={index} src={absUrl} style={{ display: 'none' }} />;
           })
         }
       </Image.PreviewGroup>

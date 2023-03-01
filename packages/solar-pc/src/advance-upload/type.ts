@@ -1,4 +1,5 @@
 import type { UploadProps, UploadFile } from 'antd/lib/upload/interface';
+import { FileGatewayOptions } from 'solar-core/src/config';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import type React from 'react';
 import type { AbstractUploadConfig } from '../interface';
@@ -34,7 +35,7 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
   // 是否保留原始名字上传,注意指定次参数后，还需要设定storeDir参数
   sameKeep?: boolean
   // 上传参数
-  params?: Record<string, any>
+  params?: Partial<FileGatewayOptions>
   // 再设置了sameKeep后需要指定文件的存放目录
   storeDir?: string
   // 业务id

@@ -52,7 +52,7 @@ export const normalizeValue = (fileList: FileList, props: AdvanceUploadProps) =>
   }
   return fileList.map((m) => {
     const res = m.response || m;
-    const url = res.url;
+    const url = res.key || res.url;
     return isObj ? createAdvanceObj(url, m) : url;
   });
 };

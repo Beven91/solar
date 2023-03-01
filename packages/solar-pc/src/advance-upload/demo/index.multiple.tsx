@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AdvanceUpload } from 'solar-pc';
 
 export default function App() {
-  const [value, setValue] = useState(['doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg']);
+  const [value, setValue] = useState(['solar-ssss.jpg']);
 
   const onUploaded = (value: string[]) => {
     setValue([...(value || [])]);

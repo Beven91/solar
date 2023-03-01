@@ -96,7 +96,6 @@ module.exports = {
           path.resolve('src'),
           /solar-core/,
           /solar-pc/,
-          /antd/,
         ],
         use: [
           {

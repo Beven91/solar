@@ -5,7 +5,7 @@ export function useMiniLayout() {
   const [collapsed, setCollapsed] = useState<boolean>(true);
 
   const requestMiniCollapsed = useCallback(() => {
-    isMini && setCollapsed(true);
+    isMini() && setCollapsed(true);
   }, []);
 
   return {
