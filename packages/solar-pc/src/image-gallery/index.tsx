@@ -1,5 +1,5 @@
 import './index.scss';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image } from 'antd';
 import BucketImage, { BucketImageProps } from '../bucket-image';
 
@@ -9,16 +9,29 @@ export type RuntimeProps = Omit<BucketImageProps, 'src'> & {
 }
 
 export default function ImageGallery({ width = 100, height = 100, value, ...props }: RuntimeProps) {
-  const items = value instanceof Array ? value : [value];
+  const items = value instanceof Array ? value : [value].filter(Boolean);
+  const [visible, setVisible] = useState(false);
   return (
     <div className="image-gallery">
-      <Image.PreviewGroup >
-        {
-          items.filter(Boolean).map((item, index) => {
-            return <BucketImage className="image-view" {...props} width={width} height={height} src={item} key={index} />;
-          })
-        }
-      </Image.PreviewGroup>
+      <Image
+        {...props}
+        preview={{ visible: false }}
+        width={width}
+        height={height}
+        src={value[0]}
+        onClick={() => setVisible(true)}
+      />
+      <div style={{ display: 'none' }}>
+        <Image.PreviewGroup
+          preview={{ visible, onVisibleChange: (vis) => setVisible(vis) }}
+        >
+          {
+            items.filter(Boolean).map((item, index) => {
+              return <BucketImage className="image-view" {...props} src={item} key={index} />;
+            })
+          }
+        </Image.PreviewGroup>
+      </div>
     </div>
   );
 }

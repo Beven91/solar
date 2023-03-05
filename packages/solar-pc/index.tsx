@@ -21,7 +21,7 @@ import OptionsPicker from './src/options-picker';
 import CodeHighlight from './src/code-highlight';
 import PortalSystem from './src/portal-system';
 import XlsxPicker from './src/xlsx-picker';
-import GwImage from './src/gw-image';
+import BucketImage from './src/bucket-image';
 import OverridePageHeader from './src/override-page-header';
 import AbstractIcon from './src/abstract-icon';
 import ImageGallery from './src/image-gallery';
@@ -63,7 +63,7 @@ export {
   CodeHighlight,
   PortalSystem,
   XlsxPicker,
-  GwImage,
+  BucketImage,
   OverridePageHeader,
   AbstractIcon,
   ImageGallery,

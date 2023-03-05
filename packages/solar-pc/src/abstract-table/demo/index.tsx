@@ -1,6 +1,11 @@
 import React, { } from 'react';
-import { AbstractTable, AbstractColumns, AbstractButtons, AbstractSFields } from 'solar-pc';
+import { AbstractTable, AbstractColumns, AbstractButtons, AbstractSFields, ImageGallery } from 'solar-pc';
 import { AbstractQueryType } from 'solar-pc/src/interface';
+
+const images= [
+  'https://img2.baidu.com/it/u=3147404475,1220123320&fm=253&fmt=auto&app=138&f=JPEG?w=722&h=500',
+  'https://img0.baidu.com/it/u=3421052381,2333233004&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=411',
+];
 
 interface ActivityModel {
   id: number
@@ -38,7 +43,7 @@ const demoRows = generate(originRows, 300);
 
 export default function App() {
   const columns: AbstractColumns<ActivityModel> = [
-    { title: '商品名', name: 'name' },
+    { title: '商品名', name: 'name', render: ()=><ImageGallery value={images} /> },
     { title: '商品价格', name: 'price' },
   ];
 
