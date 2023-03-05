@@ -1,16 +1,16 @@
 import './index.scss';
-import React, { useState } from 'react';
-import { Image } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Image, ConfigProvider } from 'antd';
 import BucketImage, { BucketImageProps } from '../bucket-image';
 
 export type RuntimeProps = Omit<BucketImageProps, 'src'> & {
   value?: string[] | string
-
 }
 
 export default function ImageGallery({ width = 100, height = 100, value, ...props }: RuntimeProps) {
   const items = value instanceof Array ? value : [value].filter(Boolean);
   const [visible, setVisible] = useState(false);
+  const context = useContext(ConfigProvider.ConfigContext);
   return (
     <div className="image-gallery">
       <Image
@@ -23,7 +23,11 @@ export default function ImageGallery({ width = 100, height = 100, value, ...prop
       />
       <div style={{ display: 'none' }}>
         <Image.PreviewGroup
-          preview={{ visible, onVisibleChange: (vis) => setVisible(vis) }}
+          preview={{
+            getContainer: context.getPopupContainer,
+            visible,
+            onVisibleChange: (vis) => setVisible(vis),
+          }}
         >
           {
             items.filter(Boolean).map((item, index) => {
