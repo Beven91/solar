@@ -11,7 +11,7 @@ import { AbstractFormProps } from './index';
 import { AbstractRow } from '../interface';
 import { Form } from 'antd';
 import { FormInstance } from 'antd/lib/form';
-import deepmerge from './deepmerge';
+import { mergeFormValues } from './deepmerge';
 
 export interface ISolationContextValue {
   setValidator: (handler: () => Promise<void>) => void
@@ -37,7 +37,7 @@ export default function ISolation<TRow>({ onChange, ...props }: React.PropsWithC
   const useFormRef = props.form || formRef;
 
   const onValuesChange = useCallback((changedValues: TRow, values: TRow) => {
-    const model = deepmerge({ ...values }, changedValues) as TRow;
+    const model = mergeFormValues(values, useFormRef.current) as TRow;
     onChange && onChange(model);
     props.onValuesChange && props.onValuesChange(changedValues, values);
   }, [onChange, props.onValuesChange]);

@@ -73,17 +73,11 @@ export default function TreeView<TRow extends PlainObject>(
     }
   };
 
-  useEffect(() => {
-    setLoading(props.loading);
-  }, [props.loading]);
+  useEffect(() => {setLoading(props.loading);}, [props.loading]);
 
-  useEffect(() => {
-    setData(props.data);
-  }, [props.data]);
+  useEffect(() => {setData(props.data);}, [props.data]);
 
-  useEffect(() => {
-    requestQuery();
-  }, []);
+  useEffect(() => {requestQuery();}, []);
 
   const handleSelect = (keys: string[], info: any) => {
     const node = info.selectedNodes[0];

@@ -139,7 +139,7 @@ export default function App() {
         };
       },
     },
-    { title: '优惠码', name: 'salerCode' },
+    { title: '优惠码', name: 'salerCode', extra: (r)=>r.salerCode },
     {
       title: '截止时间',
       name: 'validateStartTime',

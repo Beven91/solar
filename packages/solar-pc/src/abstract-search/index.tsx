@@ -34,6 +34,8 @@ export interface AbstractSearchProps<TRow> {
   // 按钮是否换行展示
   // 默认：inline
   actionStyle?: 'inline' | 'newline'
+  // 当actionStyle值为newline时，布局位置
+  actionFlow?: 'center' | 'left' | 'right'
   // 清空
   onClean?: () => void,
   // 搜索表单项样式类名
@@ -180,7 +182,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
   const renderNewlineActions = () => {
     if (!isNewline) return null;
     return (
-      <div className={'search-newline-btn'}>
+      <div className={`search-newline-btn search-btns-align-${props.actionFlow || 'left'}`}>
         {renderSearchActions()}
       </div>
     );

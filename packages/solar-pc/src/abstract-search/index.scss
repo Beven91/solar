@@ -41,7 +41,16 @@
 
   .search-newline-btn {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 10px 0;
+    .abstract-page-search-action-box {
+      min-width: auto;
+    }
+    &.search-btns-align-center {
+      justify-content: center;
+    }
+    &.search-btns-align-right {
+      justify-content: flex-end;
+    }
   }
 }

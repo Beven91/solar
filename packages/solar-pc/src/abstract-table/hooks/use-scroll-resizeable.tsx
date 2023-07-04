@@ -7,7 +7,7 @@ const mappings = {
   'middle': [56, 47],
   'small': [56, 39],
 };
-const sizeofOut = (size:SizeType, pagination:boolean)=>{
+const sizeofOut = (size: SizeType, pagination: boolean) => {
   const values = mappings[size] || mappings.large;
   if (pagination) {
     return values[0] + values[1];
@@ -19,8 +19,8 @@ export default function useScrollResizeable(
   autoHeight: boolean,
   containerRef: React.MutableRefObject<HTMLDivElement>,
   tableInnerRef: React.MutableRefObject<HTMLDivElement>,
-  size:SizeType,
-  pagination:boolean
+  size: SizeType,
+  pagination: boolean
 ) {
   const [overflow, setOverflow] = useState({
     isLess: false,
@@ -59,11 +59,16 @@ export default function useScrollResizeable(
         element.classList.remove('table-scrollable');
       }
     };
-    const id = setTimeout(handleResize, 20);
-    window.addEventListener('resize', handleResize);
+    let observer: ResizeObserver;
+    if (!window.ResizeObserver || !containerRef.current) {
+      window.addEventListener('resize', handleResize);
+    } else {
+      observer = new ResizeObserver(handleResize);
+      observer.observe(containerRef.current as Element);
+    }
     containerRef.current?.addEventListener('scroll', tableScrollListen);
     return () => {
-      clearTimeout(id);
+      observer?.disconnect();
       containerRef.current?.removeEventListener('scroll', tableScrollListen);
       window.removeEventListener('resize', handleResize);
     };

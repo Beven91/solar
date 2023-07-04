@@ -115,7 +115,8 @@ export default class FormGroup<TRow extends AbstractRow> extends React.Component
     return (
       <Form.Item
         name="member"
-        className="form-group-box"
+        className="form-group-level form-group-box"
+        style={{ marginBottom: 0 }}
         shouldUpdate={this.shouldUpdate}
       >
         <VirtualInput>

@@ -22,7 +22,7 @@ export default function App() {
   };
 
   const groups: AbstractGroups<CommodityModel> = [
-    { title: '商品名', name: 'name' },
+    { title: '商品名', name: 'name', extra: (r)=>r.name },
     { title: '颜色', name: 'color' },
     { title: '尺寸', name: 'size' },
   ];

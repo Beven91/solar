@@ -9,6 +9,7 @@ interface OverrideContextOptions {
 
 interface OverridePageHeaderProps extends PageHeaderProps {
   appendRoutes?: Route[]
+  visible?: boolean
 }
 
 export const OverrideContext = React.createContext<OverrideContextOptions>(null);
@@ -28,7 +29,7 @@ export default function OverridePageHeader(props: OverridePageHeaderProps) {
 
 OverridePageHeader.PageHeader = (props: PageHeaderProps) => {
   const context = useContext(OverrideContext);
-  const { appendRoutes, ...options } = context?.getOptions() || {};
+  const { appendRoutes, visible, ...options } = context?.getOptions() || {};
 
   let breadcrumb = props.breadcrumb || {} as any;
   if ('routes' in breadcrumb) {
@@ -39,6 +40,10 @@ OverridePageHeader.PageHeader = (props: PageHeaderProps) => {
         ...(appendRoutes || []),
       ],
     };
+  }
+
+  if (visible == false) {
+    return null;
   }
 
   return (

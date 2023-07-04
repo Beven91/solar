@@ -143,8 +143,9 @@ export default function AdvancePicker<TRow = PlainObject>({
     const rows = [...options];
     if (valueMode == 'object') {
       const value = props.value;
-      const valueRows = ((value as any) instanceof Array ? value : [value].filter(Boolean)) as TRow[];
-      rows.unshift(...valueRows.map((item) => createOption<TRow>(item, valueName, labelName)));
+      const valueRows = ((value as any) instanceof Array ? value as TRow[] : [value].filter(Boolean) as TRow[]);
+      const myRows = valueRows.filter((m)=>(m || {} as any)[valueName] !== undefined);
+      rows.unshift(...myRows.map((item) => createOption<TRow>(item, valueName, labelName)));
       return uniqueRows(rows);
     }
     return rows;
@@ -273,6 +274,7 @@ export default function AdvancePicker<TRow = PlainObject>({
     if (isString) {
       return children.toLowerCase().indexOf(value) >= 0;
     }
+    if (!children?.props?.children) return false;
     return children.props?.children.toLowerCase().indexOf(value) >= 0;
   };
 

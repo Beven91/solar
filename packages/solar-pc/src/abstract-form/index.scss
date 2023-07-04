@@ -14,8 +14,17 @@
   }
 
   .readonly-wrapper {
-    flex: 1 1 0 !important;
     word-break: break-all;
+    .ant-select-selection-search {
+      left:0;
+    }
+
+    .ant-input-number-input,
+    .ant-picker,
+    .ant-select-selector,
+    textarea {
+      padding-left: 0;
+    }
   }
 
   .tabs-group-form-inner {
@@ -75,6 +84,7 @@
 
   .abstract-form-item {
     margin-bottom: 12px;
+
     .ant-select-disabled,
     input,
     textarea,
@@ -84,6 +94,7 @@
     .ant-input-number-disabled,
     .ant-checkbox-disabled,
     .ant-checkbox-disabled+span,
+    .ant-mentions,
     .ant-select-selection {
       border: 0px !important;
       background: transparent !important;

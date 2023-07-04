@@ -8,6 +8,8 @@ import { Image } from 'antd';
 import AbstractProvider from '../abstract-provider';
 import { FileList } from './type';
 
+const imgExtRegexp = /\.(jpg|png|gif|jpeg|bmp|webp|ico)/;
+
 export interface ItemPreviewProps {
   onCancel: () => void
   file: UploadFile
@@ -30,7 +32,8 @@ export default function ItemPreview(props: ItemPreviewProps) {
   }, [fileList]);
 
   const defaultPreview = () => {
-    if (/\.pdf/.test(url) || /pdf/.test(accept)) {
+    const isImage = imgExtRegexp.test(url) || /image/.test(accept);
+    if (!isImage) {
       setTimeout(onCancel, 20);
       window.open(url);
       return;

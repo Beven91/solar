@@ -4,7 +4,7 @@ import { AbstractFormItemType, AbstractRow, onValuesChangeHandler } from '../int
 import Registry, { ValueConverter } from './register';
 import ReadOnly from './readOnly';
 import { FormInstance } from 'antd/lib/form';
-import deepmerge from './deepmerge';
+import { mergeFormValues } from './deepmerge';
 
 interface RecordProps<TRow> {
   record: TRow
@@ -41,13 +41,12 @@ export interface InputWrapProps<TRow extends AbstractRow> {
 
 export function getAllValues<TRow>(props: RecordProps<TRow> | ModelProps<TRow>) {
   const model = (props as ModelProps<TRow>).model || (props as RecordProps<TRow>).record;
-  const values = deepmerge({}, model || {});
-  return deepmerge(values, props.form?.current?.getFieldsValue?.() || {}) as TRow;
+  return mergeFormValues(model, props.form?.current) as TRow;
 }
 
 const getValue = (v: any, converter: ConverterInfo, valueFormatter: InputWrapProps<any>['valueFormatter']) => {
   const info = converter;
-  if (v && v.target) {
+  if (v && v.target && v.nativeEvent) {
     v = v.target.value;
   }
   if (valueFormatter) {
@@ -132,7 +131,7 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
   const options = {
     [valuePropName]: mappingToValue(item, inputValue, getAllValues(props)),
     disabled: component.props.disabled || isReadOnly,
-    placeholder: component.props.placeholder || item.placeholder,
+    placeholder: isReadOnly ? '' : component.props.placeholder || item.placeholder,
     onChange: (v: any, ...params: any[]) => {
       if (useGenericKeys(item)) {
         v = v || {};

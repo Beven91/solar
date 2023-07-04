@@ -24,7 +24,7 @@ export interface AbstractPermissionState {
 }
 
 export default function AbstractPermission(props: React.PropsWithChildren<AbstractPermissionProps>) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!props.initPermission);
   const [user, setUser] = useState(props.user);
 
   const permissionContext: PermissionContextModel = {
@@ -58,10 +58,10 @@ export default function AbstractPermission(props: React.PropsWithChildren<Abstra
   };
 
   useEffect(() => {setUser(props.user);}, [props.user]);
-  useEffect(()=>{loadPermissions();}, []);
+  useEffect(() => {loadPermissions();}, []);
 
 
-  const renderLoading = ()=> {
+  const renderLoading = () => {
     return (
       <Spin style={{ paddingTop: 120, height: '100%', width: '100%' }} spinning></Spin>
     );

@@ -2,11 +2,11 @@
  * @module Item
  * @description 动态antd FormItem
  */
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Col, Form, Input } from 'antd';
 import { FormInstance, Rule, RuleObject } from 'antd/lib/form';
 import InputWrap, { getAllValues } from './InputWrap';
-import { AbstractFormItemType, AbstractFormLayout, AbstractRow, onValuesChangeHandler } from '../interface';
+import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler } from '../interface';
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { ISolationContextValue } from './isolation';
 
@@ -111,15 +111,23 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const extraNode = useExtraNode(item.extra, props.form, model);
   const [contextOriginal] = useState<ContextOriginalValue>({} as ContextOriginalValue);
 
+  useEffect(()=>{
+    setVisible(isVisible(item, model));
+  }, [item.visible]);
+
+  useEffect(()=>{
+    setDisabled(isDisabled(item, model));
+  }, [item.disabled]);
+
   const name = useMemo(() => {
     if (item.name instanceof Array) return item.name;
     const items = item.name?.split('.') || [];
-    const keys = [] as string[];
+    const keys = [] as any[];
     items.forEach((key) => {
       if (key.indexOf('[') > -1) {
         key.split('[').forEach((k) => {
           k = k.replace(']', '');
-          keys.push(k);
+          keys.push(isNaN(k as any) ? k : Number(k));
         });
       } else {
         keys.push(key);
@@ -250,6 +258,13 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     return iterator === undefined;
   };
 
+  const onValuesChange = useCallback((prevValues: RecordModel, curValues: RecordModel) => {
+    if (typeof props.item?.extra == 'function') {
+      setUpdateId((id) => id + 1);
+    }
+    props.onValuesChange?.(prevValues, curValues);
+  }, [props.onValuesChange]);
+
   // 渲染
   const renderItem = () => {
     const { layout = {}, item, autoFocusAt, model: record, validateFirst } = props;
@@ -290,7 +305,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
           <InputWrap
             item={item}
             autoFocus={autoFocusAt && autoFocusAt == item.name}
-            onValuesChange={props.onValuesChange}
+            onValuesChange={onValuesChange}
             valueFormatter={context.valueFormatter}
             record={record}
             form={props.form}

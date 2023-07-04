@@ -64,6 +64,8 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
     const { btnSubmit, btnCancel, actions } = props;
     const showOkBtn = !(isReadOnly || !showOk);
     const ctx: AbstractActionItemContext = {
+      submit: handleSubmit,
+      cancel: handleCancel,
       bindValidate: (handler: Function) => {
         return async() => {
           await validateForms();
@@ -80,6 +82,7 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
               <Button
                 className="btn-back"
                 size="large"
+                disabled={okLoading}
                 onClick={handleCancel}
                 icon={btnCancel?.icon || <MenuFoldOutlined />}
                 {...(btnCancel || {})}

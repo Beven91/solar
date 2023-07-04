@@ -55,3 +55,17 @@
   title="isolation提交" 
   desc="您可以在表单下配置ISolation子表单" 
 />
+
+<AppCodebox 
+  console="true"
+  src="src/abstract-object/demo/index.confirm" 
+  title="提交确认" 
+  desc="您可以在表单下配置ISolation子表单" 
+/>
+
+<AppCodebox 
+  console="true"
+  src="src/abstract-object/demo/index.complex" 
+  title="复杂对象表单" 
+  desc="仅用作测试多级属性" 
+/>

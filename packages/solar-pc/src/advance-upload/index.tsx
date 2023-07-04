@@ -50,7 +50,11 @@ export default function AdvanceUpload(
 
   // 上传文件状态变化
   const onUploadChange = async(data: UploadChangeParam) => {
-    setFileList([...data.fileList as any]);
+    if (maxCount > 0) {
+      setFileList([...data.fileList.slice(0, maxCount) as any]);
+    } else {
+      setFileList([...data.fileList as any]);
+    }
     const items = data.fileList as FileList;
     const isAllComplete = !data.fileList.find((m) => m.status == 'uploading');
     if (isAllComplete) {
@@ -80,8 +84,13 @@ export default function AdvanceUpload(
   const defaultUploadToServer = async(context: RcCustomRequestOptions) => {
     const { bizId } = props;
     const file = (context.file as File);
+    const runtime = { done: false };
     const onProgress = (percent: number) => {
-      context.onProgress({ percent });
+      setTimeout(()=>{
+        // 防止，在接口已经成功情况下，还触发onProgress 导致状态异常
+        if (runtime.done) return;
+        context.onProgress({ percent });
+      }, 0);
     };
     const type = getExtension(file.type, file.name);
     const overlaySameFile = props.sameKeep === true;
@@ -93,7 +102,10 @@ export default function AdvanceUpload(
       bizId, bucketType,
       ...(params || {}),
     };
-    const data = await Oss.uploadToAliOss(context.file as File, options, onProgress);
+    const data = await Oss.uploadToAliOss(context.file as File, options, onProgress).catch((ex)=>{
+      return { success: false, errorMsg: ex.message, result: null };
+    });
+    runtime.done = true;
     if (data.success) {
       return props.returnAbsolute && formatUrl ? formatUrl(data.result, all) : data.result;
     }

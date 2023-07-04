@@ -44,7 +44,7 @@ export default function App() {
   });
 
   const groups: AbstractGroups<CommodityModel> = [
-    { title: '名称', name: 'name' },
+    { title: '名称', name: 'name', extra: (r)=>r.name },
     { title: '合并型号', name: 'input', render: <MergeRuleInput />, extra: '输入111触发mergeValidator' },
     { title: '', name: 'user', render: <NestedApp /> },
   ];

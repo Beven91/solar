@@ -1,27 +1,10 @@
 import React, { useState } from 'react';
 import { AbstractObject, AbstractForm, AbstractGroups, AbstractRules } from 'solar-pc';
-import { } from 'antd';
 
 export interface CommodityModel {
   name: string
   color: string
   size: string
-}
-
-const rules = {
-  name: [{ required: true, message: '请输入姓名' }],
-  age: [{ required: true, message: '请设置年龄' }],
-};
-
-function NestedApp(props:{ value?:any, onChange?:(value:any)=>void }) {
-  const groups: AbstractGroups<CommodityModel> = [
-    { title: '编号', name: 'id' },
-    { title: '年龄', name: 'age' },
-  ];
-
-  return (
-    <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
-  );
 }
 
 export default function App() {
@@ -41,14 +24,14 @@ export default function App() {
     { title: '商品名', name: 'name' },
     { title: '颜色', name: 'color' },
     { title: '尺寸', name: 'size' },
-    { title: '', name: 'user', render2: <NestedApp /> },
   ];
 
   return (
     <AbstractObject
       action={action}
       record={record}
-      onValuesChange={(r, b, c)=>console.log(c)}
+      okConfirm={{ title: '您确定要提交?', content: '提交后将无法撤回,确认继续?' }}
+      cancelConfirm={{ title: '您确定要取消?', content: '取消后无法保存?' }}
       onSubmit={(values) => console.log(values)}
       onCancel={() => console.log('取消编辑')}
     >

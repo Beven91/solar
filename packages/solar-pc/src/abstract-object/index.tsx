@@ -6,14 +6,14 @@
  */
 import './index.scss';
 import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Modal, Form, ButtonProps } from 'antd';
+import { Modal, Form, ButtonProps, ModalFuncProps } from 'antd';
 import AbstractForm from '../abstract-form';
 import { AbstractActionItem, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import { Travel } from 'solar-core';
 import FormActions, { FormActionsInstance } from './FormActions';
 import CrashProvider from '../crash-provider';
-import deepmerge from '../abstract-form/deepmerge';
+import { mergeFormValues } from '../abstract-form/deepmerge';
 import { AbstractObjectContext } from './context';
 
 let formIdIndex = 0;
@@ -62,12 +62,16 @@ export interface BaseObjectProps<TRow> {
   isReadOnly?: boolean;
   // 是否提交按钮显示loading
   loading?: boolean
+  // 点击确认按钮确认文案
+  okConfirm?: ModalFuncProps
+  // 点击取消按钮确认文案
+  cancelConfirm?: ModalFuncProps
   // 一个函数用于判定【确定】按钮是否可用
   okEnable?: (values: TRow) => boolean
   // 按钮显示情况
   showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
   // 当有值发生改变时
-  onValuesChange?: (values: TRow, prevValues: TRow) => void
+  onValuesChange?: (values: TRow, prevValues: TRow, mergedAllValues:TRow) => void
 }
 
 export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
@@ -101,15 +105,19 @@ export default React.forwardRef(function AbstractObject<TRow = AbstractRow>({
 }: React.PropsWithChildren<AbstractObjectProps<TRow>>,
 ref: React.MutableRefObject<AbstractObjectInstance>
 ) {
-  const [memo] = useState({ pendingReadOnly: null, cancelId: null, cancelSubmiting: false, isDestoryed: false });
+  const [memo] = useState({ pendingReadOnly: null, isFirst: true, cancelId: null, cancelSubmiting: false, isDestoryed: false });
   const [formId] = useState(`abstract-form-${formIdIndex++}`);
   const visible = useMemo(() => action !== 'none' && !!action, [action]);
   const formRef = useRef<FormInstance>();
   const footerRef = useRef<FormActionsInstance<TRow>>();
   const headerRef = useRef<FormActionsInstance<TRow>>();
+  const scopedValues = { ...(record || {}) };
 
   useEffect(() => {
-    formRef.current?.resetFields();
+    if (!memo.isFirst) {
+      formRef.current?.resetFields();
+      memo.isFirst = false;
+    }
     formRef.current?.setFieldsValue(record);
     return () => {
       memo.isDestoryed = true;
@@ -170,7 +178,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   };
 
   // 处理提交操作
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     if (isReadOnly) {
       return handleCancel();
     }
@@ -180,6 +188,16 @@ ref: React.MutableRefObject<AbstractObjectInstance>
 
   // 表单校验成功
   const onFinish = async(values: AbstractRow) => {
+    if (props.okConfirm) {
+      await new Promise<void>((resolve) => {
+        const instance = Modal.confirm({
+          ...props.okConfirm, onOk: () => {
+            resolve();
+            instance.destroy();
+          },
+        });
+      });
+    }
     const { onSubmit } = props;
     if (typeof onSubmit === 'function') {
       if (record) {
@@ -209,7 +227,17 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   };
 
   // 处理取消操作
-  const handleCancel = () => {
+  const handleCancel = async() => {
+    if (props.cancelConfirm) {
+      await new Promise<void>((resolve) => {
+        const instance = Modal.confirm({
+          ...props.cancelConfirm, onOk: () => {
+            resolve();
+            instance.destroy();
+          },
+        });
+      });
+    }
     const { onCancel } = props;
     let cancelable = true;
     if (typeof onCancel === 'function') {
@@ -229,14 +257,15 @@ ref: React.MutableRefObject<AbstractObjectInstance>
 
   const onValuesChange = (changedValues: TRow, allValues: TRow) => {
     const { onValuesChange } = props;
-    const model = deepmerge(allValues, changedValues) as TRow;
+    // const useValues = deepmerge(scopedValues, allValues);
+    const model = mergeFormValues(scopedValues, formRef.current) as TRow;
     if (footerRef.current) {
       footerRef.current.refresh(model);
     }
     if (headerRef.current) {
       headerRef.current.refresh(model);
     }
-    onValuesChange && onValuesChange(changedValues, allValues);
+    onValuesChange && onValuesChange(changedValues, allValues, model);
   };
 
   // 设置共享context数据

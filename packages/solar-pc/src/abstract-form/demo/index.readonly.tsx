@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AbstractForm, AbstractGroups, AdvancePicker } from 'solar-pc';
-import { Form, FormInstance, InputNumber, Switch, DatePicker, Slider } from 'antd';
+import { Form, FormInstance, InputNumber, Switch, DatePicker, Slider, Input } from 'antd';
 
 export interface CommodityModel {
   name: string
@@ -27,6 +27,8 @@ export default function App() {
     couponType: 1,
     isVisual: true,
     code: 'AD0009',
+    remark2: 2,
+    remark: 'Many platforms, one React. Create platform-specific versions of components so a single codebase can share code across platforms. With React Native, one team can maintain multiple platforms and share a common technology—React.',
     validateStartTime: '2011-01-09 10:20:20',
   });
 
@@ -41,6 +43,11 @@ export default function App() {
       initialValue: '001',
       disabled: (row) => true,
       extra: '设置disabled配置来禁用表单',
+    },
+    {
+      title: '描述',
+      name: 'remark',
+      render: <Input.TextArea rows={3} />,
     },
     {
       title: '截止时间',

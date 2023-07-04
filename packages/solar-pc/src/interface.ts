@@ -72,6 +72,8 @@ export type OptionsApiRequest = [ApiRequest, string, string]
 export type AbstractValueConverter = 'moment' | string | [string, ...any]
 
 export interface AbstractActionItemContext {
+  submit: () => void
+  cancel: () => void
   bindValidate: (handler: Function) => (...params: any[]) => any
 }
 
