@@ -11,7 +11,7 @@ import EditableCell from './EditableCell';
 import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, AbstractButton } from '../abstract-table/types';
 import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel, AbstractAction } from '../interface';
 import { FormInstance } from 'antd/lib/form';
-import AbstractForm from 'solar-pc/src/abstract-form';
+import AbstractForm from 'fluxy-pc/src/abstract-form';
 import TopActions from '../abstract-table/parts/TopActions';
 import AbstractTableContext from '../abstract-table/context';
 
@@ -75,14 +75,16 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   const tableRef = useRef<AbstractTableInstance>();
   const [editRow, setEditRow] = useState<TRow>();
   const tableContext = useContext(AbstractTableContext);
-  const [memo] = useState({
+  const vrows = useMemo(() => props.value || [], [props.value]);
+  const memoRef = useRef({
     updateReason: 'none' as UpdateReason,
     id: Date.now(),
     needFillRowForms: false,
     throttleId: null as any,
+    rows: vrows || [],
   });
 
-  const rows = useMemo(() => props.value || [], [props.value]);
+  memoRef.current.rows = vrows;
   const isLocal = !props.onQuery && pagination != false;
   const resetFields = () => formRef.current?.resetFields?.();
 
@@ -128,6 +130,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 新增行
   const onCreateRow = () => {
+    const memo = memoRef.current;
+    const rows = memo.rows;
     const row = createRow(rowKey as string, columns, ++memo.id);
     rows.push(row);
     triggerChange([...rows], 'row');
@@ -139,6 +143,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 删除行
   const onRemoveRow = (row: TRow) => {
+    const memo = memoRef.current;
+    const rows = memo.rows;
     const index = rows.indexOf(row);
     rows.splice(index, 1);
     resetFields();
@@ -152,6 +158,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 当值发生改变
   const onValuesChange = (changeValues: Record<any, any>) => {
+    const memo = memoRef.current;
+    const rows = memo.rows;
     if (mode == 'row') return;
     clearTimeout(memo.throttleId);
     memo.throttleId = setTimeout(() => {
@@ -172,6 +180,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   };
 
   const triggerChange = (rows: TRow[], reason: UpdateReason) => {
+    const memo = memoRef.current;
     const { onChange } = props;
     memo.updateReason = reason;
     onChange && onChange(rows);
@@ -240,6 +249,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     if (props.disabled || !props.moveable) {
       return [];
     }
+    const memo = memoRef.current;
+    const rows = memo.rows;
     return [
       {
         target: 'cell',
@@ -274,7 +285,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
         },
       },
     ] as AbstractButton<TRow>[];
-  }, [props.disabled, props.moveable, rows]);
+  }, [props.disabled, props.moveable]);
 
   // 按钮
   const buttons = useMemo(() => {
@@ -294,6 +305,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   }, [props.buttons]);
 
   useEffect(() => {
+    const memo = memoRef.current;
+    const rows = memo.rows;
     if (memo.updateReason == 'input') {
       memo.updateReason = 'none';
       return;
@@ -304,6 +317,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 渲染表格尾部
   const renderFooter = () => {
+    const memo = memoRef.current;
+    const rows = memo.rows;
     const { footer } = props;
     const hideFooter = (!footer && rows?.length < 1);
     if (hideFooter) return null;
@@ -320,6 +335,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 渲染新增行内容
   const renderAddButton = () => {
+    const memo = memoRef.current;
+    const rows = memo.rows;
     const { addButton, addVisible, disabled } = props;
     if (disabled || addVisible && addVisible(rows) == false) {
       return '';
@@ -338,7 +355,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   // 渲染
   return (
     <AbstractForm.ISolation
-      value={{ rows: rows }}
+      value={{ rows: memoRef.current.rows }}
       groups={NOOP}
       form={formRef}
       onValuesChange={onValuesChange}
@@ -355,7 +372,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
           emptyText: renderAddButton(),
         }}
         components={components}
-        data={{ models: rows, count: 0 }}
+        data={{ models: memoRef.current.rows, count: 0 }}
         buttons={buttons}
         footer={renderFooter}
         className={`abstract-table-input ${props.className || ''}`}

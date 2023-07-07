@@ -4,7 +4,7 @@
  *       用于选择外键数据
  */
 import './index.scss';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ConfigProvider, Select, Spin } from 'antd';
 import { Network } from 'solar-core';
 import { SelectProps, SelectValue } from 'antd/lib/select';
@@ -304,6 +304,14 @@ export default function AdvancePicker<TRow = PlainObject>({
   if (pagination.hasMore && pagination.loading && allRows.length > 0) {
     allRows.push({ loading: true, original: {} as TRow, originalValue: null, value: '-------------------', label: '加载中...' });
   }
+
+
+  const formatNode = useCallback((row: OptionRow<TRow>) => {
+    return (
+      row.loading ? <Spin size="small" /> : (formatLabel ? formatLabel(row) : row.label)
+    );
+  }, []);
+
   return (
     <ConfigProvider.ConfigContext.Consumer>
       {
@@ -327,13 +335,14 @@ export default function AdvancePicker<TRow = PlainObject>({
               onPopupScroll={handleScrollPagination}
             >
               {
-                allRows.map((row, i) => (
-                  <Option value={`${row.value}`} key={`${row.value || ''}_${i}`} label={row.label}>
-                    {
-                      row.loading ? <Spin size="small" /> : (formatLabel ? formatLabel(row) : row.label)
-                    }
-                  </Option>
-                ))
+                allRows.map((row, i) => {
+                  const node = formatNode(row);
+                  return (
+                    <Option value={`${row.value}`} key={`${row.value || ''}_${i}`} label={node}>
+                      {node}
+                    </Option>
+                  );
+                })
               }
             </Select>
           </div>
