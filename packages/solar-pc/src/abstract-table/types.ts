@@ -179,6 +179,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   showSorterTooltip?: boolean
   // 自定义顶部按钮渲染容器
   getActionsContainer?: () => HTMLElement
+  // 是否使用injecter
+  inject?: boolean
 }
 
 

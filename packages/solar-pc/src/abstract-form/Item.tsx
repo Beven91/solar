@@ -9,6 +9,7 @@ import InputWrap, { getAllValues } from './InputWrap';
 import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler } from '../interface';
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { ISolationContextValue } from './isolation';
+import { useInjecter } from '../abstract-injecter';
 
 const FormItem = Form.Item;
 
@@ -58,6 +59,10 @@ export interface AbstractItemProps<TRow> {
   autoFocusAt?: string
   // 当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验
   validateFirst?: boolean | 'parallel'
+  // 表单容器名
+  formName?: string
+  // 是否使用injecter
+  inject?: boolean
 }
 
 export interface AbstractItemState {
@@ -110,12 +115,13 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const [updater] = useState({ formatUpdate: false });
   const extraNode = useExtraNode(item.extra, props.form, model);
   const [contextOriginal] = useState<ContextOriginalValue>({} as ContextOriginalValue);
+  const injecter = useInjecter(props.inject);
 
-  useEffect(()=>{
+  useEffect(() => {
     setVisible(isVisible(item, model));
   }, [item.visible]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setDisabled(isDisabled(item, model));
   }, [item.disabled]);
 
@@ -328,6 +334,10 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
         offset={colOption.offset}
         data-id={props.item.id}
         data-name={props.item.name?.toString()}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          injecter?.listener?.onFieldDbClick(props.item, props?.formName);
+        }}
         className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
       >
         {renderItem()}

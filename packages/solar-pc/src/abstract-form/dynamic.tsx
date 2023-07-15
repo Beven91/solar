@@ -13,6 +13,7 @@ import {
   AbstractFormItemType, AbstractFormLayout, AbstractRules,
   FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow, FormItemLayout, AbstractGroupItem,
 } from '../interface';
+import { useInjecter } from '../abstract-injecter';
 
 export interface DynamicProps<TRow> {
   // 是否使用外包裹
@@ -55,6 +56,10 @@ export interface DynamicProps<TRow> {
   itemStyle?: React.CSSProperties
   // 当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验
   validateFirst?: boolean | 'parallel'
+  // 容器名称
+  name?: string
+  // 是否使用injecter
+  inject?: boolean
 }
 
 export interface DynamicState {
@@ -90,6 +95,7 @@ export default function Dynamic<TRow extends AbstractRow>({
   const [accessedKeys] = useState<Record<string, boolean>>({});
   const [memo] = useState({ callback: () => { } });
   const [activeIndex, setActiveIndex] = useState(props.defaultActiveIndex || 0);
+  const injecter = useInjecter(props.inject);
 
   useEffect(() => {
     if (memo.callback) {
@@ -191,6 +197,7 @@ export default function Dynamic<TRow extends AbstractRow>({
         data-name={groupItem.group}
         data-group-id={groupItem.group}
         span={24}
+        onDoubleClick={() => injecter?.listener?.onFieldGroupDbClick?.(groupItem, props.name)}
         key={`from-group-${groupItem.group}-${index}`}
       >
         <FormGroup
@@ -212,6 +219,7 @@ export default function Dynamic<TRow extends AbstractRow>({
             ))}
           </Row>
         </FormGroup>
+        {injecter?.node?.appendFormGroup?.(groupItem)}
       </Col>
     );
   };
@@ -269,6 +277,8 @@ export default function Dynamic<TRow extends AbstractRow>({
           rules={itemRules}
           validateFirst={props.validateFirst}
           model={model}
+          inject={props.inject}
+          formName={props.name}
           style={{
             ...(props.itemStyle || {}),
             ...(itemStyle || {}),
@@ -323,7 +333,14 @@ export default function Dynamic<TRow extends AbstractRow>({
 
   const renderNorml = () => {
     const { groups = [], children } = props;
-    const node = groups.map((groupItem, index) => renderGroup(groupItem as any, index));
+    const last = groups[groups.length -1] || {};
+    const lastIsGroup = ('group' in last) || props.name == 'AbstractSearch';
+    const node = (
+      <>
+        {groups.map((groupItem, index) => renderGroup(groupItem as any, index))}
+        {lastIsGroup ? null : injecter?.node?.appendFormGroup?.({ group: undefined })}
+      </>
+    );
     if (!wrapper) {
       return node;
     }

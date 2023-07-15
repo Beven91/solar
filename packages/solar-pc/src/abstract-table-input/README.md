@@ -5,6 +5,13 @@
 ### 代码演示
 
 <AppCodebox 
+  src="src/abstract-table-input/demo/index.basic" 
+  title="默认用例" 
+  desc="" 
+  console="true"
+/>
+
+<AppCodebox 
   console="true"
   src="src/abstract-table-input/demo/index" 
   title="多行编辑" 
@@ -37,3 +44,10 @@
   title="大量数据测试" 
   desc="当数据量比较大的情况下，可以通过开启分页来解决性能问题。" 
 />
+
+<AppCodebox 
+  src="src/abstract-table-input/demo/index.form" 
+  title="位于form下" 
+  desc="测试在form下更新，是否回导致输入框失去焦点" 
+/>
+

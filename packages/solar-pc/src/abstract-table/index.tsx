@@ -19,10 +19,18 @@ import { AbstractRow, AbstractAction, FilterTabType } from '../interface';
 import useScrollResizeable from './hooks/use-scroll-resizeable';
 import { FormInstance } from 'antd/lib/form';
 import { SorterResult } from 'antd/lib/table/interface';
+import { useInjecter } from '../abstract-injecter';
 
-function Title(props: { column: AbstractColumnType<any> }) {
+function Title(props: { column: AbstractColumnType<any>, inject: boolean }) {
   const column = props.column;
-  return (<div data-name={column.name} className="abstract-table-column column-th" >{column.title}</div>);
+  const injecter = useInjecter(props.inject);
+  return (
+    <div
+      className="abstract-table-column column-th"
+      onDoubleClick={() => injecter?.listener?.onColumnDbClick?.(column)}
+    >{column.title}
+    </div>
+  );
 }
 
 interface SortMeta {
@@ -51,6 +59,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   initQuery = true,
   initialPageIndex = 1,
   buttons = [],
+  inject,
   ...props
 }: AbstractTableProps<TRow>,
 ref: React.MutableRefObject<AbstractTableInstance>
@@ -196,7 +205,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
       const { width, ellipsis } = column;
       return {
         ...column,
-        title: <Title column={column} />,
+        title: <Title column={column} inject={inject} />,
         key: `col-${column.name}`,
         width: width || defaultWidth,
         ellipsis: ellipsis === undefined ? true : ellipsis,
@@ -207,7 +216,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
         sorter: column.sort !== undefined ? true : false,
       };
     });
-  }, [props.columns, props.cellWidth, props.sort, cellOperators, operatorColumn]);
+  }, [props.columns, props.cellWidth, props.sort, cellOperators, operatorColumn, inject]);
 
   // 分页，排序
   const handleQuery = (pageNo: number, pageSize: number, sort: SortMeta, callback?: (data: any) => void) => {
@@ -324,6 +333,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const tabs = typeof filters?.tabs === 'function' ? null : filters?.tabs;
   const loadFilters = typeof filters?.tabs === 'function' ? filters?.tabs : null;
   const showFilters = filters || loadFilters;
+  const injecter = useInjecter(inject);
 
   return (
     <div
@@ -337,6 +347,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
         className={searchBoxCls}
         actionsCls={searchBoxActionCls}
         onQuery={onSearch}
+        inject={inject}
         {...(props.searchOptions || {})}
         formRef={searchFormRef}
       >
@@ -375,7 +386,8 @@ ref: React.MutableRefObject<AbstractTableInstance>
             columns={columns as any}
           />
         </div>
+        {injecter?.node?.appendAbstractTableInner?.()}
       </div>
     </div>
   );
-}) as any as (<TRow>(props:AbstractTableProps<TRow> & React.RefAttributes<AbstractTableInstance>)=>React.ReactElement);
+}) as any as (<TRow>(props: AbstractTableProps<TRow> & React.RefAttributes<AbstractTableInstance>) => React.ReactElement);

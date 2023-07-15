@@ -6,7 +6,7 @@
  */
 import './index.scss';
 import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Modal, Form, ButtonProps, ModalFuncProps } from 'antd';
+import { Modal, Form, ButtonProps, ModalFuncProps, ModalProps } from 'antd';
 import AbstractForm from '../abstract-form';
 import { AbstractActionItem, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
@@ -15,6 +15,7 @@ import FormActions, { FormActionsInstance } from './FormActions';
 import CrashProvider from '../crash-provider';
 import { mergeFormValues } from '../abstract-form/deepmerge';
 import { AbstractObjectContext } from './context';
+import { useInjecter } from '../abstract-injecter';
 
 let formIdIndex = 0;
 
@@ -71,7 +72,11 @@ export interface BaseObjectProps<TRow> {
   // 按钮显示情况
   showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
   // 当有值发生改变时
-  onValuesChange?: (values: TRow, prevValues: TRow, mergedAllValues:TRow) => void
+  onValuesChange?: (values: TRow, prevValues: TRow, mergedAllValues: TRow) => void
+  // 是否使用injecter
+  inject?: boolean
+  // 弹窗属性
+  popupOptions?: Partial<ModalProps>
 }
 
 export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
@@ -101,6 +106,8 @@ export default React.forwardRef(function AbstractObject<TRow = AbstractRow>({
   record,
   action,
   footer = true,
+  inject,
+  popupOptions,
   ...props
 }: React.PropsWithChildren<AbstractObjectProps<TRow>>,
 ref: React.MutableRefObject<AbstractObjectInstance>
@@ -112,6 +119,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   const footerRef = useRef<FormActionsInstance<TRow>>();
   const headerRef = useRef<FormActionsInstance<TRow>>();
   const scopedValues = { ...(record || {}) };
+  const injecter = useInjecter(inject);
 
   useEffect(() => {
     if (!memo.isFirst) {
@@ -273,6 +281,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
     isReadOnly: isReadOnly,
     form: formRef,
     width: props.width,
+    inject: inject,
     // 提交
     submitAction: handleSubmit,
     // 取消
@@ -337,7 +346,9 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         isReadOnly={isReadOnly}
         okLoading={props.loading}
         actions={footActions}
-      />
+      >
+        {injecter?.node?.appendAbstractObjectFooter?.(action)}
+      </FormActions>
     );
   };
 
@@ -375,11 +386,12 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         <Modal
           wrapClassName={`abstract-object-modal-wrap abstract-object-view ${fixedCls} ${className} ${sizeCls}`}
           className={`abstract-object ${action}`}
+          maskClosable={isReadOnly}
+          width={width}
           title={title}
+          {...popupOptions}
           open={visible}
           visible={visible}
-          width={width}
-          maskClosable={isReadOnly}
           confirmLoading={loading}
           onOk={handleSubmit}
           onCancel={handleCancel}
@@ -412,6 +424,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
             {props.children}
           </AbstractForm.Context.Provider>
         </Form>
+        {injecter?.node?.appendAbstractObjectBody?.(action)}
       </CrashProvider>
     );
   };

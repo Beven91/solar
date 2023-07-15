@@ -13,6 +13,8 @@ export interface AbstractContextValue<TRow = any> {
   validateForms: () => Promise<void>,
   record: TRow,
   model: TRow,
+  // 是否使用injecter
+  inject?: boolean
 }
 
 export const AbstractObjectContext = React.createContext<AbstractContextValue>({} as AbstractContextValue);

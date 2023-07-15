@@ -11,9 +11,10 @@ import EditableCell from './EditableCell';
 import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, AbstractButton } from '../abstract-table/types';
 import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel, AbstractAction } from '../interface';
 import { FormInstance } from 'antd/lib/form';
-import AbstractForm from 'fluxy-pc/src/abstract-form';
+import AbstractForm from 'solar-pc/src/abstract-form';
 import TopActions from '../abstract-table/parts/TopActions';
 import AbstractTableContext from '../abstract-table/context';
+import AbstractUpdater from '../abstract-updater';
 
 type UpdateReason = 'input' | 'row' | 'none'
 
@@ -76,6 +77,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   const [editRow, setEditRow] = useState<TRow>();
   const tableContext = useContext(AbstractTableContext);
   const vrows = useMemo(() => props.value || [], [props.value]);
+  const updater = useRef<AbstractUpdater>();
   const memoRef = useRef({
     updateReason: 'none' as UpdateReason,
     id: Date.now(),
@@ -175,6 +177,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
           originRow[key] = row[key];
         });
       });
+      updater.current.noticeUpdater();
       triggerChange([...originalRows], 'input');
     }, 200);
   };
@@ -354,32 +357,34 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 渲染
   return (
-    <AbstractForm.ISolation
-      value={{ rows: memoRef.current.rows }}
-      groups={NOOP}
-      form={formRef}
-      onValuesChange={onValuesChange}
-    >
-      <AbstractTable
-        {...props}
-        rowKey={rowKey}
-        pagination={pagination}
-        pageSize={pagination ? pagination.pageSize : undefined}
-        autoHeight
-        onQuery={onQuery}
-        ref={tableRef}
-        locale={{
-          emptyText: renderAddButton(),
-        }}
-        components={components}
-        data={{ models: memoRef.current.rows, count: 0 }}
-        buttons={buttons}
-        footer={renderFooter}
-        className={`abstract-table-input ${props.className || ''}`}
-        columns={mergedColumns}
+    <AbstractUpdater ref={updater}>
+      <AbstractForm.ISolation
+        value={{ rows: memoRef.current.rows }}
+        groups={NOOP}
+        form={formRef}
+        onValuesChange={onValuesChange}
       >
-        {props.children}
-      </AbstractTable>
-    </AbstractForm.ISolation>
+        <AbstractTable
+          {...props}
+          rowKey={rowKey}
+          pagination={pagination}
+          pageSize={pagination ? pagination.pageSize : undefined}
+          autoHeight
+          onQuery={onQuery}
+          ref={tableRef}
+          locale={{
+            emptyText: renderAddButton(),
+          }}
+          components={components}
+          data={{ models: memoRef.current.rows, count: 0 }}
+          buttons={buttons}
+          footer={renderFooter}
+          className={`abstract-table-input ${props.className || ''}`}
+          columns={mergedColumns}
+        >
+          {props.children}
+        </AbstractTable>
+      </AbstractForm.ISolation>
+    </AbstractUpdater>
   );
 }

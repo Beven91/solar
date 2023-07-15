@@ -71,6 +71,8 @@ export interface AbstractActionsProps<TRow> {
   // 定义:列表操作按钮与表单操作按钮渲染容器位置
   getActionsContainer?: () => HTMLElement
   children?: React.ReactNode
+  // 是否使用injecter
+  inject?: boolean
   [x: string]: any
 }
 

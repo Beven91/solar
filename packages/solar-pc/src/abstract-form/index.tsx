@@ -50,6 +50,10 @@ export interface AbstractFormProps<TRow> {
   itemStyle?: React.CSSProperties
   // 当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验
   validateFirst?: boolean | 'parallel'
+  // 容器名称
+  name?: string
+  // 是否使用injecter
+  inject?: boolean
 }
 
 export default function AbstractForm<TRow extends AbstractRow>(props: React.PropsWithChildren<AbstractFormProps<TRow>>) {
@@ -63,6 +67,7 @@ export default function AbstractForm<TRow extends AbstractRow>(props: React.Prop
       formItemLayout={config.formItemLayout}
       {...formContext}
       {...props}
+      name={props.name || 'AbstractForm'}
       containerWidth={formContext.width}
     />
   );

@@ -25,6 +25,7 @@ export interface FormActionsProps<TRow> {
   className?: string
   // 按钮渲染目标容器
   container?: React.RefObject<HTMLElement>
+  children?: React.ReactNode
 }
 
 export interface FormActionsInstance<TRow> {
@@ -114,6 +115,7 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
             })
           }
         </div>
+        {props.children}
       </div>
     );
   };

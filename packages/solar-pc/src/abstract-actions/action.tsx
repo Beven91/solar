@@ -153,7 +153,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
 
   const onValuesChange = (changedValues: TRow, allValues: TRow) => {
     const onValuesChange = props.onValuesChange || context.onValuesChange;
-    onValuesChange && onValuesChange(changedValues, allValues);
+    onValuesChange && onValuesChange(changedValues, allValues, allValues);
     if (actionsRef.current) {
       actionsRef.current.refresh({ ...allValues, ...changedValues });
     }
