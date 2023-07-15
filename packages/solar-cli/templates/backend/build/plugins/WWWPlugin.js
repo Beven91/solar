@@ -5,7 +5,7 @@ const pkg = require('../../package.json');
 class WWWPlugin {
   options = {
     target: '',
-  }
+  };
 
   constructor(options) {
     this.options = options;
@@ -13,6 +13,8 @@ class WWWPlugin {
 
   makePackage(root) {
     const id = path.join(root, 'package.json');
+    const pm2 = path.resolve('pm2.json');
+    const pm2Config = require(pm2);
     const meta = {
       name: pkg.name,
       description: pkg.description,
@@ -24,6 +26,9 @@ class WWWPlugin {
         'src/api/*',
       ],
     };
+    pm2Config.env = pm2Config.env || {};
+    pm2Config.env['RUN_ENV'] = process.env.npm_config_env || '';
+    fs.writeFileSync(pm2, JSON.stringify(pm2Config, null, 2));
     fs.writeFileSync(id, JSON.stringify(meta, null, 2));
     fs.readdirSync('src/api').forEach((name) => {
       const id = path.resolve('src/api', name);
@@ -31,7 +36,6 @@ class WWWPlugin {
         const file = 'package.json';
         const from = id + '/' + file;
         const target = path.join('dist/src/api/', name, file);
-        console.log('make ', from, target);
         fs.copyFileSync(from, target);
       }
     });
