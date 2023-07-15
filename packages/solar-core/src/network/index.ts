@@ -10,9 +10,9 @@ import stringify from 'qs/lib/stringify';
 import Tunnel from '../tunnel/index';
 import RequestContext from './context';
 import BizError from '../biz-error';
-import UseQuery, { GenerateHooks } from './useQuery';
-import { HttpMethods, RHttpHeaders, NetworkBaseOptions, ChainResponses, SharedResponse, NetworkExtra } from './types';
+import { HttpMethods, RHttpHeaders, NetworkBaseOptions, ChainResponses, NetworkExtra, SharedResponse } from './types';
 import { NetworkEventHandler, NetworkEvents, NetworkOptions, Promiseable } from './types';
+import UseQuery, { GenerateHooks } from './useQuery';
 
 let Options = {} as NetworkOptions;
 // 创建一个事件容器
@@ -21,7 +21,8 @@ const tunnel = Tunnel.create();
 // 瞬时共享返回内容
 const sharedResponses = [] as SharedResponse[];
 
-const FormData = (<any>self).FormData || function() { };
+const FD = typeof window == 'object' ? window.FormData : function() { };
+const FormData = typeof FD != 'function' ? function() { } : FD;
 
 export default class Network {
   private readonly selfOptions: NetworkBaseOptions;
@@ -58,13 +59,15 @@ export default class Network {
         }
       }
     }
-    UseQuery.setHooks(options.hooks);
+    if (options?.hooks) {
+      UseQuery.setHooks(options.hooks);
+    }
     return this;
   }
 
-  /**
-   * 添加请求事件监听
-   */
+  // TSVQVQKTH
+
+  static on(name: 'sign', handler: (url: string, body: string | FormData, headers: Record<string, string>, context: RequestContext) => any): typeof Network
   static on(name: 'auth', handler: (data: any, context: RequestContext) => any): typeof Network
   static on(name: 'options', handler: (options: NetworkBaseOptions) => NetworkBaseOptions | void): typeof Network
   static on(name: 'start', handler: (data: any, context: RequestContext) => any): typeof Network
@@ -83,6 +86,13 @@ export default class Network {
   static on(name: NetworkEvents, handler: NetworkEventHandler) {
     tunnel.pull(name, handler);
     return this;
+  }
+
+  /**
+   * 构造一个Hooks查询对象
+   */
+  useQuery(deps?: any[]) {
+    return new UseQuery(this, deps) as Omit<GenerateHooks<typeof this>, keyof Network>;
   }
 
   /**
@@ -123,13 +133,6 @@ export default class Network {
   }
 
   /**
-   * 构造一个Hooks查询对象
-   */
-  useQuery(deps?: any[]) {
-    return new UseQuery(this, deps) as Omit<GenerateHooks<typeof this>, keyof Network>;
-  }
-
-  /**
    * 发送一个get请求
    * @param {String} uri 服务端接口url 可以为完整路径或者相对路径
    * 完整路径例如: https://api.solar-pc/rest/order/submit
@@ -163,7 +166,7 @@ export default class Network {
    * @param headers  发送报文首部配置
    */
   any<T = any>(uri: string, data?: any, method?: HttpMethods, headers?: any) {
-    const context = new RequestContext(uri, method, data, headers);
+    const context = new RequestContext(uri, method || 'GET', data, headers);
     const sharedRes = this.findSharedResponse(context);
     if (sharedRes) {
       // 如果是瞬时共享返回，则不进行请求，直接使用返回
@@ -171,9 +174,9 @@ export default class Network {
     }
     const promise = Promise
       // 执行前置auth事件
-      .resolve(tunnel.push('auth', data, context))
+      .resolve(Promise.all(tunnel.push('auth', data, context)))
       // 执行start事件
-      .then(() => tunnel.push('start', data, context))
+      .then(() => Promise.all(tunnel.push('start', data, context)))
       .then(() => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -182,33 +185,15 @@ export default class Network {
             } catch (ex) {
               reject(ex);
             }
-          }, 20);
+          }, context.delay || 20);
         });
       });
     return new AttachResponse<Response, T>(promise as Promise<Response>, context);
   }
 
-  /**
-   * 调用response事件
-   */
-  private callResponseEvent(response: any, context: RequestContext) {
-    const handlers = tunnel.getMessageContainer('response');
-    let promise = Promise.resolve(response);
-    handlers.forEach((handler) => {
-      promise = promise.then((res) => {
-        res = res === undefined ? response : res;
-        return handler(res, context);
-      });
-    });
-    return promise;
-  }
-
-  /**
-   * 开始进行超时计算
-   */
-  private fetchTimeout(options: NetworkBaseOptions, context: RequestContext, reject: Function) {
+  private listenTimeout(options: NetworkBaseOptions, context: RequestContext, reject: Function) {
     if (options.timeout > 0) {
-      context.fetchTimeoutId = setTimeout(() => {
+      context.timeoutId = setTimeout(() => {
         context.isCancened = true;
         reject(new BizError(-2000, '网络不给力！请稍后重试'));
       }, options.timeout);
@@ -220,6 +205,18 @@ export default class Network {
    */
   private findSharedResponse(context: RequestContext): SharedResponse {
     return sharedResponses.find((item) => item.isShared(context));
+  }
+
+  private callResponseEvent(response: any, context: RequestContext) {
+    const handlers = tunnel.getMessageContainer('response');
+    let promise = Promise.resolve(response);
+    handlers.forEach((handler) => {
+      promise = promise.then((res) => {
+        res = res === undefined ? response : res;
+        return handler(res, context);
+      });
+    });
+    return promise;
   }
 
   /**
@@ -243,8 +240,15 @@ export default class Network {
       ...context.headers || {},
     });
     const myFetch = typeof fetch === 'function' ? fetch : window.fetch;
-    this.fetchTimeout(requestOptions, context, reject);
-    myFetch(combine(url || '', method, data, requestOptions), {
+    // 超时监听
+    this.listenTimeout(requestOptions, context, reject);
+    const useUrl = combine(url || '', method, data, requestOptions);
+    const useBody = adapter(data, headers, method);
+    context.requestContentType = ct;
+    context.modifyHeaders = headers;
+    // 签名事件
+    tunnel.push('sign', useUrl, useBody, headers, context);
+    myFetch(useUrl, {
       // 请求谓词
       method,
       // 设置证书类型 omit:不传递cookie same-origin:同源发送cookie include:都发送cookie
@@ -252,20 +256,19 @@ export default class Network {
       // 请求首部
       headers,
       // 请求正文
-      body: adapter(data, headers, method),
+      body: useBody,
     })
       .then((response: Response) => {
-        clearTimeout(context.fetchTimeoutId);
+        clearTimeout(context.timeoutId);
         // 如果请求被取消掉,则直接返回,不做任何处理
         if (context.isCancened) {
           return new Promise(() => { });
         }
-        const { status } = response || {};
+        const { status } = response;
         const isOK = status >= 200 && status < 300 || status === 304;
         const cloneData = response.clone();
-        context.response = response;
         tunnel.push('end', cloneData, context);
-        return isOK ? response.clone() : Promise.reject(new BizError(500, 'http:' + response.status, response));
+        return isOK ? response : Promise.reject(new BizError(500, 'http:' + response.status, response));
       })
       .then((response: Response) => {
         if (response[context.responseConvert]) {
@@ -274,22 +277,40 @@ export default class Network {
         return response;
       })
       .then((response: any) => {
+        // 断言是否需要重试请求
+        if (context.shouldRetry(response)) {
+          if (!tryRequest2()) {
+            reject(new BizError(500, 'http:' + response.status, response));
+          }
+          return;
+        }
+        // 如果无需重试，则返回结果
         return Promise
           .resolve(this.callResponseEvent(response, context))
-          .then((selfResponse) => {
-            if (!context.shouldRetry(selfResponse)) {
-              resolve(selfResponse === undefined ? response : selfResponse);
-            } else if (!tryRequest2()) {
-              reject(new BizError(500, 'http:' + response.status, response));
-            }
+          .then((selfResponse) => resolve(selfResponse === undefined ? response : selfResponse))
+          .catch((ex) => {
+            // 如果是全局断言失败:
+            return Promise.reject({
+              error: ex,
+              isGlobalAssert: true,
+            });
           });
       })
-      .catch((error: any) => {
-        clearTimeout(context.fetchTimeoutId);
+      .catch((data: any) => {
+        clearTimeout(context.timeoutId);
         // 如果请求被取消掉,则直接返回,不做任何处理
         if (context.isCancened) return;
+        const isGlobalAssert = data?.isGlobalAssert === true;
+        const error = isGlobalAssert ? data.error : data;
+        // 如果指定了tryAssertFunc 则表示用于需要自行控制重试逻辑，所以全局断言的异常需要忽略try
+        const stopTry = (isGlobalAssert && !!context.tryAssertFunc);
+        // 如果需要停止重试
+        if (stopTry) {
+          reject(error);
+          return;
+        }
         if (!tryRequest2()) {
-          tunnel.push('end', error);
+          !isGlobalAssert && tunnel.push('end', error, context);
           reject(error);
         }
       });
@@ -315,9 +336,11 @@ export default class Network {
    */
   private tryRequest(context: RequestContext, reject: Function, resolve: Function) {
     if (context.tryNum < context.maxTry) {
-      context.tryNum++;
-      tunnel.push('try', context);
-      this.request(context, resolve, reject);
+      setTimeout(() => {
+        context.tryNum++;
+        tunnel.push('try', context);
+        this.request(context, resolve, reject);
+      }, context.tryDelay || context.delay || 0);
       return true;
     }
   }
@@ -336,7 +359,6 @@ export class AttachResponse<T, R> extends Promise<T> {
    * 原始promise
    */
   private nativePromise: Promise<any>;
-
   /**
    * 当前链式调用下，过程中产生的所有错误
    */
@@ -366,10 +388,10 @@ export class AttachResponse<T, R> extends Promise<T> {
   constructor(promise: Promise<T>, context: RequestContext, isSharedResponse?: boolean) {
     super(() => { });
     this.mergeResponses = {} as ChainResponses;
-    this.isSharedResponse = isSharedResponse;
     this.reqContext = context;
     this.promise = promise;
     this.nativePromise = promise;
+    this.isSharedResponse = isSharedResponse;
     this.errors = [];
     const finnalyPush = (data: any) => {
       this.cancelShare();
@@ -439,6 +461,15 @@ export class AttachResponse<T, R> extends Promise<T> {
     if (typeof Options.loading === 'function') {
       this.complete(Options.loading(message, options), true);
     }
+    return this;
+  }
+
+  /**
+   * 设置当前请求延迟多少毫秒发出
+   * @param timeout 毫秒
+   */
+  delay(timeout: number) {
+    this.reqContext.delay = timeout;
     return this;
   }
 
@@ -542,33 +573,16 @@ export class AttachResponse<T, R> extends Promise<T> {
    * @param {Number} max 重试最大的次数 默认值=1
    * @param {Function} errorAssert 需要进行重试的条件函数,默认重试条件为:请求网络错误
    *         例如: function(response){ return response.status!=200  };
+   * @param {Number} 重试间隔
    *
    */
-  try(max = 1, errorAssert?: () => boolean) {
+  try(max = 1, errorAssert?: (response: any) => boolean, delay?: number) {
     this.reqContext.tryable = true;
     this.reqContext.maxTry = max;
+    this.reqContext.tryDelay = delay;
     if (typeof errorAssert === 'function') {
       this.reqContext.tryAssertFunc = errorAssert;
     }
-    return this;
-  }
-
-  /**
-   * 设置本次接口禁止发送cookie
-   */
-  noCookie() {
-    this.reqContext.credentials = 'omit';
-    return this;
-  }
-
-  /**
-   * 设置证书类型
-   * omit:不传递cookie
-   * same-origin:同源发送cookie
-   * include:都发送cookie
-   */
-  credentials(credentials: 'omit' | 'same-origin' | 'include') {
-    this.reqContext.credentials = credentials;
     return this;
   }
 
@@ -607,6 +621,25 @@ export class AttachResponse<T, R> extends Promise<T> {
         }),
       });
     }
+    return this;
+  }
+
+  /**
+   * 设置本次接口禁止发送cookie
+   */
+  noCookie() {
+    this.reqContext.credentials = 'omit';
+    return this;
+  }
+
+  /**
+   * 设置证书类型
+   * omit:不传递cookie
+   * same-origin:同源发送cookie
+   * include:都发送cookie
+   */
+  credentials(credentials: 'omit' | 'same-origin' | 'include') {
+    this.reqContext.credentials = credentials;
     return this;
   }
 
@@ -686,7 +719,7 @@ function merge(data: any, merge: any) {
  */
 function combine(uri: string, method: string, data: any, requestOptions: any) {
   if (!/(https:|http:|\/\/)/.test(uri) && requestOptions.base) {
-    uri = requestOptions.base + uri;
+    uri = requestOptions.base.replace(/\/$/, '') + '/' + uri?.replace(/^\//, '');
   }
   data = merge(data, requestOptions.data);
   const m = method.toLowerCase();

@@ -4,6 +4,8 @@
  */
 import { NetworkExtra, RHttpHeaders } from './types';
 
+type ResponseConvert = 'json' | 'text' | 'arrayBuffer' | 'blob'
+
 export default class RequestContext {
   /**
    * 当前已重试测次数
@@ -14,7 +16,7 @@ export default class RequestContext {
    * 在需要重试请求时，用于
    * 断言：本地请求是否返回结果正常
    */
-  public tryAssertFunc?= (data: any) => false;
+  public tryAssertFunc?= (response: any) => false;
 
   /**
    * 当前请求是否开启：重试机制
@@ -25,6 +27,16 @@ export default class RequestContext {
    * 可重试的最大次数
    */
   public maxTry?: number = 0;
+
+  /**
+   * 请求发送的延迟时间
+   */
+  public delay?: number = 100;
+
+  /**
+   * 重试请求的延迟发送时间
+   */
+  public tryDelay?: number;
 
   /**
    * 当前请求的url
@@ -41,12 +53,17 @@ export default class RequestContext {
    */
   public data?: any;
 
-  public responseConvert: 'json' | 'text' | 'arrayBuffer' | 'blob';
+  public responseConvert!: ResponseConvert;
 
   /**
    * 请求内容类型
    */
-  public requestContentType: string;
+  public requestContentType = '';
+
+  /**
+   * 当前实例实际发送的headers
+   */
+  public modifyHeaders?: RHttpHeaders;
 
   /**
    * 当前请求的http谓词
@@ -61,12 +78,12 @@ export default class RequestContext {
   // 返回对象
   public response?: Response;
 
-  public fetchTimeoutId?:ReturnType<typeof setTimeout>;
-
   /**
-   * 当前请求是否呗取消掉
+   * 是否取消请求
    */
-  public isCancened:boolean;
+  public isCancened?: boolean;
+
+  public timeoutId!: ReturnType<typeof setTimeout>;
 
   // 单个接口调用的附加信息，用于全局事件使用
   public extra: NetworkExtra;
@@ -90,9 +107,9 @@ export default class RequestContext {
   /**
    * 根据返回结果，判断当前请求是否需要重试
    */
-  shouldRetry?(data: any): boolean {
+  shouldRetry?(response:any): boolean {
     if (this.tryable && this.tryAssertFunc) {
-      return this.tryAssertFunc(data);
+      return this.tryAssertFunc(response);
     }
     return false;
   }

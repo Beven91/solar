@@ -1,13 +1,13 @@
 import type { AttachResponse } from './index';
 import RequestContext from './context';
 
-export type NetworkEvents = 'start' | 'end' | 'response' | 'error' | 'try' | 'auth' | 'options'
+export type NetworkEvents = 'start' | 'end' | 'response' | 'error' | 'try' | 'auth' | 'options' | 'sign'
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface NetworkReactHooks {
   useEffect: (handler: Function, deps: any[]) => any
-  useState: any
+  useState<T>(params: T): [T, (data: T | ((state: T) => T)) => void]
 }
 
 export interface NetworkBaseOptions {
@@ -20,7 +20,7 @@ export interface NetworkBaseOptions {
   // 统一指定请求内容类型，默认:application/x-www-form-urlencoded
   contentType?: string
   // 是否开启mock服务
-  mock?: boolean | string
+  mock?: string | boolean
   // 第二条mock通道
   mock2?: string
   // 配置hooks
@@ -50,7 +50,7 @@ export interface ChainResponses {
   [propName: string]: any
 }
 
-export type NetworkEventHandler = (data: any, context: RequestContext) => void
+export type NetworkEventHandler = (...params: any[]) => void
 
 export type Promiseable = {
   then: (handler: Function, handler2?: Function) => Promiseable,
