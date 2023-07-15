@@ -174,6 +174,8 @@ export interface AbstractFormGroupItemType<TRow> {
   itemStyle?: React.CSSProperties
   // 表单组展示模式
   mode?: FormGroupStyle
+  // 表单组id
+  id?: string | number
 }
 
 export interface AbstractInputComponent extends React.ComponentClass<any, any>, React.FunctionComponent<any> {

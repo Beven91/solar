@@ -25,6 +25,7 @@ import BucketImage from './src/bucket-image';
 import OverridePageHeader from './src/override-page-header';
 import AbstractIcon from './src/abstract-icon';
 import ImageGallery from './src/image-gallery';
+import AbstractUpdater from './src/abstract-updater';
 
 export type {
   AbstractConfig, PageQueryData, AbstractGroups, AbstractRules, AbstractSFields, SubmitAction,
@@ -67,4 +68,5 @@ export {
   OverridePageHeader,
   AbstractIcon,
   ImageGallery,
+  AbstractUpdater,
 };
