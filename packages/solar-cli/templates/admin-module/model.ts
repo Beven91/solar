@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { $service$ } from '$serviceModule$';
-import { RematchThis, RematchModelTo } from 'solar-core';
+import { RematchEffectThis, RematchModelTo } from 'solar-core';
 import { AbstractAction, AbstractQueryType, SubmitAction } from 'solar-pc/src/interface';
 
 export interface RecordModel {
@@ -35,13 +35,13 @@ const model = {
     async queryAllAsync(this: ModelThis, query: AbstractQueryType) {
       this.setState({ loading: true });
       const response = await $service$.$query$(query);
-      this.setState({ query, loading: false, allRecords: response.model || {} });
+      this.setState({ query, loading: false, allRecords: response.result });
     },
     // 进入动作
     async enterAction(this: ModelThis, payload: AbstractAction) {
       if (payload.id) {
         const res = await $service$.$get$(payload.id).showLoading();
-        payload.model = res.model;
+        payload.model = res.result;
       }
       this.setState({ action: payload.action, record: payload.model || {} });
     },
@@ -91,7 +91,7 @@ const model = {
 
 export default model;
 
-interface ModelThis extends RematchThis<typeof model> { }
+interface ModelThis extends RematchEffectThis<typeof model> { }
 
 export type ModelState = typeof modelState;
 
