@@ -13,6 +13,8 @@ import AccessToken from './security/AccessToken';
 import AccessTokenTool from './security/AccessTokenTool';
 import CorsInterceptor from './interceptors/CorsInterceptor';
 import Profile from './profile';
+import SecurityInteceptor from './security/SecurityInterceptor';
+
 
 export {
   UserContext,
@@ -30,4 +32,5 @@ export {
   AccessTokenTool,
   CorsInterceptor,
   Profile,
+  SecurityInteceptor
 };

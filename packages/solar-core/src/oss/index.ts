@@ -1,18 +1,8 @@
-import config, { AliOssConfig } from '../config';
+import config, { AliOssConfig, BucketType, FileGatewayOptions } from '../config';
 
 type onUploadProgress = (percent: number) => void
 
-const absoluteRegexp = /^(https|http|\/\/)/;
-
-export type BucketType = 'public' | 'private'
-
 export interface OssUploadOptions {
-  // 上传目录
-  category?: string
-  // 上传bucket类型
-  bucketType?: BucketType
-  // 是否保留原始文件名
-  hash?: boolean
   // 设置上传文件，访问时的缓存策略
   'Cache-Control'?: string
   // 设置上传文件，访问时的编码类型
@@ -23,12 +13,14 @@ export interface OssUploadOptions {
   'Content-Disposition'?: string
 }
 
-interface UploadResponse {
+interface FileGatewayResponse {
   success: boolean
   result: string
   errorMsg: string
   errorCode: string
 }
+
+const absoluteRegexp = /^(https|http|\/\/)/;
 
 export default class AliOss {
   /**
@@ -39,8 +31,9 @@ export default class AliOss {
    * @returns
    */
   static getBucketAccessUrl(bucketType: BucketType, src: string, action?: string) {
-    const cdn = config.options.cdn;
-    const fullUri = absoluteRegexp.test(src) ? src : `${cdn.replace(/\/$/, '')}/${src?.replace(/^\//, '')}`;
+    src = (src || '').toString();
+    const cdn = config.options.fileGateway.urls[bucketType] || '';
+    const fullUri = absoluteRegexp.test(src) ? src : `${cdn.replace(/\/$/, '')}/${src.replace(/^\//, '')}`;
     const joinChar = fullUri.indexOf('?') > 0 ? '&' : '?';
     if (fullUri.indexOf('x-oss-process=') > -1) {
       return fullUri;
@@ -73,16 +66,6 @@ export default class AliOss {
   }
 
   /**
-   * 获取aliOss配置
-   */
-  static aliOssConfig(category: string): Promise<AliOssConfig> {
-    if (config.options.oss?.aliOssConfig) {
-      return Promise.resolve(config.options.oss?.aliOssConfig(category));
-    }
-    return Promise.resolve({} as AliOssConfig);
-  }
-
-  /**
    * 删除aliOss资源
    * @param {String} key 要删除的资源key名
    * @param {String} category 分类名称
@@ -99,6 +82,16 @@ export default class AliOss {
     // });
   }
 
+  /**
+   * 获取aliOss配置
+   */
+  static aliOssConfig(category: string): Promise<AliOssConfig> {
+    if (config.options.fileGateway?.aliOssConfig) {
+      return Promise.resolve(config.options.fileGateway?.aliOssConfig(category));
+    }
+    return Promise.resolve({} as AliOssConfig);
+  }
+
   private static mergeOssFormData(formData: any, options: any) {
     Object.keys(options || {}).forEach((key) => {
       formData.append ? formData.append(key, options[key]) : formData[key] = options[key];
@@ -107,46 +100,81 @@ export default class AliOss {
   }
 
   /**
+   * aliOSS 通过web直传
+   */
+  static async aliOssWebUpload(file: File, options?: Partial<FileGatewayOptions>, onprogress?: onUploadProgress): Promise<FileGatewayResponse> {
+    const ossConfig = await this.aliOssConfig(options.storeDir || '');
+    const category = (ossConfig.dir + '/' + (options.storeDir || '')).replace(/\/\//g, '/');
+    let formData = {} as any;
+    // const path = `https://${ossConfig.bucketName}.${config.OSS.region}.aliyuncs.com/`;
+    const ext = file.name.split('.').pop();
+    const name = options?.hash == false ? file.name : new Date().getTime() + '-' + Math.random().toString().split('.').pop() + '.' + ext;
+    const fileKey = (category + '/' + name).replace(/\/\//g, '/');
+    const url = ossConfig.host;
+    options = options || {} as OssUploadOptions;
+    delete options.hash;
+    // 默认设置cache-control 为no-cache
+    options['Cache-Control'] = options.cacheType;
+    // options['Content-Encoding'] = options['Content-Encoding'] || 'utf-8';
+    if (process.env.RUNTIME === 'wxapp') {
+      formData = {
+        'key': fileKey,
+        'policy': ossConfig.policy,
+        'CDNAccessKeyId': ossConfig.accessId,
+        'signature': ossConfig.signature,
+        'success_action_status': 201,
+      };
+      this.mergeOssFormData(formData, options);
+      return this.wxUpload(url, formData, file);
+    }
+    formData = new FormData();
+    formData.append('key', fileKey);
+    formData.append('policy', ossConfig.policy);
+    formData.append('OSSAccessKeyId', ossConfig.accessId);
+    formData.append('signature', ossConfig.signature);
+    formData.append('success_action_status', 201);
+    this.mergeOssFormData(formData, options);
+    formData.append('file', file);
+    return this.h5Upload(url, formData, onprogress, true).then((res)=>{
+      res.result = res.result?.replace(ossConfig.dir, '');
+      return res;
+    });
+  }
+
+  /**
    * 上传文件到aliOss
    * @param file 文件
    * @param category 上传目录
    * @param keep 是否保持原始文件目录上传
    */
-  static uploadToAliOss(file: File, options?: OssUploadOptions, onprogress?: onUploadProgress, url?:string) {
-    let category = options?.category || config.options.oss?.directory || 'default';
-    return this.aliOssConfig(category).then((ossConfig) => {
-      let formData = {} as any;
-      category = category.replace(/\/$/, '');
-      // const path = `https://${ossConfig.bucketName}.${config.OSS.region}.aliyuncs.com/`;
-      const ext = file.name.split('.').pop();
-      const name = options?.hash == false ? file.name : new Date().getTime() + '-ali-oss-' + Math.random().toString().split('.').pop() + '.' + ext;
-      const fileKey = category + '/' + name;
-      options = options || {} as OssUploadOptions;
-      delete options.hash;
-      // 默认设置cache-control 为no-cache
-      options['Cache-Control'] = options['Cache-Control'] || 'no-cahe';
-      // options['Content-Encoding'] = options['Content-Encoding'] || 'utf-8';
-      if (process.env.RUNTIME === 'wxapp') {
-        formData = {
-          'key': fileKey,
-          'policy': ossConfig.policy,
-          'CDNAccessKeyId': ossConfig.accessid,
-          'signature': ossConfig.signatur,
-          'success_action_status': 201,
-        };
-        this.mergeOssFormData(formData, options);
-        return this.wxUpload(url || ossConfig.host, formData, file);
+  static async uploadToAliOss(file: File, options?: Partial<FileGatewayOptions>, onprogress?: onUploadProgress, uploadUrl?: string): Promise<FileGatewayResponse> {
+    if (options?.web) {
+      return this.aliOssWebUpload(file, options, onprogress);
+    }
+    const url = uploadUrl || config.options.fileGateway.uploadUrl;
+    const defaultOptions = (config.options.fileGateway.data || {}) as Record<string, any>;
+    const isUndef = (v: any, dv: any) => {
+      if (v === undefined || v === null) {
+        return dv;
       }
-      formData = new FormData();
-      formData.append('key', fileKey);
-      formData.append('policy', ossConfig.policy);
-      formData.append('OSSAccessKeyId', ossConfig.accessid);
-      formData.append('signature', ossConfig.signatur);
-      formData.append('success_action_status', 201);
-      this.mergeOssFormData(formData, options);
-      formData.append('file', file);
-      return this.h5Upload(url || ossConfig.host, formData, onprogress);
-    }) as unknown as Promise<any>;
+      return v;
+    };
+    options = {
+      ...defaultOptions,
+      ...options,
+      storeDir: isUndef(options?.storeDir, defaultOptions.storeDir),
+      bizId: isUndef(options.bizId, defaultOptions.bizId),
+    };
+    // 默认设置cache-control 为no-cache
+    // options['Cache-Control'] = options['Cache-Control'] || 'no-cahe';
+    // options['Content-Encoding'] = options['Content-Encoding'] || 'utf-8';
+    if (process.env.RUNTIME === 'wxapp') {
+      return this.wxUpload(url, options, file);
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    Object.keys(options).forEach((key) => formData.append(key, options[key]));
+    return this.h5Upload(url, formData, onprogress);
   }
 
   /**
@@ -156,7 +184,7 @@ export default class AliOss {
    * @param filePath 小程序选择文件路径
    */
   static wxUpload(url: string, formData: any, filePath: any) {
-    return new Promise<UploadResponse>((resolve, reject) => {
+    return new Promise<FileGatewayResponse>((resolve, reject) => {
       const ext = filePath.split('.').pop();
       formData.key = formData.key + '.' + ext;
       (<any>global).wx.uploadFile({
@@ -165,7 +193,7 @@ export default class AliOss {
         name: 'file',
         formData,
         success: (res: any) => {
-          resolve(res.data as UploadResponse);
+          resolve(res.data);
         },
         fail: reject,
       });
@@ -178,10 +206,11 @@ export default class AliOss {
    * @param data 表单数据
    * @returns
    */
-  static h5Upload(url: string, data: FormData, onprogress: onUploadProgress) {
-    return new Promise<UploadResponse>((resolve, reject) => {
+  static h5Upload(url: string, data: FormData, onprogress: onUploadProgress, xml = false) {
+    return new Promise<FileGatewayResponse>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
+      xhr.responseType = xml ? '' : 'json';
       if (xhr.upload) {
         xhr.upload.onprogress = (ev) => {
           if (ev.lengthComputable) {
@@ -192,13 +221,17 @@ export default class AliOss {
       xhr.withCredentials = true;
       xhr.onreadystatechange = () => {
         if (xhr.readyState == 4) {
-          if (xhr.responseXML) {
-            const domKey = xhr.responseXML.querySelector('PostResponse Location');
-            const url = (domKey || {}).innerHTML;
-            const result = (url || '').replace(/:\/\//g, ':///').replace(/\/\//g, '/');
-            return result ? resolve({ errorMsg: '', errorCode: '0', success: true, result }) : reject({ success: false });
+          let response = xhr.response as FileGatewayResponse;
+          if (xml) {
+            const doc = xhr.responseXML;
+            const key = doc?.querySelector('Key')?.textContent;
+            response = {
+              success: true,
+              result: key,
+              errorCode: '0',
+              errorMsg: '',
+            };
           }
-          const response = JSON.parse(xhr.response || '{}') as UploadResponse;
           (xhr.status >= 200 && xhr.status < 300) ? resolve(response) : reject(response);
         }
       };
