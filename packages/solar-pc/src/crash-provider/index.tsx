@@ -62,7 +62,11 @@ export default class CrashProvider extends React.Component<React.PropsWithChildr
 
   // 渲染正常视图
   renderNormal() {
-    return React.Children.only(this.props.children);
+    return (
+      <>
+        {this.props.children}
+      </>
+    );
   }
 
   // 渲染
