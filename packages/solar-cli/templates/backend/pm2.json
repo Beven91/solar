@@ -1,0 +1,9 @@
+{
+  "name": "$projectName$-api",
+  "script": "src/api/$projectName$-api/index.js",
+  "env": {
+    "NODE_ENV": "production",
+    "RUNENV": "",
+    "RUN_ENV": ""
+  }
+}
