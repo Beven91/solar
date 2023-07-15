@@ -116,7 +116,6 @@ module.exports = {
                   '@babel/preset-env',
                   {
                     'useBuiltIns': 'usage',
-                    'modules': 'commonjs',
                     'corejs': require('core-js/package.json').version,
                   },
                 ],

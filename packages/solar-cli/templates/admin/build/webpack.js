@@ -45,7 +45,6 @@ module.exports = {
   entry: {
     index: [
       isProduction ? null : 'webpack-hot-middleware/client',
-      'core-js/stable',
       './src/$projectName$/index.tsx',
     ].filter((v) => v),
   },
@@ -109,7 +108,6 @@ module.exports = {
                   '@babel/preset-env',
                   {
                     'useBuiltIns': 'usage',
-                    'modules': 'commonjs',
                     'corejs': require('core-js/package.json').version,
                   },
                 ],

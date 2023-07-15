@@ -61,7 +61,6 @@ module.exports = {
   entry: {
     mainApp: [
       isProduction ? null : 'webpack-hot-middleware/client',
-      'core-js/stable',
       './src/$projectName$/index.dll.ts',
       './src/$projectName$/index.tsx',
 
@@ -121,7 +120,6 @@ module.exports = {
           path.resolve('src'),
           /solar-core/,
           /solar-pc/,
-          /antd/,
         ],
         use: [
           {
@@ -135,7 +133,6 @@ module.exports = {
                   '@babel/preset-env',
                   {
                     'useBuiltIns': 'usage',
-                    'modules': 'commonjs',
                     'corejs': require('core-js/package.json').version,
                   },
                 ],

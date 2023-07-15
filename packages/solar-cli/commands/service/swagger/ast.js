@@ -47,6 +47,7 @@ class ServiceAST {
           };
         });
     }
+    return [];
   }
 
   addServiceMethod(name, code) {
