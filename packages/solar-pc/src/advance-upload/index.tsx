@@ -28,6 +28,7 @@ export default function AdvanceUpload(
     formatUrl = (key, props: AdvanceUploadProps) => Oss.getBucketAccessUrl(props.bucketType, key),
     withCredentials = true,
     params,
+    propagation = false,
     ...props
   }: AdvanceUploadProps
 ) {
@@ -36,6 +37,9 @@ export default function AdvanceUpload(
   const all = { maxCount, acceptType, bucketType, valueMode, headers, formatUrl, withCredentials, ...props };
   const [fileList, setFileList] = useState(getFileList(props.value, formatUrl, [], all));
   const [previewItem, setPreview] = useState<UploadFile>();
+  const dragHandler = useMemo(()=>{
+    return propagation ? ()=>{ } : stopPropagation;
+  }, [propagation]);
 
   useEffect(() => {
     setFileList(getFileList(props.value, formatUrl, fileList, all));
@@ -140,7 +144,7 @@ export default function AdvanceUpload(
     if (children) {
       return children;
     }
-    if (listType == 'text') {
+    if (listType !== 'picture-card' && listType) {
       return (
         <Button type="primary">
           <PlusOutlined />
@@ -191,8 +195,8 @@ export default function AdvanceUpload(
       className={`clearfix advance-upload ${topClass} ${single ? 'single' : 'multiple'} ${props.className}`}
     >
       <div
-        onDragStart={stopPropagation}
-        onDragOver={stopPropagation}
+        onDragStart={dragHandler}
+        onDragOver={dragHandler}
       >
         <UploadFile
           data={data}

@@ -31,7 +31,7 @@ Network
         // 跳转登录
         break;
     }
-    return success ? resposne.result : Promise.reject(new BizError(resposne.errorCode, resposne.errorMsg));
+    return success ? resposne : Promise.reject(new BizError(resposne.errorCode, resposne.errorMsg));
   });
 
 // 启动React应用

@@ -68,6 +68,8 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
   returnAbsolute?: boolean
   // 自定义上传
   customRequest?: (options: RcCustomRequestOptions, config: AbstractUploadConfig) => Promise<string>
+  // 是否冒泡： 默认情况下会关闭drag的冒泡
+  propagation?: boolean
 }
 
 export type ProcessUploadInterceptor = (type: string, file: UploadFileExtend, props: AdvanceUploadProps) => Promise<any>
