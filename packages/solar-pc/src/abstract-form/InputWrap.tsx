@@ -128,8 +128,9 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
   if (!component) return null;
   const valuePropName = component?.type?.valuePropName || 'value';
   const inputValue = converter?.convert ? converter.convert.setInput(props.value, ...converter.args) : props.value;
+  const allValues = getAllValues(props);
   const options = {
-    [valuePropName]: mappingToValue(item, inputValue, getAllValues(props)),
+    [valuePropName]: mappingToValue(item, inputValue, allValues),
     disabled: component.props.disabled || isReadOnly,
     placeholder: isReadOnly ? '' : component.props.placeholder || item.placeholder,
     onChange: (v: any, ...params: any[]) => {
@@ -154,9 +155,13 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
       props.onValuesChange?.(prevValues, getAllValues(props));
     },
   };
+  if (item.customKey) {
+    (options as any).key = item.customKey(allValues);
+  }
   if (item.render2) {
     (options as any).title = item.title;
   }
+
   return (
     <div ref={containerRef} id={id}>
       {React.cloneElement(component, options)}

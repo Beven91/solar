@@ -48,7 +48,20 @@ export default function App() {
 
   const onSave = (row: ActivityModel) => {
     console.log('save row', row);
-    return Promise.resolve({});
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({});
+      }, 1000);
+    });
+  };
+
+  const onRemove = (row: ActivityModel) => {
+    console.log('remove row', row);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({});
+      }, 1000);
+    });
   };
 
   return (
@@ -60,6 +73,8 @@ export default function App() {
         mode="row"
         buttons={buttons}
         onSave={onSave}
+        removeConfirm="您确定要删除该商品?"
+        onRemove={onRemove}
         onChange={onChange}
         columns={columns}
         value={rows}

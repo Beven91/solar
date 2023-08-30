@@ -16,9 +16,9 @@ const SkuStatus = [
 ];
 
 const demoRows = [
-  { id: 1, name: 'Surface Book3', price: 17800, status: 1, picture: 'solar-ssss.jpg' },
-  { id: 2, name: 'Mac Book Pro3', price: 20000, status: 2, picture: 'solar-ssss.jpg' },
-  { id: 3, name: 'Thinkpad', price: 10000, status: 3, picture: 'solar-ssss.jpg' },
+  { id: 1, name: 'Surface Book3', price: 17800, status: 1, picture: 'doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg' },
+  { id: 2, name: 'Mac Book Pro3', price: 20000, status: 2, picture: 'doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg' },
+  { id: 3, name: 'Thinkpad', price: 10000, status: 3, picture: 'doctorSubmit-c4f8322a15454f23950bb80b176bdde3.jpg' },
 ];
 
 export default function App() {

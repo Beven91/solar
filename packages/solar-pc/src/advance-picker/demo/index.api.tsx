@@ -33,7 +33,7 @@ const queryAllRecords = (query: PageQueryData) => {
         count: rows.length,
         models: filterd,
       });
-    }, 1000);
+    }, 2000);
   });
 };
 
@@ -44,6 +44,7 @@ export default function App() {
     <div style={{ width: 300 }}>
       <AdvancePicker
         value={value}
+        type="remote"
         api={queryAllRecords}
         pageSize={10}
         onChange={(v) => {

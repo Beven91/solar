@@ -9,7 +9,7 @@ import { AbstractMenuType } from '../interface';
 import { MenuProps } from 'antd/lib/menu';
 import { Adapter } from 'solar-core';
 import { SelectInfo } from 'rc-menu/lib/interface';
-import history, { defaultUrlMatch, flat, systemRouteMatch } from './history';
+import history, { defaultUrlMatch, flat, fullUrlMatch, matchUrlLikeMatch } from './history';
 
 const globalLink = document.createElement('a');
 
@@ -56,9 +56,7 @@ export default function AbstractMenu({
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [memo] = useState({ flatMenus: [] as AbstractMenuType[] });
 
-  useEffect(() => {
-    loadAsync();
-  }, []);
+  useEffect(() => {loadAsync();}, []);
 
   useEffect(() => {
     const sychronizeHandler = () => synchronizeRoute();
@@ -81,7 +79,8 @@ export default function AbstractMenu({
     const { matchSelectedKey } = props;
     const route = getRoute(type);
     const match = matchSelectedKey || defaultUrlMatch;
-    const menu = flatMenus.find((m) => match(m, route)) || systemRouteMatch(route, flatMenus);
+    const fullMatched = flatMenus.find((m) => fullUrlMatch(m, route));
+    const menu = fullMatched || matchUrlLikeMatch(flatMenus, route, match);
     let selectedKeys = [] as AbstractMenuType[];
     let element = menu;
     while (element) {

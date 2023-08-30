@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { AbstractForm, AdvancePicker, AbstractGroups, AbstractRules } from 'solar-pc';
 import { Button, Form, FormInstance, InputNumber, Input, Switch, DatePicker } from 'antd';
 // import { Network } from 'solar-core';
@@ -76,8 +76,37 @@ const CITY = [
   { value: 2, label: '上海市' },
 ];
 
+const rules = {
+  name: [{ required: true, message: '请输入姓名' }],
+  age: [{ required: true, message: '请设置年龄' }],
+};
+
+function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
+  const [name, setName] = useState();
+  console.log('name....', name);
+  const groups: AbstractGroups<any> = [
+    {
+      title: '编号',
+      name: 'id',
+      initialValue: 200,
+      onChange: (v) => setName(v),
+    },
+    { title: '年龄', name: 'age' },
+    {
+      title: '动态',
+      name: 'dynamic',
+      render: () => <div>{name}</div>,
+    },
+  ];
+
+  return (
+    <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
+  );
+}
+
 export default function App() {
   const formRef = useRef<FormInstance>();
+  const [name, setName] = useState('');
 
   const rules: AbstractRules = {
     'activityId': [{ required: true, message: '请输入活动编码' }],
@@ -88,7 +117,19 @@ export default function App() {
   const groups: AbstractGroups<ActivityModel> = [
     { title: '最大值', initialValue: 200, name: 'max', render: <InputNumber />, extra: '带初始值' },
     { title: '活动编号', name: 'activityId', extra: '默认为文本输入框' },
-    { title: '用户名称', name: 'user.name', extra: '多级属性例如: user.name' },
+    {
+      title: '用户名称',
+      name: 'user.name',
+      extra: '多级属性例如: user.name',
+      onChange: (v) => {
+        setName(v);
+      },
+    },
+    {
+      title: '',
+      name: 'iso',
+      render2: <NestedApp />,
+    },
     {
       title: '用户年龄',
       name: 'user.age',
@@ -102,7 +143,7 @@ export default function App() {
       extra: '通过制定format，可以指定表单值生成',
     },
     {
-      title: '券设计',
+      title: '券设计' + name,
       name: 'design',
       extra: '自定义render渲染函数',
       render: (row) => {
@@ -139,7 +180,7 @@ export default function App() {
         };
       },
     },
-    { title: '优惠码', name: 'salerCode', extra: (r)=>r.salerCode },
+    { title: '优惠码', name: 'salerCode', extra: (r) => r.salerCode },
     {
       title: '截止时间',
       name: 'validateStartTime',

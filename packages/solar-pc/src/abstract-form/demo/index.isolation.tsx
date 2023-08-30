@@ -17,7 +17,7 @@ const rules = {
 
 function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
   const groups: AbstractGroups<CommodityModel> = [
-    { title: '编号', name: 'id' },
+    { title: '编号', name: 'id', initialValue: 200 },
     { title: '年龄', name: 'age' },
   ];
 

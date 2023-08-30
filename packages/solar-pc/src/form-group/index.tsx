@@ -12,7 +12,7 @@ import VirtualInput from './VirtualInput';
 const isVisible = (item: AbstractFormGroupItemType<any>, data: AbstractRow) => {
   if (typeof item.visible === 'function') {
     return item.visible(data);
-  } else if ('visible' in item) {
+  } else if (item.visible !== undefined) {
     return item.visible;
   }
   return true;

@@ -14,7 +14,7 @@ const rules = {
 
 function NestedApp(props: { disabled?: boolean, value?: any, onChange?: (value: any) => void }) {
   const groups: AbstractGroups<CommodityModel> = [
-    { title: '编号', name: 'id' },
+    { title: '编号', name: 'id', initialValue: '2' },
     { title: '年龄', name: 'age' },
   ];
 
@@ -48,7 +48,7 @@ export default function App() {
     {
       group: '条码配置',
       items: [
-        { title: '条码信息', name: 'skuId', initialValue: '' },
+        { title: '条码信息', name: 'skuId', initialValue: 'aaa' },
         { title: '条码信息', name: 'skuId2' },
         { title: '', name: 'sku', render2: <NestedApp /> },
       ],

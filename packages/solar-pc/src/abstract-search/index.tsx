@@ -4,13 +4,14 @@
  *       提供通用的搜索视图
  */
 import './index.scss';
-import React, { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, ButtonProps, Col, Form, Input } from 'antd';
+import { Button, ButtonProps, Col, ConfigProvider, Form, Input } from 'antd';
 import { AbstractQueryType, PlainObject, AbstractSField, RecordModel, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import AdvancePicker from '../advance-picker';
 import AbstractForm from '../abstract-form';
+import { useInjecter } from '../abstract-injecter';
 
 export interface AbstractSearchProps<TRow> {
   // 获取表单实例
@@ -48,6 +49,8 @@ export interface AbstractSearchProps<TRow> {
   onChange?: (allValues: Record<string, any>) => void
   // 搜索项style
   itemStyle?: React.CSSProperties
+  // 是否使用injecter
+  inject?: boolean
 }
 
 const FormItem = Form.Item;
@@ -104,6 +107,9 @@ export default function AbstractSearch<TRow = AbstractRow>({
   const formRef = useFormRef(props.formRef);
   const [delayTimerId, setDelayTimerId] = useState<ReturnType<typeof setTimeout>>();
   const isNewline = props.actionStyle == 'newline';
+  const injecter = useInjecter(props.inject);
+  const context = useContext(ConfigProvider.ConfigContext);
+
 
   const fields = useMemo(() => {
     return (props.fields || []).map((item) => ({
@@ -160,9 +166,9 @@ export default function AbstractSearch<TRow = AbstractRow>({
         <div className={props.actionsCls}>
           <Button
             type="primary"
-            htmlType="submit"
             icon={<SearchOutlined />}
             {...(props.btnQuery || {})}
+            onClick={() => formRef.current?.submit()}
           >
             {useValue(props.btnQuery?.title, '查询')}
           </Button>
@@ -174,6 +180,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
           >
             {useValue(props.btnCancel?.title, '清空')}
           </Button>
+          {injecter?.node?.appendSearchAfter?.()}
         </div>
       </FormItem>
     );
@@ -205,11 +212,14 @@ export default function AbstractSearch<TRow = AbstractRow>({
   if (fields.length < 1) {
     return React.Children.only(props.children) as React.ReactElement;
   }
+
   return (
-    <div className={'abstract-search-form abstract-form '}>
+    <div className={`abstract-search-form abstract-form ${context.getPrefixCls('form-horizontal')}`}>
       <Form
+        component={false}
         className={`abstract-search-form-container ${props.className || ''}`}
         ref={formRef}
+        onSubmitCapture={() => false}
         initialValues={props.initialValues}
         onValuesChange={handleInputChanged}
         onFinish={handleSearch}
@@ -218,6 +228,8 @@ export default function AbstractSearch<TRow = AbstractRow>({
           form={formRef}
           groups={fields}
           itemStyle={props.itemStyle}
+          name="AbstractSearch"
+          inject={props.inject}
           formItemCls={`${props.formItemCls || ''} abstract-search-form-item`}
           formChildren={renderInlineActions()}
         />

@@ -5,7 +5,7 @@
 import './index.scss';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Context, { ActionsContext } from './context';
-import { AbstractRow, InitialAction, SubmitAction } from '../interface';
+import { AbstractFormContext, AbstractRow, InitialAction, SubmitAction } from '../interface';
 import { OnActionRoute } from '../abstract-table/types';
 import cellRenders from '../abstract-table/util/cellRenders';
 import TableContext, { AbstractTableContextValue } from '../abstract-table/context';
@@ -73,6 +73,9 @@ export interface AbstractActionsProps<TRow> {
   children?: React.ReactNode
   // 是否使用injecter
   inject?: boolean
+  // 是否在值改变时更新当前组件
+  shouldUpdate?: () => boolean
+  intoViewOptions?: AbstractFormContext['intoViewOptions']
   [x: string]: any
 }
 

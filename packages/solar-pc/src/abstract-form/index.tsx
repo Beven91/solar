@@ -3,14 +3,18 @@
  * @description 一个表单生成视图
  */
 import './index.scss';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import Dynamic from './dynamic';
 import register, { ConverterRegistry, ValueConverter } from './register';
 import { AbstractGroups, AbstractFormLayout, AbstractRules as AbstractRules, FormGroupStyle, onValuesChangeHandler, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
-import FormContext from './context';
+import FormContext, { TopFormContext } from './context';
 import AbstractProvider from '../abstract-provider';
 import ISolation from './isolation';
+
+const runtime = {
+  id: 0,
+};
 
 // 属性类型定义
 export interface AbstractFormProps<TRow> {
@@ -59,17 +63,28 @@ export interface AbstractFormProps<TRow> {
 export default function AbstractForm<TRow extends AbstractRow>(props: React.PropsWithChildren<AbstractFormProps<TRow>>) {
   const config = useContext(AbstractProvider.Context);
   const formContext = useContext(FormContext);
+  const topContext = useContext(TopFormContext);
 
   formContext.cacheGroups = props.groups;
 
+  const passContext = useMemo(() => {
+    return {
+      name: topContext?.name || `abstract-form-${runtime.id++}`,
+    };
+  }, []);
+
   return (
-    <Dynamic
-      formItemLayout={config.formItemLayout}
-      {...formContext}
-      {...props}
-      name={props.name || 'AbstractForm'}
-      containerWidth={formContext.width}
-    />
+    <TopFormContext.Provider
+      value={passContext}
+    >
+      <Dynamic
+        formItemLayout={config.formItemLayout}
+        {...formContext}
+        {...props}
+        name={props.name || 'AbstractForm'}
+        containerWidth={formContext.width}
+      />
+    </TopFormContext.Provider>
   );
 }
 

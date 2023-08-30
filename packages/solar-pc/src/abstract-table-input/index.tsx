@@ -14,9 +14,8 @@ import { FormInstance } from 'antd/lib/form';
 import AbstractForm from 'solar-pc/src/abstract-form';
 import TopActions from '../abstract-table/parts/TopActions';
 import AbstractTableContext from '../abstract-table/context';
-import AbstractUpdater from '../abstract-updater';
 
-type UpdateReason = 'input' | 'row' | 'none'
+type UpdateReason = 'input' | 'item' | 'none'
 
 const NOOP = [] as any[];
 
@@ -29,12 +28,19 @@ export interface AbstractTableInputProps<TRow extends AbstractRow> extends Abstr
   onChange?: (rows: TRow[]) => void
   // 保存指定行数据，仅在mode=row时能出发
   onSave?: (row: TRow) => Promise<any>
+  // 自定义移除时间
+  onRemove?: (row: TRow) => Promise<any>
+  // 自定义编辑事件
+  onEdit?: (row: TRow, defaultEdit: (row: TRow) => void) => Promise<TRow>
+  // 自定义创建事件
+  onCreate?: (emptyRow: TRow) => TRow | Promise<TRow>
   /**
    * 编辑模式
    * all: 所有行同时可以编辑
    * row: 点击指定行的按钮进入编辑状态
+   * row-api 新增时不自动进入编辑模式
    */
-  mode?: 'all' | 'row',
+  mode?: 'all' | 'row' | 'row-api',
   // 校验规则
   rules?: AbstractRules
   // 自定义创建行对象
@@ -51,6 +57,10 @@ export interface AbstractTableInputProps<TRow extends AbstractRow> extends Abstr
   removeVisible?: (row: TRow) => boolean
   // 是否显示操作列
   hideOperation?: boolean
+  // 删除二次确认文案
+  removeConfirm?: React.ReactNode
+  // 取消编辑二次确认文案
+  cancelConfirm?: React.ReactNode
 }
 
 const components = {
@@ -65,6 +75,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   pagination = false,
   mode = 'all',
   columns = [],
+  removeConfirm = '确定要删除当前行?',
+  cancelConfirm = '您确定要取消编辑?',
   createRow = (rowKey: string, columns: AbstractColumnType<AbstractRow>[], index: number) => {
     const emptyRow = {} as any;
     emptyRow[rowKey] = index;
@@ -77,7 +89,6 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   const [editRow, setEditRow] = useState<TRow>();
   const tableContext = useContext(AbstractTableContext);
   const vrows = useMemo(() => props.value || [], [props.value]);
-  const updater = useRef<AbstractUpdater>();
   const memoRef = useRef({
     updateReason: 'none' as UpdateReason,
     id: Date.now(),
@@ -131,12 +142,15 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   };
 
   // 新增行
-  const onCreateRow = () => {
+  const onCreateRow = async() => {
     const memo = memoRef.current;
     const rows = memo.rows;
-    const row = createRow(rowKey as string, columns, ++memo.id);
+    let row = createRow(rowKey as string, columns, ++memo.id);
+    if (props.onCreate) {
+      row = await props.onCreate(row);
+    }
     rows.push(row);
-    triggerChange([...rows], 'row');
+    triggerChange([...rows], 'item');
     tableRef.current.paginateIntoView(rows.length);
     if (mode == 'row' && !editRow) {
       setEditRow(row);
@@ -145,12 +159,16 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 删除行
   const onRemoveRow = (row: TRow) => {
-    const memo = memoRef.current;
-    const rows = memo.rows;
-    const index = rows.indexOf(row);
-    rows.splice(index, 1);
-    resetFields();
-    triggerChange([...rows], 'row');
+    return Promise
+      .resolve(props.onRemove?.(row))
+      .then(() => {
+        const memo = memoRef.current;
+        const rows = memo.rows;
+        const index = rows.indexOf(row);
+        rows.splice(index, 1);
+        resetFields();
+        triggerChange([...rows], 'item');
+      });
   };
 
   const onAction = (action: AbstractAction<TRow>) => {
@@ -162,7 +180,10 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   const onValuesChange = (changeValues: Record<any, any>) => {
     const memo = memoRef.current;
     const rows = memo.rows;
-    if (mode == 'row') return;
+    if (mode == 'row' || mode == 'row-api') {
+      triggerChange([...rows], 'input');
+      return;
+    }
     clearTimeout(memo.throttleId);
     memo.throttleId = setTimeout(() => {
       // 修改指定项,时不进行onChange ,如果执行onChange可能会触发整个表格重新渲染,性能欠佳
@@ -177,7 +198,6 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
           originRow[key] = row[key];
         });
       });
-      updater.current.noticeUpdater();
       triggerChange([...originalRows], 'input');
     }, 200);
   };
@@ -189,6 +209,20 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     onChange && onChange(rows);
   };
 
+  const handleEdit = async(row: TRow) => {
+    if (!props.onEdit) {
+      setEditRow(row);
+      return;
+    }
+    const index = memoRef.current.rows.indexOf(row);
+    const updatedRow = await props.onEdit(row, setEditRow);
+    const originRow = memoRef.current.rows[index] as Record<string, any>;
+    Object.keys(updatedRow).forEach((k) => {
+      originRow[k] = updatedRow[k];
+    });
+    onValuesChange({ [index]: updatedRow });
+  };
+
   // 默认操作按钮
   const defaultButtons = useMemo(() => {
     if (mode == 'all') {
@@ -197,8 +231,9 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
           icon: <DeleteOutlined />,
           target: 'cell',
           tip: '删除',
+          size: 'small',
           visible: props.removeVisible,
-          confirm: '确定要删除当前行?',
+          confirm: removeConfirm,
           click: onRemoveRow,
         },
       ];
@@ -208,7 +243,9 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
         target: 'cell',
         title: '编辑',
         visible: (row) => editRow != row,
-        click: (row) => setEditRow(row),
+        click: (r) => {
+          handleEdit(r);
+        },
       },
       {
         target: 'cell',
@@ -216,36 +253,42 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
         visible: (row) => editRow == row,
         click: async(row: AbstractRow) => {
           const { onSave } = props;
-          if (onSave) {
-            const res = await formRef.current.validateFields();
-            const rows = res.rows;
-            const keys = Object.keys(rows);
-            const editData = rows[keys[0]] || {};
-            const data = {
-              ...row,
-              ...editData,
-            };
-            Promise.resolve(onSave(data)).then(() => {
-              Object.keys(data).forEach((k) => {
-                row[k] = data[k];
-              });
-              setEditRow(null);
+          const res = await formRef.current.validateFields();
+          const rows = res.rows;
+          const keys = Object.keys(rows);
+          const editData = rows[keys[0]] || {};
+          const data = {
+            ...row,
+            ...editData,
+          };
+          const response = onSave ? onSave(data) : data;
+          return Promise.resolve(response).then(() => {
+            Object.keys(data).forEach((k) => {
+              row[k] = data[k];
             });
-          }
+            setEditRow(null);
+          });
         },
       },
       {
         target: 'cell',
         title: '取消',
-        confirm: '您确定要取消编辑?',
+        confirm: cancelConfirm,
         visible: (row) => editRow == row,
         click: () => {
           formRef.current?.resetFields();
           setEditRow(null);
         },
       },
+      {
+        target: 'cell',
+        title: '删除',
+        visible: props.removeVisible,
+        confirm: removeConfirm,
+        click: onRemoveRow,
+      },
     ] as AbstractButton<TRow>[];
-  }, [mode, editRow, props.removeVisible, props.onSave]);
+  }, [mode, editRow, removeConfirm, cancelConfirm, props.removeVisible, props.onSave]);
 
   // 移动按钮
   const moveButtons = useMemo(() => {
@@ -259,6 +302,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
         target: 'cell',
         tip: '上移',
         icon: <UpOutlined />,
+        size: 'small',
         visible: (row, i) => i > 0,
         click: (row: TRow) => {
           const { onChange } = props;
@@ -274,6 +318,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
       {
         target: 'cell',
         tip: '下移',
+        size: 'small',
         visible: (row, i) => i < (rows.length - 1),
         icon: <DownOutlined />,
         click: (row: TRow) => {
@@ -347,9 +392,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     return (
       <div className="abstract-table-input-addrow">
         <div onClick={onCreateRow} className="abstract-table-input-addrow-btn">
-          {addButton ?
-            addButton :
-            <Button type="dashed" icon={<PlusOutlined />} >追加一行</Button>}
+          {addButton || <Button type="dashed" icon={<PlusOutlined />} >追加一行</Button>}
         </div>
       </div>
     );
@@ -357,34 +400,32 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
 
   // 渲染
   return (
-    <AbstractUpdater ref={updater}>
-      <AbstractForm.ISolation
-        value={{ rows: memoRef.current.rows }}
-        groups={NOOP}
-        form={formRef}
-        onValuesChange={onValuesChange}
+    <AbstractForm.ISolation
+      value={{ rows: memoRef.current.rows }}
+      groups={NOOP}
+      form={formRef}
+      onValuesChange={onValuesChange}
+    >
+      <AbstractTable
+        {...props}
+        rowKey={rowKey}
+        pagination={pagination}
+        pageSize={pagination ? pagination.pageSize : undefined}
+        autoHeight
+        onQuery={onQuery}
+        ref={tableRef}
+        locale={{
+          emptyText: renderAddButton(),
+        }}
+        components={components}
+        data={{ models: memoRef.current.rows, count: 0 }}
+        buttons={buttons}
+        footer={renderFooter}
+        className={`abstract-table-input ${props.className || ''}`}
+        columns={mergedColumns}
       >
-        <AbstractTable
-          {...props}
-          rowKey={rowKey}
-          pagination={pagination}
-          pageSize={pagination ? pagination.pageSize : undefined}
-          autoHeight
-          onQuery={onQuery}
-          ref={tableRef}
-          locale={{
-            emptyText: renderAddButton(),
-          }}
-          components={components}
-          data={{ models: memoRef.current.rows, count: 0 }}
-          buttons={buttons}
-          footer={renderFooter}
-          className={`abstract-table-input ${props.className || ''}`}
-          columns={mergedColumns}
-        >
-          {props.children}
-        </AbstractTable>
-      </AbstractForm.ISolation>
-    </AbstractUpdater>
+        {props.children}
+      </AbstractTable>
+    </AbstractForm.ISolation>
   );
 }

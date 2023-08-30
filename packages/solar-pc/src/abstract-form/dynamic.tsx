@@ -3,7 +3,7 @@
  * @name Dynamic
  * @description 一个表单生成视图
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Row, Col, Tabs, Input, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import FormGroup from '../form-group';
@@ -14,6 +14,7 @@ import {
   FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow, FormItemLayout, AbstractGroupItem,
 } from '../interface';
 import { useInjecter } from '../abstract-injecter';
+import { IsolationError } from './context';
 
 export interface DynamicProps<TRow> {
   // 是否使用外包裹
@@ -93,14 +94,14 @@ export default function Dynamic<TRow extends AbstractRow>({
   const groups = props.groups || [];
   const [plainFields] = useState<Record<string, number>>({});
   const [accessedKeys] = useState<Record<string, boolean>>({});
-  const [memo] = useState({ callback: () => { } });
+  const memo = useRef({ callback: () => { }, keepIndex: -1 });
   const [activeIndex, setActiveIndex] = useState(props.defaultActiveIndex || 0);
   const injecter = useInjecter(props.inject);
 
   useEffect(() => {
-    if (memo.callback) {
-      memo.callback();
-      memo.callback = null;
+    if (memo.current.callback) {
+      memo.current.callback();
+      memo.current.callback = null;
     }
   }, [activeIndex]);
 
@@ -122,7 +123,7 @@ export default function Dynamic<TRow extends AbstractRow>({
           return new Promise<void>((resolve, reject) => {
             setTimeout(() => {
               const ok = checkTabsValidator(form);
-              ok ? resolve() : reject('tab validator');
+              ok ? resolve() : reject(<IsolationError />);
             }, 20);
           });
         },
@@ -139,12 +140,18 @@ export default function Dynamic<TRow extends AbstractRow>({
     const errorField = form.getFieldsError().filter((m) => m.errors?.length > 0)[0];
     const key = Object.keys(accessedKeys).find((k) => accessedKeys[k] == false);
     if (!key && !errorField) {
+      memo.current.keepIndex > -1 && toggleActiveIndex(memo.current.keepIndex);
+      memo.current.keepIndex = -1;
       return true;
     }
     if (errorField) {
+      memo.current.keepIndex = -1;
       toggleActiveIndex(plainFields[errorField.name.join('.')]);
     } else if (key) {
-      memo.callback = () => {
+      if (memo.current.keepIndex === -1) {
+        memo.current.keepIndex = activeIndex;
+      }
+      memo.current.callback = () => {
         setTimeout(() => form.submit?.(), 20);
       };
       toggleActiveIndex(key);
@@ -218,8 +225,8 @@ export default function Dynamic<TRow extends AbstractRow>({
               i
             ))}
           </Row>
+          {injecter?.node?.appendFormGroup?.(groupItem)}
         </FormGroup>
-        {injecter?.node?.appendFormGroup?.(groupItem)}
       </Col>
     );
   };

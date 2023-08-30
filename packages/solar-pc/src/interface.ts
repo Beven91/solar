@@ -1,6 +1,6 @@
 import { ColProps } from 'antd/lib/col';
 import { FormInstance, Rule } from 'antd/lib/form';
-import { NamePath } from 'antd/lib/form/interface';
+import { NamePath, ScrollOptions } from 'antd/lib/form/interface';
 import React, { ReactElement, ReactNode } from 'react';
 import { AbstractButton, AbstractColumnType, AbstractEditColumnType } from './abstract-table/types';
 import { DataNode } from 'rc-tree/lib/interface';
@@ -90,12 +90,14 @@ export interface AbstractFormItemType<TRow> {
   // 表单id
   id?: string | number
   // 表单标题
-  title: string
+  title: React.ReactNode
   // 表单字段名称
   name: string | Array<string>
   // 派生映射字段，用于实现一个输入可以派生出额外的表单值，例如：下拉框组件选择后，需要同时获取id和name
   // 例如: { id:'id',name:'cityName' }
   genericKeys?: Record<string, string>
+  // 组件动态key
+  customKey?: (record: TRow) => string
   // 联动字段
   // 默认值
   initialValue?: any
@@ -190,7 +192,10 @@ export interface AbstractFormContext {
   width?: number
   // 表单存根
   cacheGroups?: AbstractGroups<any>
+  intoViewOptions?: ScrollOptions
 }
+
+export type FormScrollIntoViewOptions = ScrollOptions
 
 export interface AbstractSField<TRow extends AbstractRow = AbstractRow> extends AbstractFormItemType<TRow> {
   /**

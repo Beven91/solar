@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { AbstractTable, AbstractColumns, AbstractButtons, AbstractSFields } from 'solar-pc';
 import { AbstractQueryType } from 'solar-pc/src/interface';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, SyncOutlined } from '@ant-design/icons';
 
 interface ActivityModel {
   id: number
@@ -22,6 +22,14 @@ export default function App() {
     { title: '商品价格', name: 'price' },
   ];
 
+  const onAsyncClick = useCallback(async(rows:ActivityModel[])=>{
+    console.log('批量上架:', rows);
+    return new Promise((resolve)=>{
+      console.log('批量上架成功');
+      setTimeout(()=>resolve({}), 3000);
+    });
+  }, []);
+
   const buttons: AbstractButtons<ActivityModel> = [
     // 行内按钮，
     { title: '修改', target: 'cell', click: (row) => console.log('修改行:', row) },
@@ -30,9 +38,9 @@ export default function App() {
     // 顶部按钮
     { title: '新增商品', icon: <PlusOutlined />, click: () => console.log('点击了新增') },
     // 单选
-    { title: '上架商品(单选)', select: 'single', click: (row) => console.log('上架商品:', row) },
+    { title: '上架商品(单选)', icon: <SyncOutlined />, confirm: 'ssdfsf', select: 'single', click: (row) => console.log('上架商品:', row) },
     // 多选行
-    { title: '批量上架(多选)', select: 'multiple', click: (rows) => console.log('批量上架:', rows) },
+    { title: '批量上架(多选)', confirm: '您确定要批量上架?', select: 'multiple', click: onAsyncClick },
     // 按钮是否可见
     {
       title: '审核',

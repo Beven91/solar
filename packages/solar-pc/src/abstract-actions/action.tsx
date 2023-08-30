@@ -50,6 +50,7 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
       onSubmit: onSubmit,
       onCancel: onCancel,
       isSubAction: false,
+      intoViewOptions: context.intoViewOptions,
       headContainer: { current: context.getActionsContainer?.() },
     };
   } else if (props.subAction && subAction == props.subAction) {
@@ -60,6 +61,7 @@ const getMatchContext = (context: ActionsContext, props: ActionProps) => {
       onSubmit: onSubSubmit,
       onCancel: onSubCancel,
       isSubAction: true,
+      intoViewOptions: context.intoViewOptions,
       headContainer: { current: context.getActionsContainer?.() },
     };
   }

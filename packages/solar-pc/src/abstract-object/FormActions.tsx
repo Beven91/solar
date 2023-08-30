@@ -110,7 +110,11 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
             actions?.map((render, i) => {
               const node = render(formValues || {} as TRow, ctx);
               return (
-                <span style={{ display: node ? 'inline' : 'none' }} className="footer-action-wrap" key={i}>{node}</span>
+                <span style={{ display: node ? 'inline' : 'none' }} className="footer-action-wrap" key={i}>
+                  <span className="button-wrapper">
+                    {node}
+                  </span>
+                </span>
               );
             })
           }

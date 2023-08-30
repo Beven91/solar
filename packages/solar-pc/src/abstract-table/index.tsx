@@ -80,6 +80,12 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const overflow = useScrollResizeable(props.autoHeight, containerRef, tableInnerRef, props.size, props.pagination !== false);
   const selectedRows = props.selectedRows || memo.selectedRows;
   const [updateId, setUpdateId] = useState(0);
+  const useInnerLoading = !('loading' in props);
+  const [innerLoading, setInnerLoading] = useState(props.loading);
+
+  useEffect(()=>{
+    setInnerLoading(props.loading);
+  }, [props.loading]);
 
   const tablePagination = useMemo(() => {
     if (props.pagination == false) {
@@ -229,6 +235,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
       callback?.(undefined);
       return;
     }
+    useInnerLoading && setInnerLoading(true);
     // 获取搜索框填写的表单值
     const query = searchFormRef.current?.getFieldsValue() || {};
     // 如果有选中标签
@@ -253,6 +260,8 @@ ref: React.MutableRefObject<AbstractTableInstance>
       if (data && data.models instanceof Array) {
         setDataSource(data);
       }
+    }).finally(() => {
+      useInnerLoading && setInnerLoading(false);
     });
   };
 
@@ -319,7 +328,6 @@ ref: React.MutableRefObject<AbstractTableInstance>
     children,
     renderTopBar,
     style,
-    loading,
     autoHeight,
     searchBoxCls,
     buttonBoxCls,
@@ -375,9 +383,9 @@ ref: React.MutableRefObject<AbstractTableInstance>
         <div className="abstract-flex" ref={tableInnerRef}>
           <Table
             rowKey={rowKey}
-            loading={loading}
             scroll={autoHeight ? { x: '100%' } : overflow.scroll}
             {...others}
+            loading={innerLoading}
             pagination={tablePagination}
             dataSource={dataSource?.models?.filter((a) => !!a)}
             onChange={onPagination}

@@ -54,7 +54,7 @@ export interface AbstractEditColumnType<TRow extends AbstractRow> extends Abstra
 
 type RenderButton = (href: string, onClick: (e: React.MouseEventHandler<HTMLElement>) => void) => ReactElement | React.ReactNode
 
-interface AbstractBaseButton<TRow> extends Omit<ButtonProps, 'disabled' | 'role'> {
+interface AbstractBaseButton<TRow> extends Omit<ButtonProps, 'disabled' | 'role' | 'loading'> {
   // 按钮标题
   title: string,
   // 按钮动作名称，在没有指定click情况下，使用action点击后会触发表格的全局onAction事件

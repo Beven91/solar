@@ -1,6 +1,6 @@
 import React from 'react';
 import { OnActionRoute } from '../abstract-table/types';
-import { AbstractRow } from '../interface';
+import { AbstractFormContext, AbstractRow } from '../interface';
 
 export interface ActionsContext<TRow = AbstractRow> {
   action: string
@@ -19,6 +19,7 @@ export interface ActionsContext<TRow = AbstractRow> {
   onValuesChange?: (values: TRow, prevValues: TRow) => void
   getActionsContainer?: ()=> HTMLElement
   listRef?: React.RefObject<HTMLDivElement>
+  intoViewOptions?: AbstractFormContext['intoViewOptions']
 }
 
 export default React.createContext<ActionsContext>({ action: '', record: {} });

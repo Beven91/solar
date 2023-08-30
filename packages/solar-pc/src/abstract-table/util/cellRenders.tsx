@@ -28,7 +28,7 @@ export function getRender<TRow>(column: AbstractColumnType<TRow>) {
  */
 function remainColumnWidth(columns: AbstractColumnType<AbstractRow>[], clientWidth: number) {
   if (clientWidth > 0) {
-    const columns2 = columns.filter((column) => column.width > 0);
+    const columns2 = columns.filter((column) => Number(column.width) > 0);
     const sum = columns2.reduce((total, column) => total + parseInt(column.width as any) + 32, 0);
     const count = columns.length - columns2.length;
     const remains = clientWidth - sum;

@@ -2,7 +2,7 @@
  * @module Item
  * @description 动态antd FormItem
  */
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Col, Form, Input } from 'antd';
 import { FormInstance, Rule, RuleObject } from 'antd/lib/form';
 import InputWrap, { getAllValues } from './InputWrap';
@@ -10,13 +10,14 @@ import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onV
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { ISolationContextValue } from './isolation';
 import { useInjecter } from '../abstract-injecter';
+import { IsolationError } from './context';
 
 const FormItem = Form.Item;
 
 const isVisible = (item: AbstractFormItemType<AbstractRow>, data: AbstractRow) => {
   if (typeof item.visible === 'function') {
     return item.visible(data);
-  } else if ('visible' in item) {
+  } else if (item.visible !== undefined) {
     return item.visible;
   }
   return true;
@@ -28,7 +29,7 @@ const isDisabled = (item: AbstractFormItemType<AbstractRow>, data: AbstractRow) 
   }
   if (typeof item.disabled === 'function') {
     return item.disabled(data);
-  } else if ('disabled' in item) {
+  } else if (item.disabled !== undefined) {
     return item.disabled;
   }
   return false;
@@ -114,8 +115,9 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const [updateId, setUpdateId] = useState<number>(0);
   const [updater] = useState({ formatUpdate: false });
   const extraNode = useExtraNode(item.extra, props.form, model);
-  const [contextOriginal] = useState<ContextOriginalValue>({} as ContextOriginalValue);
+  const contextOriginal = useRef<ContextOriginalValue>({} as ContextOriginalValue);
   const injecter = useInjecter(props.inject);
+  const memo = useRef({ isInputTrigger: false });
 
   useEffect(() => {
     setVisible(isVisible(item, model));
@@ -146,27 +148,31 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     return {
       validator: () => {
         return new Promise<void>((resolve, reject) => {
-          if (!contextOriginal.isolationValidator) {
+          if (!contextOriginal.current.isolationValidator) {
             return resolve();
           }
-          Promise.resolve(contextOriginal.isolationValidator()).then(() => {
+          if (memo.current.isInputTrigger) {
+            memo.current.isInputTrigger = false;
+            return resolve();
+          }
+          Promise.resolve(contextOriginal.current.isolationValidator()).then(() => {
             resolve();
           }).catch((ex) => {
-            reject();
+            reject(<IsolationError />);
           });
         });
       },
     };
-  }, [contextOriginal]);
+  }, []);
 
   const mergeValidatorRuler = useMemo(() => {
     return {
       validator: (rule: RuleObject) => {
         return new Promise<void>((resolve, reject) => {
-          if (!contextOriginal.mergeValidator) {
+          if (!contextOriginal.current.mergeValidator) {
             return resolve();
           }
-          Promise.resolve(contextOriginal.mergeValidator()).then(() => {
+          Promise.resolve(contextOriginal.current.mergeValidator()).then(() => {
             resolve();
           }).catch((message: string) => {
             rule.message = message;
@@ -175,7 +181,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
         });
       },
     };
-  }, [contextOriginal]);
+  }, []);
 
   const rules = useMemo(() => {
     return visible ? [...(props.rules || []), isolationRuler, mergeValidatorRuler] : null;
@@ -184,13 +190,13 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const isolationContext = useMemo(() => {
     return {
       setValidator: (handler) => {
-        contextOriginal.isolationValidator = handler;
+        contextOriginal.current.isolationValidator = handler;
       },
       setMergeValidator: (handler) => {
-        contextOriginal.mergeValidator = handler;
+        contextOriginal.current.mergeValidator = handler;
       },
     } as ISolationContextValue;
-  }, [contextOriginal]);
+  }, []);
 
 
   const shouldUpdate = (prevValues: TRow, curValues: TRow, info: { source: string }) => {
@@ -268,6 +274,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     if (typeof props.item?.extra == 'function') {
       setUpdateId((id) => id + 1);
     }
+    memo.current.isInputTrigger = true;
     props.onValuesChange?.(prevValues, curValues);
   }, [props.onValuesChange]);
 
@@ -335,8 +342,10 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
         data-id={props.item.id}
         data-name={props.item.name?.toString()}
         onDoubleClick={(e) => {
-          e.stopPropagation();
-          injecter?.listener?.onFieldDbClick(props.item, props?.formName);
+          if (injecter?.listener?.onFieldDbClick) {
+            e.stopPropagation();
+            injecter?.listener?.onFieldDbClick(props.item, props?.formName);
+          }
         }}
         className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
       >

@@ -8,7 +8,7 @@ import './index.scss';
 import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Modal, Form, ButtonProps, ModalFuncProps, ModalProps } from 'antd';
 import AbstractForm from '../abstract-form';
-import { AbstractActionItem, AbstractRow } from '../interface';
+import { AbstractActionItem, AbstractFormContext, AbstractRow, FormScrollIntoViewOptions } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import { Travel } from 'solar-core';
 import FormActions, { FormActionsInstance } from './FormActions';
@@ -16,6 +16,7 @@ import CrashProvider from '../crash-provider';
 import { mergeFormValues } from '../abstract-form/deepmerge';
 import { AbstractObjectContext } from './context';
 import { useInjecter } from '../abstract-injecter';
+import { IsolationError } from '../abstract-form/context';
 
 let formIdIndex = 0;
 
@@ -77,6 +78,8 @@ export interface BaseObjectProps<TRow> {
   inject?: boolean
   // 弹窗属性
   popupOptions?: Partial<ModalProps>
+  // 表单定位滚动选项
+  intoViewOptions?: AbstractFormContext['intoViewOptions']
 }
 
 export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
@@ -108,11 +111,12 @@ export default React.forwardRef(function AbstractObject<TRow = AbstractRow>({
   footer = true,
   inject,
   popupOptions,
+  intoViewOptions = { behavior: 'smooth', block: 'center' } as FormScrollIntoViewOptions,
   ...props
 }: React.PropsWithChildren<AbstractObjectProps<TRow>>,
 ref: React.MutableRefObject<AbstractObjectInstance>
 ) {
-  const [memo] = useState({ pendingReadOnly: null, isFirst: true, cancelId: null, cancelSubmiting: false, isDestoryed: false });
+  const memo = useRef({ pendingReadOnly: null, isFirst: true, visible: false, cancelId: null, cancelSubmiting: false, isDestoryed: false });
   const [formId] = useState(`abstract-form-${formIdIndex++}`);
   const visible = useMemo(() => action !== 'none' && !!action, [action]);
   const formRef = useRef<FormInstance>();
@@ -121,24 +125,26 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   const scopedValues = { ...(record || {}) };
   const injecter = useInjecter(inject);
 
+  memo.current.visible = visible;
+
   useEffect(() => {
-    if (!memo.isFirst) {
+    if (!memo.current.isFirst) {
       formRef.current?.resetFields();
-      memo.isFirst = false;
+      memo.current.isFirst = false;
     }
     formRef.current?.setFieldsValue(record);
     return () => {
-      memo.isDestoryed = true;
+      memo.current.isDestoryed = true;
       resetFields();
-      clearTimeout(memo.cancelId);
+      clearTimeout(memo.current.cancelId);
     };
   }, [action, record]);
 
   // 是否在只读模式下
   const isReadOnly = useMemo(() => {
-    if (memo.pendingReadOnly !== null) {
+    if (memo.current.pendingReadOnly !== null) {
       // 如果正在关闭中，这里需要临时使用关闭前的状态
-      return memo.pendingReadOnly;
+      return memo.current.pendingReadOnly;
     }
     return action === 'view' || !!props.isReadOnly;
   }, [action, props.isReadOnly]);
@@ -154,6 +160,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   }, [showActions]);
 
   const resetFields = () => {
+    if (memo.current.visible === false) return;
     formRef.current?.resetFields?.();
     const values = formRef.current?.getFieldsValue?.() || {} as TRow;
     if (footerRef.current) {
@@ -229,8 +236,11 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   };
 
   const doFinishFailed = (form: FormInstance, errorFields: any) => {
-    if (errorFields.length > 0 && scrollToFirstError) {
-      setTimeout(() => form.scrollToField(errorFields[0].name), 200);
+    const fields = errorFields.filter((m:any)=>!(m.errors[0]?.type === IsolationError));
+    if (fields.length > 0 && scrollToFirstError) {
+      setTimeout(() => {
+        form.scrollToField(fields[0].name, intoViewOptions);
+      }, 200);
     }
   };
 
@@ -251,13 +261,13 @@ ref: React.MutableRefObject<AbstractObjectInstance>
     if (typeof onCancel === 'function') {
       cancelable = onCancel() !== false;
     }
-    memo.pendingReadOnly = isReadOnly;
+    memo.current.pendingReadOnly = isReadOnly;
     Promise.resolve(cancelable).then((cancel) => {
-      if (cancel && !memo.isDestoryed) {
+      if (cancel && !memo.current.isDestoryed) {
         // 切换模式下，清除表单输入数据
         resetFields();
-        memo.cancelId = setTimeout(() => {
-          memo.pendingReadOnly = null;
+        memo.current.cancelId = setTimeout(() => {
+          memo.current.pendingReadOnly = null;
         }, 400);
       }
     });
@@ -288,6 +298,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
     handleCancel: handleCancel,
     // 校验表单
     validateForms: validateForms,
+    intoViewOptions: intoViewOptions,
     record: record || {},
     model: record || {},
   };

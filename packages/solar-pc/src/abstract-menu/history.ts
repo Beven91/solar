@@ -54,6 +54,28 @@ export function systemRouteMatch(route: string, flatMenus: AbstractMenuType[]) {
   return best.menu;
 }
 
+export function fullUrlMatch(menu: AbstractMenuType, route: string) {
+  if (menu.href == '') {
+    return false;
+  }
+  return (menu.href === route);
+}
+
+export function matchUrlLikeMatch(menus: AbstractMenuType[], route:string, match: (menu:AbstractMenuType, route:string)=>boolean) {
+  const findMenus = menus.filter((m) => match(m, route));
+  if (findMenus.length < 1) {
+    return systemRouteMatch(route, menus);
+  }
+  let menu = findMenus[0];
+  for (let i=1; i<findMenus.length; i++) {
+    const nextMenu = findMenus[i];
+    if (nextMenu.href.length > menu.href.length) {
+      menu = nextMenu;
+    }
+  }
+  return menu;
+}
+
 export function defaultUrlMatch(menu: AbstractMenuType, route: string) {
   if (menu.href == '') {
     return false;

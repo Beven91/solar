@@ -4,7 +4,7 @@
  *       用于选择外键数据
  */
 import './index.scss';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigProvider, Select, Spin } from 'antd';
 import { Network } from 'solar-core';
 import { SelectProps, SelectValue } from 'antd/lib/select';
@@ -135,7 +135,8 @@ export default function AdvancePicker<TRow = PlainObject>({
 }: AdvancePickerProps<TRow, SelectValue>
 ) {
   const [options, setOptions] = useState(createSource<TRow>(props.data, valueName, labelName));
-  const [pagination, setPagination] = useState({ init: true, search: '', loading: false, page: 0, hasMore: false });
+  const memo = useRef({ init: true });
+  const [pagination, setPagination] = useState({ search: '', loading: false, page: 0, hasMore: false });
   const [tagsValue, setTagsValue] = useState('');
   const [internalValue, setInternalValue] = useState<any>();
   const [timerId, setTimerId] = useState<TimerId>();
@@ -144,7 +145,7 @@ export default function AdvancePicker<TRow = PlainObject>({
     if (valueMode == 'object') {
       const value = props.value;
       const valueRows = ((value as any) instanceof Array ? value as TRow[] : [value].filter(Boolean) as TRow[]);
-      const myRows = valueRows.filter((m)=>(m || {} as any)[valueName] !== undefined);
+      const myRows = valueRows.filter((m) => (m || {} as any)[valueName] !== undefined);
       rows.unshift(...myRows.map((item) => createOption<TRow>(item, valueName, labelName)));
       return uniqueRows(rows);
     }
@@ -183,13 +184,13 @@ export default function AdvancePicker<TRow = PlainObject>({
   }, [joinChar, nativeValue, props.mode]);
 
   useEffect(() => {
-    if (pagination.init) {
+    if (memo.current.init) {
       initQuery && handleRemote('', false);
     } else {
       handleRemote('', false);
       return;
     }
-    setPagination({ ...pagination, init: false });
+    memo.current.init = false;
   }, [pageSize]);
 
   useEffect(() => {
@@ -200,7 +201,10 @@ export default function AdvancePicker<TRow = PlainObject>({
   // 搜索
   const thottleSearch = (value?: string) => {
     clearTimeout(timerId);
-    const id = setTimeout(() => handleRemote(value, false, true), 300);
+    const id = setTimeout(() => {
+      setOptions([]);
+      handleRemote(value, false, true);
+    }, 300);
     setTimerId(id);
   };
 
@@ -304,7 +308,6 @@ export default function AdvancePicker<TRow = PlainObject>({
   if (pagination.hasMore && pagination.loading && allRows.length > 0) {
     allRows.push({ loading: true, original: {} as TRow, originalValue: null, value: '-------------------', label: '加载中...' });
   }
-
 
   const formatNode = useCallback((row: OptionRow<TRow>) => {
     return (
