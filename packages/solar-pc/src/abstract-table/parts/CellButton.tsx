@@ -28,7 +28,9 @@ export function CellButton<TRow>(props: CellButtonProps<TRow>) {
   const handleAction = (e: any) => {
     const r = realClick(row as any, rowId, e) as any;
     if (r instanceof Promise) {
-      memo.current.timerId = setTimeout(()=>{setLoading(true);}, 80);
+      memo.current.timerId = setTimeout(()=>{
+        setLoading(true);
+      }, 80);
       setLoading(true);
       Promise.resolve(r).finally(() => {
         clearTimeout(memo.current.timerId);
