@@ -5,7 +5,7 @@
  */
 import './index.scss';
 import React, { PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, DeleteOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Button, ButtonProps, Col, ConfigProvider, Form, Input } from 'antd';
 import { AbstractQueryType, PlainObject, AbstractSField, RecordModel, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
@@ -51,6 +51,8 @@ export interface AbstractSearchProps<TRow> {
   itemStyle?: React.CSSProperties
   // 是否使用injecter
   inject?: boolean
+  // 默认展示条件个数
+  defaultCount?: number
 }
 
 const FormItem = Form.Item;
@@ -102,6 +104,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
   span = 8,
   onQuery = () => { },
   resetMode = 'all',
+  defaultCount = 0,
   ...props
 }: PropsWithChildren<AbstractSearchProps<TRow>>) {
   const formRef = useFormRef(props.formRef);
@@ -109,7 +112,8 @@ export default function AbstractSearch<TRow = AbstractRow>({
   const isNewline = props.actionStyle == 'newline';
   const injecter = useInjecter(props.inject);
   const context = useContext(ConfigProvider.ConfigContext);
-
+  const [expand, setExpand] = useState(false);
+  const showExpander = defaultCount > 0;
 
   const fields = useMemo(() => {
     return (props.fields || []).map((item) => ({
@@ -159,11 +163,15 @@ export default function AbstractSearch<TRow = AbstractRow>({
     props.onChange?.(model);
   }, [props.fields, delayTimerId, props.onChange]);
 
+  const toggleExpander = useCallback(()=>{
+    setExpand((expand)=> !expand);
+  }, []);
+
   // 渲染搜索按钮
   const renderSearchActions = () => {
     return (
       <FormItem >
-        <div className={props.actionsCls}>
+        <div className={`${props.actionsCls || ''} search-actions-btns`}>
           <Button
             type="primary"
             icon={<SearchOutlined />}
@@ -180,6 +188,17 @@ export default function AbstractSearch<TRow = AbstractRow>({
           >
             {useValue(props.btnCancel?.title, '清空')}
           </Button>
+          {
+            showExpander && (
+              <Button
+                onClick={toggleExpander}
+                icon={expand ? <UpOutlined /> : <DownOutlined />}
+                type="link"
+              >
+                {expand ? '收起' : '展开'}
+              </Button>
+            )
+          }
           {injecter?.node?.appendSearchAfter?.()}
         </div>
       </FormItem>
@@ -201,7 +220,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
       <Col
         span={span - 1}
         key="table-search-buttons"
-        className="search-buttons abstract-search-item"
+        className={`search-buttons abstract-search-item ${showExpander ? 'showExpander' : ''}`}
       >
         {renderSearchActions()}
       </Col>
@@ -212,6 +231,11 @@ export default function AbstractSearch<TRow = AbstractRow>({
   if (fields.length < 1) {
     return React.Children.only(props.children) as React.ReactElement;
   }
+
+  const useFields = useMemo(()=>{
+    if (!showExpander || expand) return fields;
+    return fields.slice(0, defaultCount);
+  }, [expand, defaultCount, showExpander, fields]);
 
   return (
     <div className={`abstract-search-form abstract-form ${context.getPrefixCls('form-horizontal')}`}>
@@ -226,7 +250,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
       >
         <AbstractForm
           form={formRef}
-          groups={fields}
+          groups={useFields}
           itemStyle={props.itemStyle}
           name="AbstractSearch"
           inject={props.inject}

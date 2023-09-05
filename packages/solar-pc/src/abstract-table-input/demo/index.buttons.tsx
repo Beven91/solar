@@ -25,7 +25,7 @@ export default function App() {
   ];
 
   const buttons: AbstractButtons<ActivityModel> = [
-    { title: '扣除', target: 'cell', click: (row) => console.log('扣除', row) },
+    // { title: '扣除', target: 'cell', click: (row) => console.log('扣除', row) },
   ];
 
   const onChange = (values: ActivityModel[]) => {

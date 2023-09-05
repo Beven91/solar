@@ -23,10 +23,15 @@
     min-width: 270px;
   }
 
+  .search-actions-btns {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
   .search-buttons {
     position: static;
     text-align: left;
-    min-width: 200px;
 
     .ant-form-item-children {
       white-space: nowrap;

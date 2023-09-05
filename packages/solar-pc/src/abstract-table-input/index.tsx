@@ -370,11 +370,13 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     const { footer } = props;
     const hideFooter = (!footer && rows?.length < 1);
     if (hideFooter) return null;
+    const btn = renderAddButton();
+    const hideActions = !btn && topButtons?.length < 1;
     return (
       <div className="abstract-table-input-footer">
         {footer ? <div className="abstract-table-input-footer-ext">{footer({} as any)}</div> : ''}
-        <div className="footer-actions">
-          {rows.length > 0 ? <div className="abstract-table-input-btns">{renderAddButton()}</div> : ''}
+        <div className="footer-actions" style={{ display: hideActions ? 'none' : undefined }}>
+          {rows.length > 0 ? <div className="abstract-table-input-btns">{btn}</div> : ''}
           <TopActions onAction={onAction} selectedRows={props.selectedRows} buttons={topButtons} />
         </div>
       </div>
