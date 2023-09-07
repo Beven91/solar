@@ -227,15 +227,19 @@ export default function AbstractSearch<TRow = AbstractRow>({
     );
   };
 
-  // 渲染
-  if (fields.length < 1) {
-    return React.Children.only(props.children) as React.ReactElement;
-  }
-
   const useFields = useMemo(()=>{
     if (!showExpander || expand) return fields;
     return fields.slice(0, defaultCount);
   }, [expand, defaultCount, showExpander, fields]);
+
+  // 渲染
+  if (fields.length < 1) {
+    return (
+      <>
+        {props.children}
+      </>
+    );
+  }
 
   return (
     <div className={`abstract-search-form abstract-form ${context.getPrefixCls('form-horizontal')}`}>
