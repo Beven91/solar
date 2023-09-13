@@ -295,8 +295,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     if (props.disabled || !props.moveable) {
       return [];
     }
-    const memo = memoRef.current;
-    const rows = memo.rows;
+
     return [
       {
         target: 'cell',
@@ -305,6 +304,8 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
         size: 'small',
         visible: (row, i) => i > 0,
         click: (row: TRow) => {
+          const memo = memoRef.current;
+          const rows = memo.rows;
           const { onChange } = props;
           const index = rows.indexOf(row);
           const targetIndex = index - 1;
@@ -319,9 +320,11 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
         target: 'cell',
         tip: '下移',
         size: 'small',
-        visible: (row, i) => i < (rows.length - 1),
+        visible: (row, i) => i < (memoRef.current.rows.length - 1),
         icon: <DownOutlined />,
         click: (row: TRow) => {
+          const memo = memoRef.current;
+          const rows = memo.rows;
           const index = rows.indexOf(row);
           const { onChange } = props;
           const targetIndex = index + 1;
