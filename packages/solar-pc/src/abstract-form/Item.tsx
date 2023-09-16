@@ -6,11 +6,12 @@ import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } 
 import { Col, Form, Input } from 'antd';
 import { FormInstance, Rule, RuleObject } from 'antd/lib/form';
 import InputWrap, { getAllValues } from './InputWrap';
-import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler } from '../interface';
+import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler, FunctionItemType } from '../interface';
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { ISolationContextValue } from './isolation';
 import { useInjecter } from '../abstract-injecter';
 import { IsolationError } from './context';
+import { FormGroupContext } from '../form-group';
 
 const FormItem = Form.Item;
 
@@ -106,9 +107,27 @@ function useExtraNode<TRow>(extra: AbstractFormItemType<TRow>['extra'], formRef:
   return extra;
 }
 
+export interface FunctionItemProps<TRow =any> {
+  isReadonly:boolean
+  item:FunctionItemType<TRow>
+  model: TRow
+  form: React.RefObject<FormInstance>
+}
+
+export function FunctionItem<TRow =any>(props:FunctionItemProps<TRow>) {
+  const groupContext = useContext(FormGroupContext);
+  const model = getAllValues(props);
+  return (
+    <>
+      {props.item(model, groupContext.isReadonly || props.isReadonly)}
+    </>
+  );
+}
+
 export default function Item<TRow extends AbstractRow = AbstractRow>(props: AbstractItemProps<TRow>) {
   const item = props.item;
   const context = useContext(ConfigConsumer.Context);
+  const groupContext = useContext(FormGroupContext);
   const model = useMemo(() => getAllValues(props), [props.model, props.form?.current]);
   const [visible, setVisible] = useState(isVisible(item, model));
   const [disabled, setDisabled] = useState(isDisabled(item, model));
@@ -286,7 +305,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     const items = useInitialValue(record, name) ? { initialValue } : {};
     const title = item.render2 ? '' : item.title || '';
     const type = item.render2 ? 'input-full' : '';
-    const isReadOnly = disabled || props.isReadOnly;
+    const isReadOnly = disabled || groupContext.isReadonly || props.isReadOnly;
     const readonlyCls = isReadOnly ? 'readonly-item' : '';
     const id = item.name instanceof Array ? item.name.join(',') : item.name;
     const genericKeys = Object.keys(item.genericKeys || {}).filter((m) => m !== id);

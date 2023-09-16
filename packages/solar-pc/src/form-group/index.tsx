@@ -3,7 +3,7 @@
  * @description 表单分组行
  */
 import './index.scss';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { AbstractFormGroupItemType, AbstractRow, FormGroupStyle } from '../interface';
@@ -19,6 +19,17 @@ const isVisible = (props: WithFormProps<any>) => {
     return item.visible;
   }
   return true;
+};
+
+const isReadonly = (props: WithFormProps<any>) => {
+  const item = props.group;
+  if (typeof item?.readonly === 'function') {
+    const data = getAllValues(props);
+    return item.readonly(data);
+  } else if (item?.readonly !== undefined) {
+    return item.readonly;
+  }
+  return undefined;
 };
 
 interface WithFormProps<TRow = any> {
@@ -42,20 +53,38 @@ export interface FormGroupProps<TRow> extends WithFormProps<TRow> {
   noLeftPadding?: boolean
 }
 
+export interface FormGroupContextValue {
+  isReadonly?: boolean
+}
+
+export const FormGroupContext = React.createContext<FormGroupContextValue>({
+});
+
 export default function FormGroup<TRow extends AbstractRow>({
   mode = 'normal',
   ...props
 }: React.PropsWithChildren<FormGroupProps<TRow>>) {
   const [visible, setVisible] = useState(true);
+  const [readonly, setReadonly] = useState<boolean>(undefined);
   const memo = useRef({ timerId: 0 as any });
+
+  const groupContext = useMemo(() => {
+    return {
+      isReadonly: readonly,
+    };
+  }, [readonly]);
 
   useEffect(() => {
     setVisible(isVisible(props));
   }, [props.group?.visible, props.model]);
 
+  useEffect(() => {
+    setReadonly(isReadonly(props));
+  }, [props.group?.readonly, props.model]);
+
   const shouldUpdate = () => {
     clearTimeout(memo.current.timerId);
-    memo.current.timerId = setTimeout(()=>{
+    memo.current.timerId = setTimeout(() => {
       const innerVisible = isVisible(props);
       setVisible(innerVisible);
     }, 16);
@@ -83,10 +112,12 @@ export default function FormGroup<TRow extends AbstractRow>({
       <Card
         headStyle={style}
         bodyStyle={style}
-        className={`form-group ${className} ${mode || ''}`}
+        className={`form-group ${ readonly ? 'readonly' : '' } ${className} ${mode || ''}`}
         title={props.title ? title : ''}
       >
-        {props.children}
+        <FormGroupContext.Provider value={groupContext}>
+          {props.children}
+        </FormGroupContext.Provider>
       </Card>
     );
   };

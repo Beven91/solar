@@ -4,7 +4,7 @@ import React from 'react';
 export interface AbstractContextValue<TRow = any> {
   isReadOnly: boolean
   form: React.MutableRefObject<FormInstance>
-  width: number
+  width: number | string
   // 提交
   submitAction: () => void,
   // 取消

@@ -39,7 +39,7 @@ export interface BaseObjectProps<TRow> {
   // 取消操作
   onCancel?: () => boolean | void;
   // 弹窗宽度
-  width?: number;
+  width?: number | string;
   // 内容高度
   height?: string | number
   // 是否显示底部操作按钮
@@ -391,7 +391,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   const renderPopupObject = () => {
     const { title, width, height, loading, className } = props;
     const fixedCls = height ? 'fixed-footer' : '';
-    const sizeCls = width > 0 ? '' : 'large';
+    const sizeCls = width ? '' : 'large';
     return (
       <AbstractObjectContext.Provider value={formContext}>
         <Modal

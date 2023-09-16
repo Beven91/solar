@@ -1,41 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AbstractForm, AdvancePicker, AbstractGroups, AbstractRules } from 'solar-pc';
 import { Button, Form, FormInstance, InputNumber, Input, Switch, DatePicker } from 'antd';
-// import { Network } from 'solar-core';
-
-// const network = new Network();
-
-// (window as any).keepingRunning = true;
-
-// function scheduleTask(name: string, handler: () => Promise<any>) {
-//   if (!(window as any).keepingRunning) return;
-//   const ctx = handler();
-//   ctx.then((res) => res.json())
-//     .catch((ex) => {
-//       console.log(ex);
-//     })
-//     .then((res) => {
-//       const sign = (ctx as any).reqContext.modifyHeaders['sign'];
-//       if (res?.errorCode == 108) {
-//         console.error((new Date()).toLocaleTimeString() + '-- ' + sign + ' -- ' + name + '-check sign fail');
-//       } else {
-//         console.info((new Date()).toLocaleTimeString() + '-- ' + sign + +' -- ' + name + '-check sign ok');
-//       }
-//       setTimeout(() => scheduleTask(name, handler), 2000);
-//     });
-// }
-
-// scheduleTask('getCityByProvince', () => {
-//   return network.post('https://api.test.shantaijk.cn/api/serve-base/servebase/addressService/getCityByProvince', { provinceCode: '110000' });
-// });
-
-// scheduleTask('getContent', () => {
-//   return network.get('https://api.test.shantaijk.cn/api/resource-manager/secret/getContent?resourceId=app.local.physical.reportBtn&groupId=LOCAL&environment=DEV');
-// });
-
-// network.get('https://api.test.shantaijk.cn/api/resource-manager/secret/getContent', { 'resourceId': 'app.local.physical.reportBtn', 'groupId': 's是是是', 'environment': 'DEV' });
-
-// network.post('http://api.test.shantaijk.cn/api/futuredoctor/myFamilyApi/createPatientAndJoinFamilyGroup', { 'patientInfo': { 'patientName': '吉里吉里', 'gender': 'MALE', 'monthAge': 360 } });
 
 export interface ActivityModel {
   activityId: string

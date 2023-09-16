@@ -7,7 +7,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Row, Col, Tabs, Input, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import FormGroup from '../form-group';
-import FormItem from './Item';
+import FormItem, { FunctionItem } from './Item';
 import {
   AbstractFormGroupItemType, AbstractGroups,
   AbstractFormItemType, AbstractFormLayout, AbstractRules,
@@ -52,7 +52,7 @@ export interface DynamicProps<TRow> {
   // 表单项样式名
   formItemCls?: string
   // 表单容器外在宽度
-  containerWidth?: number
+  containerWidth?: number | string
   // 表单项底部间距模式
   itemStyle?: React.CSSProperties
   // 当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验
@@ -73,15 +73,9 @@ const defaultFormItemLayout: FormItemLayout = {
   },
   wrapperCol: {
     span: 16,
-  },
-};
-
-const defaultFormItemLayout2: FormItemLayout = {
-  labelCol: {
-    span: 5,
-  },
-  wrapperCol: {
-    span: 17,
+    xs: {
+      span: 17,
+    },
   },
 };
 
@@ -104,17 +98,6 @@ export default function Dynamic<TRow extends AbstractRow>({
       memo.current.callback = null;
     }
   }, [activeIndex]);
-
-  // 是否为只读模式
-  const getIsReadOnly = (group: AbstractFormGroupItemType<TRow>) => {
-    return props.isReadOnly || group?.readonly;
-  };
-
-  const getDefaultFormLayout = () => {
-    const width = props.containerWidth;
-    const isMini = width > 0 && width <= 500;
-    return isMini ? defaultFormItemLayout2 : defaultFormItemLayout;
-  };
 
   const controlRules = [
     (form: FormInstance) => {
@@ -195,9 +178,6 @@ export default function Dynamic<TRow extends AbstractRow>({
     if (index == 0) {
       classNames.push('first-group');
     }
-    if (groupItem.readonly) {
-      classNames.push('readonly');
-    }
     return (
       <Col
         className="abstract-form-group-wrapper"
@@ -246,7 +226,12 @@ export default function Dynamic<TRow extends AbstractRow>({
         key={`form-group-item-${index || 0}-${item.name}`}
         span={24}
       >
-        {item(model, getIsReadOnly(group))}
+        <FunctionItem
+          item={item}
+          model={model}
+          form={props.form}
+          isReadonly={props.isReadOnly}
+        />
       </Col>
     );
   };
@@ -257,7 +242,7 @@ export default function Dynamic<TRow extends AbstractRow>({
     const title = item.render2 ? '' : item.title;
     const layout = group?.layout;
     const itemStyle = group?.itemStyle;
-    const layout2 = title ? item.layout || layout || formItemLayout || getDefaultFormLayout() : {};
+    const layout2 = title ? item.layout || layout || formItemLayout || defaultFormItemLayout : {};
     const num = 24 / span;
     const name = item.name instanceof Array ? item.name.join('.') : item.name;
     const itemRules = (rules || {})[name];
@@ -279,7 +264,7 @@ export default function Dynamic<TRow extends AbstractRow>({
           autoFocusAt={props.autoFocus}
           colOption={colOption}
           onValuesChange={props.onValuesChange}
-          isReadOnly={getIsReadOnly(group)}
+          isReadOnly={props.isReadOnly}
           form={props.form}
           rules={itemRules}
           validateFirst={props.validateFirst}
@@ -340,7 +325,7 @@ export default function Dynamic<TRow extends AbstractRow>({
 
   const renderNorml = () => {
     const { groups = [], children } = props;
-    const last = groups[groups.length -1] || {};
+    const last = groups[groups.length - 1] || {};
     const lastIsGroup = ('group' in last) || props.name == 'AbstractSearch';
     const node = (
       <>

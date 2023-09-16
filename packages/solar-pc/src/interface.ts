@@ -171,7 +171,7 @@ export interface AbstractFormGroupItemType<TRow> {
   // 列独立布局
   layout?: AbstractFormLayout
   // 当前组是否只读
-  readonly?: boolean
+  readonly?: boolean | ((record: TRow) => boolean)
   // 表单选项的样式控制
   itemStyle?: React.CSSProperties
   // 表单组展示模式
@@ -189,7 +189,7 @@ export interface AbstractFormContext {
   form: React.RefObject<FormInstance>
   record: RecordModel
   // 容器宽度
-  width?: number
+  width?: number | string
   // 表单存根
   cacheGroups?: AbstractGroups<any>
   intoViewOptions?: ScrollOptions

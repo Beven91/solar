@@ -12,6 +12,7 @@ import { AbstractResponseModel, OptionObject, PageQueryData, PlainObject } from 
 
 const Option = Select.Option;
 const NOOP = (a: any) => a;
+const isUndef = (v: any) => v === null || v === undefined;
 
 const network = new Network();
 
@@ -173,7 +174,7 @@ export default function AdvancePicker<TRow = PlainObject>({
     const value = nativeValue;
     if (!props.mode) {
       // 单选
-      return value ? value.toString() : value;
+      return isUndef(value) ? value : value.toString();
     }
     // 多选
     if (joinChar && typeof value === 'string') {
