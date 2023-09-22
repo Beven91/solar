@@ -53,6 +53,8 @@ export interface AbstractSearchProps<TRow> {
   inject?: boolean
   // 默认展示条件个数
   defaultCount?: number
+  // 是否开启回车搜索
+  enterKeySubmit?: boolean
 }
 
 const FormItem = Form.Item;
@@ -105,6 +107,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
   onQuery = () => { },
   resetMode = 'all',
   defaultCount = 0,
+  enterKeySubmit = true,
   ...props
 }: PropsWithChildren<AbstractSearchProps<TRow>>) {
   const formRef = useFormRef(props.formRef);
@@ -123,6 +126,11 @@ export default function AbstractSearch<TRow = AbstractRow>({
     }));
   }, [props.fields, span]);
 
+  const onKeyUp = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && enterKeySubmit) {
+      formRef.current?.submit();
+    }
+  }, [enterKeySubmit]);
 
   // 处理搜索
   const handleSearch = (values: PlainObject) => {
@@ -163,8 +171,8 @@ export default function AbstractSearch<TRow = AbstractRow>({
     props.onChange?.(model);
   }, [props.fields, delayTimerId, props.onChange]);
 
-  const toggleExpander = useCallback(()=>{
-    setExpand((expand)=> !expand);
+  const toggleExpander = useCallback(() => {
+    setExpand((expand) => !expand);
   }, []);
 
   // 渲染搜索按钮
@@ -227,7 +235,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
     );
   };
 
-  const useFields = useMemo(()=>{
+  const useFields = useMemo(() => {
     if (!showExpander || expand) return fields;
     return fields.slice(0, defaultCount);
   }, [expand, defaultCount, showExpander, fields]);
@@ -235,34 +243,34 @@ export default function AbstractSearch<TRow = AbstractRow>({
   // 渲染
   if (fields.length < 1) {
     return (
-      <>
-        {props.children}
-      </>
+      <>{props.children}</>
     );
   }
 
   return (
     <div className={`abstract-search-form abstract-form ${context.getPrefixCls('form-horizontal')}`}>
-      <Form
-        component={false}
-        className={`abstract-search-form-container ${props.className || ''}`}
-        ref={formRef}
-        onSubmitCapture={() => false}
-        initialValues={props.initialValues}
-        onValuesChange={handleInputChanged}
-        onFinish={handleSearch}
-      >
-        <AbstractForm
-          form={formRef}
-          groups={useFields}
-          itemStyle={props.itemStyle}
-          name="AbstractSearch"
-          inject={props.inject}
-          formItemCls={`${props.formItemCls || ''} abstract-search-form-item`}
-          formChildren={renderInlineActions()}
-        />
-        {renderNewlineActions()}
-      </Form>
+      <div className="abstract-search-inner" onKeyUp={onKeyUp}>
+        <Form
+          component={false}
+          className={`abstract-search-form-container ${props.className || ''}`}
+          ref={formRef}
+          onSubmitCapture={() => false}
+          initialValues={props.initialValues}
+          onValuesChange={handleInputChanged}
+          onFinish={handleSearch}
+        >
+          <AbstractForm
+            form={formRef}
+            groups={useFields}
+            itemStyle={props.itemStyle}
+            name="AbstractSearch"
+            inject={props.inject}
+            formItemCls={`${props.formItemCls || ''} abstract-search-form-item`}
+            formChildren={renderInlineActions()}
+          />
+          {renderNewlineActions()}
+        </Form>
+      </div>
       {props.children}
     </div>
   );

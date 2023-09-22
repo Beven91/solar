@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { AbstractObject, AbstractForm, AbstractGroups, AbstractRules } from 'solar-pc';
-import { Button, PageHeader } from 'antd';
+import { Button } from 'antd';
+import PageHeader from '../../page-header';
 
 export interface CommodityModel {
   name: string
@@ -42,8 +43,8 @@ export default function App() {
         headContainer={headContainer}
         headActions={
           [
-            (row, ctx) => {
-              return <Button onClick={ctx.bindValidate(() => alert('审核成功'))} size="large" type="primary">审核({row.name})</Button>;
+            (row: CommodityModel, ctx) => {
+              return <Button onClick={ctx.bindValidate(() => alert('审核成功'))} type="primary">审核({row.name})</Button>;
             },
           ]
         }

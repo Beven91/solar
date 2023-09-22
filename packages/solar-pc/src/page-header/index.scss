@@ -1,0 +1,179 @@
+
+.my-page-header {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5715;
+  list-style: none;
+  font-feature-settings: 'tnum';
+  position: relative;
+  padding: 16px 24px;
+  background-color: #fff;
+}
+
+.my-page-header-ghost {
+  background-color: inherit;
+}
+
+.my-page-header.has-breadcrumb {
+  padding-top: 12px;
+}
+
+.my-page-header.has-footer {
+  padding-bottom: 0;
+}
+
+.my-page-header-back {
+  margin-right: 16px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.my-page-header-back-button {
+  color: #1890ff;
+  outline: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  color: #000;
+}
+
+.my-page-header-back-button:focus-visible, .my-page-header-back-button:hover {
+  color: #40a9ff;
+}
+
+.my-page-header-back-button:active {
+  color: #096dd9;
+}
+
+.my-page-header .my-divider-vertical {
+  height: 14px;
+  margin: 0 12px;
+  vertical-align: middle;
+}
+
+.my-breadcrumb + .my-page-header-heading {
+  margin-top: 8px;
+}
+
+.my-page-header-heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.my-page-header-heading-left {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  overflow: hidden;
+}
+
+.my-page-header-heading-title {
+  margin-right: 12px;
+  margin-bottom: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 32px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.my-page-header-heading .my-avatar {
+  margin-right: 12px;
+}
+
+.my-page-header-heading-sub-title {
+  margin-right: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  line-height: 1.5715;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.my-page-header-heading-extra {
+  margin: 4px 0;
+  white-space: nowrap;
+}
+
+.my-page-header-heading-extra > * {
+  white-space: unset;
+}
+
+.my-page-header-content {
+  padding-top: 12px;
+}
+
+.my-page-header-footer {
+  margin-top: 16px;
+}
+
+.my-page-header-footer .my-tabs > .my-tabs-nav {
+  margin: 0;
+}
+
+.my-page-header-footer .my-tabs > .my-tabs-nav::before {
+  border: none;
+}
+
+.my-page-header-footer .my-tabs .my-tabs-tab {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 16px;
+}
+
+.my-page-header-compact .my-page-header-heading {
+  flex-wrap: wrap;
+}
+
+.my-page-header-rtl {
+  direction: rtl;
+}
+
+.my-page-header-rtl .my-page-header-back {
+  float: right;
+  margin-right: 0;
+  margin-left: 16px;
+}
+
+.my-page-header-rtl .my-page-header-heading-title {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.my-page-header-rtl .my-page-header-heading .my-avatar {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.my-page-header-rtl .my-page-header-heading-sub-title {
+  float: right;
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.my-page-header-rtl .my-page-header-heading-tags {
+  float: right;
+}
+
+.my-page-header-rtl .my-page-header-heading-extra {
+  float: left;
+}
+
+.my-page-header-rtl .my-page-header-heading-extra > * {
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+.my-page-header-rtl .my-page-header-heading-extra > *:first-child {
+  margin-right: 0;
+}
+
+.my-page-header-rtl .my-page-header-footer .my-tabs-bar .my-tabs-nav {
+  float: right;
+}

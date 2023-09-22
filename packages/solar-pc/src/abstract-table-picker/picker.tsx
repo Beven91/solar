@@ -66,14 +66,17 @@ export default function ObjectPicker<TRow = AbstractRow>(
         title: '选择',
         click: (row: TRow) => {
           const rows = selectedRows;
-          if (select === 'single') {
+          const isSingle = select === 'single';
+          if (isSingle) {
             rows.length = 0;
           }
           if (rows.indexOf(row) < 0) {
             rows.push(row);
           }
           setSelectedRows([...rows]);
-          handleSubmit(rows);
+          if (isSingle) {
+            handleSubmit(rows);
+          }
         },
       },
     ] as AbstractButton<TRow>[];
@@ -138,7 +141,7 @@ export default function ObjectPicker<TRow = AbstractRow>(
       <Modal
         wrapClassName="object-picker-modal"
         title={title || '请选择'}
-        visible={visible}
+        open={visible}
         okText="确定选择"
         cancelText="取消"
         width={width}

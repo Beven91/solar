@@ -1,6 +1,10 @@
-import React, { PropsWithChildren } from 'react';
+import React, { } from 'react';
 
-export default class AbstractUpdater extends React.Component<PropsWithChildren> {
+export interface AbstractUpdaterProps {
+  needForceUpdate?: () => boolean
+}
+
+export default class AbstractUpdater extends React.Component<React.PropsWithChildren<AbstractUpdaterProps>> {
   reason = '';
 
   noticeUpdater() {
@@ -8,6 +12,9 @@ export default class AbstractUpdater extends React.Component<PropsWithChildren> 
   }
 
   shouldComponentUpdate(): boolean {
+    if (this.props.needForceUpdate?.() === true) {
+      return true;
+    }
     if (this.reason == 'change') {
       this.reason = '';
       return false;

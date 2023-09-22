@@ -1,6 +1,6 @@
 {
   "name": "solar-pc",
-  "version": "4.12.0",
+  "version": "5.0.0",
   "description": "solar pc",
   "main": "index",
   "scripts": {
@@ -9,7 +9,7 @@
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "antd": "^4.24.5",
+    "antd": "^5.2.9",
     "solar-core": "^4.2.0"
   },
   "dependencies": {

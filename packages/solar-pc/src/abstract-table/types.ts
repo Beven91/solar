@@ -181,6 +181,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   getActionsContainer?: () => HTMLElement
   // 是否使用injecter
   inject?: boolean
+  // 操作按钮描述
+  extraNode?: React.ReactNode
 }
 
 

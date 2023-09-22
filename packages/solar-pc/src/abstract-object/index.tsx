@@ -290,7 +290,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   const formContext = {
     isReadOnly: isReadOnly,
     form: formRef,
-    width: props.width,
+    width: (props.width),
     inject: inject,
     // 提交
     submitAction: handleSubmit,
@@ -375,7 +375,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         showCancel={false}
         showOk={false}
         record={record}
-        className={props.className ? `${props.className}-header` : ''}
+        className={`header-actions ${props.className ? `${props.className}-header` : ''}`}
         handleCancel={handleCancel}
         handleSubmit={handleSubmit}
         validateForms={validateForms}
@@ -402,7 +402,6 @@ ref: React.MutableRefObject<AbstractObjectInstance>
           title={title}
           {...popupOptions}
           open={visible}
-          visible={visible}
           confirmLoading={loading}
           onOk={handleSubmit}
           onCancel={handleCancel}

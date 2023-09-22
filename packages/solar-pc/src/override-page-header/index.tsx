@@ -1,6 +1,6 @@
-import { PageHeader, PageHeaderProps } from 'antd';
-import { Route } from 'antd/lib/breadcrumb/Breadcrumb';
+import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
 import React, { useContext, useEffect, useState } from 'react';
+import PageHeader, { PageHeaderProps } from '../page-header';
 
 interface OverrideContextOptions {
   setOptions?: (options: OverridePageHeaderProps) => void
@@ -8,7 +8,7 @@ interface OverrideContextOptions {
 }
 
 interface OverridePageHeaderProps extends PageHeaderProps {
-  appendRoutes?: Route[]
+  appendRoutes?: ItemType[]
   visible?: boolean
 }
 
@@ -27,6 +27,7 @@ export default function OverridePageHeader(props: OverridePageHeaderProps) {
   return null as React.ReactElement;
 }
 
+// eslint-disable-next-line react/display-name
 OverridePageHeader.PageHeader = (props: PageHeaderProps) => {
   const context = useContext(OverrideContext);
   const { appendRoutes, visible, ...options } = context?.getOptions() || {};
@@ -51,6 +52,7 @@ OverridePageHeader.PageHeader = (props: PageHeaderProps) => {
   );
 };
 
+// eslint-disable-next-line react/display-name
 OverridePageHeader.Container = (props: React.PropsWithChildren) => {
   const [options, setOptions] = useState<PageHeaderProps>();
   const context: OverrideContextOptions = {

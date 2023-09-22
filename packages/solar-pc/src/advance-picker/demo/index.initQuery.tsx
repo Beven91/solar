@@ -47,6 +47,7 @@ export default function App() {
         api={queryAllRecords}
         pageSize={10}
         initQuery={false}
+        type="remote"
         onChange={(v) => {
           setValue(v);
           console.log(v);

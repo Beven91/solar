@@ -1,5 +1,5 @@
 import { Switch, Checkbox, Radio } from 'antd';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Registrations from '../input-factory/Registration';
 
 export interface ValueConverter {
@@ -39,7 +39,7 @@ ConverterRegistry.register({
   },
   setInput: (v, fmt = 'YYYY-MM-DD HH:mm:ss') => {
     if (!v) return null;
-    const value = moment(v, fmt);
+    const value = dayjs(v, fmt);
     return value.isValid() ? value : null;
   },
 });

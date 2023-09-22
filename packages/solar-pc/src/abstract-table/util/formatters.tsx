@@ -4,7 +4,7 @@
  *       表格列格式化工具
  */
 import { Image } from 'antd';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React from 'react';
 import { Oss } from 'solar-core';
 import { AbstractRow } from '../../interface';
@@ -36,7 +36,7 @@ const formatters = new FormatterRegistrations();
 
 // 日期格式化
 function date(value: any, ctx: FormatContext) {
-  return value ? moment(value).format(ctx?.options?.fmt || 'YYYY-MM-DD HH:mm:ss') : '';
+  return value ? dayjs(value).format(ctx?.options?.fmt || 'YYYY-MM-DD HH:mm:ss') : '';
 }
 
 // 是否格式化

@@ -12,7 +12,6 @@ import { AbstractResponseModel, OptionObject, PageQueryData, PlainObject } from 
 
 const Option = Select.Option;
 const NOOP = (a: any) => a;
-const isUndef = (v: any) => v === null || v === undefined;
 
 const network = new Network();
 
@@ -23,6 +22,8 @@ type ValueType = Parameters<SelectProps['onChange']>[0]
 type TimerId = ReturnType<typeof setTimeout>;
 
 type TRowModel = Record<string, string | number>
+
+const isUndef = (v: any) => v === undefined || v === null;
 
 export interface OptionRow<TRow> {
   original: TRow,

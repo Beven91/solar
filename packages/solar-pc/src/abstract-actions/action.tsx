@@ -191,12 +191,12 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       placement={placement || 'right'}
       {...(drawer || {})}
       {...(realtime ? { mask: true, maskClosable: true } : {})}
-      style={style}
+      rootStyle={style}
       contentWrapperStyle={myStyle}
       width={finalWidth}
-      className={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
+      rootClassName={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
       title={props.title || ''}
-      visible={visible}
+      open={visible}
       onClose={onCancel}
     >
       {

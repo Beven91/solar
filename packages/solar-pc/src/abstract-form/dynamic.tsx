@@ -72,7 +72,7 @@ const defaultFormItemLayout: FormItemLayout = {
     span: 5,
   },
   wrapperCol: {
-    span: 16,
+    span: 19,
     xs: {
       span: 17,
     },

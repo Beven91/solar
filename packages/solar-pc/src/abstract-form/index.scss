@@ -15,8 +15,9 @@
 
   .readonly-wrapper {
     word-break: break-all;
+
     .ant-select-selection-search {
-      left:0;
+      left: 0;
     }
 
     .ant-input-number-input,
@@ -68,7 +69,7 @@
     }
   }
 
-  .abstract-form-item-col.three {
+  .abstract-form-item-col {
     min-width: 270px;
   }
 }
@@ -120,6 +121,23 @@
 
     .ant-input+.anticon {
       display: none;
+    }
+  }
+}
+
+@media (max-width: 575px) {
+
+  .readonly-item {
+    .ant-form-item-label {
+      flex:none !important;
+      max-width: initial !important;
+    }
+    .ant-form-item-control {
+      flex: 1 1 0 !important;
+    }
+
+    .ant-form-item-label>label::after {
+      display: block !important;
     }
   }
 }

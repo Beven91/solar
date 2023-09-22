@@ -1,4 +1,4 @@
-# AbstractPicker
+# AbstractTablePicker
 
 对象选择器，提供一个可搜索的表格用以单选或者多选。
 

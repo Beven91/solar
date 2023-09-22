@@ -295,7 +295,6 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     if (props.disabled || !props.moveable) {
       return [];
     }
-
     return [
       {
         target: 'cell',

@@ -4,12 +4,12 @@
  * @description
  *       表格操作列视图,用于渲染操作列中的按钮
  */
-import React, { useContext } from 'react';
+import React from 'react';
 import { Tooltip } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
-import AbstractPermission from '../../abstract-permission';
 import { CellButton } from './CellButton';
+import { usePermissionButtons } from './TopActions';
 
 export interface CellActionsProps<TRow> {
   // 操作按钮 具体内容查看 Types.button类型定义
@@ -36,13 +36,12 @@ function isDisabled<TRow>(button: AbstractButton<TRow>, row: TRow, index: number
 }
 
 export default function CellActions<TRow = AbstractRow>({
-  buttons = [],
   style,
   row,
   rowId,
   ...props
 }: CellActionsProps<TRow>) {
-  const permissionCtx = useContext(AbstractPermission.Context);
+  const buttons = usePermissionButtons(props.buttons);
 
   // 根据类型渲染按钮
   const renderButton = (button: AbstractButton<TRow>, index: number) => {
@@ -71,10 +70,6 @@ export default function CellActions<TRow = AbstractRow>({
 
   // 渲染tooltip
   const renderTooltip = (button: AbstractButton<TRow>, index: number) => {
-    if (button.roles && !permissionCtx.hasPermission(button.roles)) {
-      // 如果没有权限
-      return;
-    }
     const children = renderButton(button, index);
     if (children && button.tip) {
       return (

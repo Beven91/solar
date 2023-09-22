@@ -4,7 +4,7 @@
  * @description 表格顶部的操作按钮条
  */
 import ReactDOM from 'react-dom';
-import React, { ReactNode, useContext } from 'react';
+import React, { ReactNode, useContext, useMemo } from 'react';
 import { Row, Col, Space } from 'antd';
 import { AbstractButton, OnActionRoute } from '../types';
 import { AbstractRow } from '../../interface';
@@ -23,21 +23,28 @@ export interface TopActionsProps<TRow> {
   getContainer?: () => HTMLElement
 }
 
+export function usePermissionButtons<TRow>(buttons: AbstractButton<TRow>[]) {
+  const permissionCtx = useContext(AbstractPermission.Context);
+  return useMemo(() => {
+    buttons = buttons || [];
+    return buttons.filter((button) => {
+      const roles = String(button.roles || '').split(',').filter(Boolean);
+      if (roles.length < 1) return true;
+      return permissionCtx.hasPermission(...roles);
+    });
+  }, [buttons]);
+}
+
 export default function TopActions<TRow = AbstractRow>({
   onAction,
   selectedRows = [],
-  buttons = [],
   renderTopBar = () => null,
   ...props
 }: TopActionsProps<TRow>) {
-  const permissionCtx = useContext(AbstractPermission.Context);
+  const buttons = usePermissionButtons(props.buttons);
 
   // 根据类型渲染按钮
   const renderButton = (button: AbstractButton<TRow>, index: number) => {
-    if (button.roles && !permissionCtx.hasPermission(button.roles)) {
-      // 如果没有权限
-      return null;
-    }
     return (
       <TopButton
         onAction={onAction}

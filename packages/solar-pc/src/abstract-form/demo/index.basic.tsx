@@ -48,7 +48,6 @@ const rules = {
 
 function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
   const [name, setName] = useState();
-  console.log('name....', name);
   const groups: AbstractGroups<any> = [
     {
       title: '编号',

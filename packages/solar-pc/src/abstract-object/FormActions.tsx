@@ -3,10 +3,9 @@
  * @module FormActions
  * @description 底部操作按钮
  */
-import React, { useEffect, useImperativeHandle, useState } from 'react';
+import React, { useContext, useEffect, useImperativeHandle, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Button, ButtonProps } from 'antd';
-import { MenuFoldOutlined, SaveFilled } from '@ant-design/icons';
+import { Button, ButtonProps, ConfigProvider } from 'antd';
 import { AbstractActionItem, AbstractActionItemContext } from '../interface';
 
 export interface FormActionsProps<TRow> {
@@ -34,6 +33,14 @@ export interface FormActionsInstance<TRow> {
 
 const useValue = (value: string, dv: string) => {
   return value === null || value == undefined ? dv : value;
+};
+
+const ActionWrap = (props: React.PropsWithChildren) => {
+  return (
+    <>
+      {props.children}
+    </>
+  );
 };
 
 export default React.forwardRef(function FormActions<TRow>(props: FormActionsProps<TRow>, ref: React.RefObject<FormActionsInstance<TRow>>) {
@@ -76,48 +83,42 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
     };
     const isOkEnable = () => okEnable ? okEnable(formValues) : true;
     return (
-      <div className={`object-view-footer ${props.className || ''}`}>
-        <div style={{ display: 'inline-block' }}>
-          {
-            showCancel && (
+      <div className={`action-view-container ${props.className || ''}`}>
+        <div className="form-actions-wrapper">
+          <div className="form-actions">
+            {
+              showCancel && (
+                <Button
+                  className="btn-back"
+                  disabled={okLoading}
+                  onClick={handleCancel}
+                  icon={btnCancel?.icon}
+                  {...(btnCancel || {})}
+                >
+                  {useValue(btnCancel?.title, '返回')}
+                </Button>
+              )
+            }
+            {showOkBtn && (
               <Button
-                className="btn-back"
-                size="large"
-                disabled={okLoading}
-                onClick={handleCancel}
-                icon={btnCancel?.icon || <MenuFoldOutlined />}
-                {...(btnCancel || {})}
+                loading={okLoading}
+                className="btn-submit"
+                type="primary"
+                disabled={!isOkEnable()}
+                onClick={handleSubmit}
+                icon={btnSubmit?.icon}
+                {...(btnSubmit || {})}
               >
-                {useValue(btnCancel?.title, '返回')}
+                {useValue(btnSubmit?.title, '确定')}
               </Button>
-            )
-          }
-          {showOkBtn && (
-            <Button
-              loading={okLoading}
-              className="btn-submit"
-              type="primary"
-              disabled={!isOkEnable()}
-              onClick={handleSubmit}
-              size="large"
-              icon={btnSubmit?.icon || <SaveFilled />}
-              {...(btnSubmit || {})}
-            >
-              {useValue(btnSubmit?.title, '确定')}
-            </Button>
-          )}
-          {
-            actions?.map((render, i) => {
-              const node = render(formValues || {} as TRow, ctx);
-              return (
-                <span style={{ display: node ? 'inline' : 'none' }} className="footer-action-wrap" key={i}>
-                  <span className="button-wrapper">
-                    {node}
-                  </span>
-                </span>
-              );
-            })
-          }
+            )}
+            {
+              actions?.map((render, i) => {
+                const node = render(formValues || {} as TRow, ctx);
+                return (<ActionWrap key={i}>{node}</ActionWrap>);
+              })
+            }
+          </div>
         </div>
         {props.children}
       </div>

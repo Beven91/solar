@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns } from 'solar-pc';
 import { AbstractAction, AbstractGroups, AbstractResponseModel, AbstractRules } from 'solar-pc/src/interface';
-import { Button, PageHeader } from 'antd';
+import { Button } from 'antd';
+import PageHeader from '../../page-header';
 
 interface ActivityModel {
   id: number

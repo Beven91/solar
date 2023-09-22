@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { AbstractForm, AbstractGroups, AbstractRules, RadioList } from 'solar-pc';
-import { Button, Form, FormInstance, Input, message } from 'antd';
+import { Button, Form, FormInstance, Input, Switch, message } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 
 export interface CommodityModel {
   name: string
+  hideSku: boolean
 }
 
 const rules = {
@@ -43,10 +44,15 @@ export default function App() {
         { title: '尺寸', name: 'size', initialValue: '13.7', disabled: true },
         { title: '品牌', name: 'brand', initialValue: 'Black', break: true },
         { title: '厂商', name: 'marker', initialValue: '13.7' },
+        { title: '关闭条码', name: 'hideSku', initialValue: true, render: <Switch /> },
       ],
     },
     {
       group: '条码配置',
+      visible: (r)=>{
+        console.log('sku visible');
+        return r.hideSku !== true;
+      },
       items: [
         { title: '条码信息', name: 'skuId', initialValue: 'aaa' },
         { title: '条码信息', name: 'skuId2' },

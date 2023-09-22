@@ -85,12 +85,24 @@ export const getExtension = (type: string, path: string) => {
   }
 };
 
+// const isAccept = (realAccept: string, file: File) => {
+//   if (!realAccept) {
+//     return true;
+//   }
+//   const exp = realAccept.replace(/\s/g, '').replace(/,/g, '|').replace(/\*/g, '.+').replace(/\./g, '\\.').replace(/\+/g, '\\+');
+//   const regexp = new RegExp(exp);
+//   return regexp.test(file.type);
+// };
+
 export const checkUpload = (file: File, acceptType: AdvanceUploadProps['acceptType'], maxSize: number, config: AbstractUploadConfig) => {
   const defaultMax = 3 * 1024 * 1024;
   const media = config?.media || AbstractProvider.defaultMediaDefinitions;
   const data = media[acceptType] || { max: defaultMax };
   const max = maxSize || data.max || defaultMax;
   const isLt = file.size < max;
+  // if (checkAfterAccept && !isAccept(realAccept, file)) {
+  //   return new Error(acceptInvalidMessage || '请选择正确格式的文件');
+  // }
   if (!isLt) {
     const value = max / (1024 * 1024);
     return new Error(`上传不能超过 ${value}MB!`);

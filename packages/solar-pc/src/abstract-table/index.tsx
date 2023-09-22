@@ -58,6 +58,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   rowKey = 'id',
   initQuery = true,
   initialPageIndex = 1,
+  extraNode,
   buttons = [],
   inject,
   ...props
@@ -82,8 +83,17 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const [updateId, setUpdateId] = useState(0);
   const useInnerLoading = !('loading' in props);
   const [innerLoading, setInnerLoading] = useState(props.loading);
+  const searchOptions = useMemo(()=>{
+    return {
+      ...(props.searchOptions || {}),
+      btnQuery: {
+        ...(props.searchOptions?.btnQuery || {}),
+        loading: innerLoading,
+      },
+    };
+  }, [props.searchOptions, innerLoading]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setInnerLoading(props.loading);
   }, [props.loading]);
 
@@ -164,8 +174,9 @@ ref: React.MutableRefObject<AbstractTableInstance>
           setUpdateId(updateId + 1);
         }
       },
+      ...(props.rowSelection || {}),
     };
-  }, [selectedRows, select, topOperators, props.onSelectRows]);
+  }, [selectedRows, select, topOperators, props.onSelectRows, props.rowSelection]);
 
   // 操作列
   const operatorColumn = useMemo(() => {
@@ -342,6 +353,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const loadFilters = typeof filters?.tabs === 'function' ? filters?.tabs : null;
   const showFilters = filters || loadFilters;
   const injecter = useInjecter(inject);
+  const onlyTable = (!showFilters && topOperators.length < 1);
 
   return (
     <div
@@ -356,9 +368,11 @@ ref: React.MutableRefObject<AbstractTableInstance>
         actionsCls={searchBoxActionCls}
         onQuery={onSearch}
         inject={inject}
-        {...(props.searchOptions || {})}
+        {...(searchOptions)}
         formRef={searchFormRef}
       >
+      </AbstractSearch>
+      <div className={`abstract-table abstract-flex ${onlyTable ? 'only-table' : ''}`}>
         <TopActions
           className={buttonBoxCls}
           onAction={onAction}
@@ -367,8 +381,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
           renderTopBar={renderTopBar}
           selectedRows={selectedRows}
         />
-      </AbstractSearch>
-      <div className="abstract-table abstract-flex">
+        {extraNode}
         {
           showFilters && (
             <TabFilters

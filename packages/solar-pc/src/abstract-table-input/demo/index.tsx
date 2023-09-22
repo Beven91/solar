@@ -27,11 +27,12 @@ export default function App() {
   const [id, setId] = useState(0);
 
   const columns: AbstractEColumns<ActivityModel> = [
-    { title: '商品名', name: 'name' },
-    { title: '商品价格', name: 'price', editor: () => <InputNumber /> },
+    { title: '商品名', name: 'name', width: 160 },
+    { title: '商品价格', width: 160, name: 'price', editor: () => <InputNumber /> },
     {
       title: '售卖价',
       name: 'discount',
+      width: 120,
       editor: (row) => {
         return <InputNumber disabled={(row.price || 0) <= 0} />;
       },

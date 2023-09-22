@@ -12,8 +12,21 @@ import ISolation, { ISolationContextValue } from './isolation';
 import { useInjecter } from '../abstract-injecter';
 import { IsolationError } from './context';
 import { FormGroupContext } from '../form-group';
+import { ColProps } from 'antd/lib/grid';
 
 const FormItem = Form.Item;
+
+const defaultColOption: ColProps = {
+  xs: {
+    span: 24,
+  },
+  sm: {
+    span: 24,
+  },
+  md: {
+    span: 12,
+  },
+};
 
 const isVisible = (item: AbstractFormItemType<AbstractRow>, data: AbstractRow) => {
   if (typeof item.visible === 'function') {
@@ -107,14 +120,14 @@ function useExtraNode<TRow>(extra: AbstractFormItemType<TRow>['extra'], formRef:
   return extra;
 }
 
-export interface FunctionItemProps<TRow =any> {
-  isReadonly:boolean
-  item:FunctionItemType<TRow>
+export interface FunctionItemProps<TRow = any> {
+  isReadonly: boolean
+  item: FunctionItemType<TRow>
   model: TRow
   form: React.RefObject<FormInstance>
 }
 
-export function FunctionItem<TRow =any>(props:FunctionItemProps<TRow>) {
+export function FunctionItem<TRow = any>(props: FunctionItemProps<TRow>) {
   const groupContext = useContext(FormGroupContext);
   const model = getAllValues(props);
   return (
@@ -137,6 +150,19 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const contextOriginal = useRef<ContextOriginalValue>({} as ContextOriginalValue);
   const injecter = useInjecter(props.inject);
   const memo = useRef({ isInputTrigger: false });
+  const colOptions = useMemo(() => {
+    const span = props.colOption?.span;
+    return {
+      span: span,
+      offset: props.colOption?.offset,
+      md: {
+        span: Math.max(span, (defaultColOption.md as any)?.span),
+      },
+      lg: {
+        span: span,
+      },
+    };
+  }, [props.colOption?.span, props.colOption?.offset]);
 
   useEffect(() => {
     setVisible(isVisible(item, model));
@@ -356,7 +382,8 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   if (colOption) {
     return (
       <Col
-        span={colOption.span}
+        {...defaultColOption}
+        {...colOptions}
         offset={colOption.offset}
         data-id={props.item.id}
         data-name={props.item.name?.toString()}

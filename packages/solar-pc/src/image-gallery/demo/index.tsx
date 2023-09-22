@@ -4,7 +4,7 @@ import { ImageGallery } from 'solar-pc';
 export default function GwImageDemoApp() {
   return (
     <ImageGallery
-      value={['https://img2.baidu.com/it/u=3147404475,1220123320&fm=253&fmt=auto&app=138&f=JPEG?w=722&h=500', 'https://img0.baidu.com/it/u=3421052381,2333233004&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=411']}
+      value={['undefined/undefined-3849a03322c44738aa5f70129dfb9246.jpg', 'undefined/undefined-9fb44708264b4a1eabc1dc19d9c9faf4.jpg']}
       bucketType="private"
     />
   );

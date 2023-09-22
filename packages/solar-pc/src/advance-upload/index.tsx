@@ -32,11 +32,14 @@ export default function AdvanceUpload(
     ...props
   }: AdvanceUploadProps
 ) {
+  const { disabled, data, type, accept, ...rest } = props;
   const provider = useContext(AbstractProvider.Context);
   const configProvider = useContext(ConfigProvider.ConfigContext);
   const all = { maxCount, acceptType, bucketType, valueMode, headers, formatUrl, withCredentials, ...props };
   const [fileList, setFileList] = useState(getFileList(props.value, formatUrl, [], all));
   const [previewItem, setPreview] = useState<UploadFile>();
+  const media = provider?.upload?.media || AbstractProvider.defaultMediaDefinitions;
+  const realAccept = accept || media[acceptType]?.accept || '';
   const dragHandler = useMemo(()=>{
     return propagation ? ()=>{ } : stopPropagation;
   }, [propagation]);
@@ -177,15 +180,12 @@ export default function AdvanceUpload(
   };
 
   // 渲染视图
-  const { disabled, data, type, accept, ...rest } = props;
   const showUpload = !(fileList.length >= maxCount || disabled === true);
   const single = maxCount <= 1;
   const dragger = type === 'drag';
   const UploadFile = dragger ? Dragger : Upload;
   const uploadButton = dragger ? renderDraggerUpload() : renderUploadButton();
   const topClass = props.children ? 'has-children' : '';
-  const media = provider?.upload?.media || AbstractProvider.defaultMediaDefinitions;
-  const realAccept = accept || media[acceptType]?.accept || '';
   const previewFormatUrl = useMemo(() => {
     return (key: string) => formatUrl(key, all);
   }, [formatUrl, all]);

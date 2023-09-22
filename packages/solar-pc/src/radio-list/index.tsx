@@ -44,9 +44,7 @@ export default function RadioList({ api, optionClassName, buttonStyle='solid', o
     setSource(data);
   };
 
-  useEffect(() => {
-    fetchApiResponse();
-  }, [api]);
+  useEffect(() => {fetchApiResponse();}, [api]);
 
   return (
     <Radio.Group

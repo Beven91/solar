@@ -163,7 +163,7 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
   }
 
   return (
-    <div ref={containerRef} id={id}>
+    <div className="abstract-input-wrap" ref={containerRef} id={id}>
       {React.cloneElement(component, options)}
     </div>
   );

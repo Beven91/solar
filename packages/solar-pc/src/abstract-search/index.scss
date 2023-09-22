@@ -1,5 +1,7 @@
 .abstract-search-form {
-  padding: 24px 24px 0px 0px;
+  .abstract-search-inner {
+    padding: 24px 24px 0px 0px;
+  }
   flex-shrink: 0;
 
   .ant-calendar-picker {
