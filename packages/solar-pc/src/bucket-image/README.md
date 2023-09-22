@@ -5,7 +5,7 @@
 ### 代码演示
 
 <AppCodebox 
-  src="src/gw-image/demo/index" 
+  src="src/bucket-image/demo/index" 
   title="基本用法" 
   desc="通过bucketType来设置访问类型" 
 />
