@@ -44,10 +44,11 @@ export function getAllValues<TRow>(props: RecordProps<TRow> | ModelProps<TRow>) 
   return mergeFormValues(model, props.form?.current) as TRow;
 }
 
-const getValue = (v: any, converter: ConverterInfo, valueFormatter: InputWrapProps<any>['valueFormatter']) => {
+const getValue = (v: any, converter: ConverterInfo, valueFormatter: InputWrapProps<any>['valueFormatter'], valuePropName: string) => {
   const info = converter;
-  if (v && v.target && v.nativeEvent) {
-    v = v.target.value;
+  const target = v?.target;
+  if (v && target && v.nativeEvent) {
+    v = valuePropName in target ? target[valuePropName] : target.value;
   }
   if (valueFormatter) {
     v = valueFormatter(v);
@@ -142,7 +143,7 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
       }
       const prevValues = getAllValues(props);
       const onChange = component.props.onChange;
-      const value = getValue(v, converter, props.valueFormatter);
+      const value = getValue(v, converter, props.valueFormatter, valuePropName);
       if (onChange != item.onChange) {
         // 包裹组件本身的onChange
         onChange && onChange(v, ...params);
