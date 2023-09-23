@@ -11,6 +11,7 @@ import { FormInstance } from 'antd/lib/form';
 import FormContext, { TopFormContext } from './context';
 import AbstractProvider from '../abstract-provider';
 import ISolation from './isolation';
+import { Form } from 'antd';
 
 const runtime = {
   id: 0,
@@ -64,6 +65,14 @@ export default function AbstractForm<TRow extends AbstractRow>(props: React.Prop
   const config = useContext(AbstractProvider.Context);
   const formContext = useContext(FormContext);
   const topContext = useContext(TopFormContext);
+  const ownerForm = Form.useFormInstance();
+  const form = useMemo(() => {
+    return {
+      get current() {
+        return props.form?.current || formContext.form?.current || ownerForm;
+      },
+    };
+  }, []);
 
   formContext.cacheGroups = props.groups;
 
@@ -81,6 +90,7 @@ export default function AbstractForm<TRow extends AbstractRow>(props: React.Prop
         formItemLayout={config.formItemLayout}
         {...formContext}
         {...props}
+        form={form}
         name={props.name || 'AbstractForm'}
         containerWidth={formContext.width}
       />
