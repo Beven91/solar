@@ -1,5 +1,5 @@
 import type { UploadProps, UploadFile } from 'antd/lib/upload/interface';
-import { FileGatewayOptions } from 'fluxy-core/src/config';
+import { FileGatewayOptions } from 'solar-core/src/config';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import type React from 'react';
 import type { AbstractUploadConfig } from '../interface';
