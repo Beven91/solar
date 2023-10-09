@@ -3,9 +3,9 @@
  * @module FormActions
  * @description 底部操作按钮
  */
-import React, { useContext, useEffect, useImperativeHandle, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Button, ButtonProps, ConfigProvider } from 'antd';
+import { Button, ButtonProps } from 'antd';
 import { AbstractActionItem, AbstractActionItemContext } from '../interface';
 
 export interface FormActionsProps<TRow> {
@@ -93,6 +93,7 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
                   disabled={okLoading}
                   onClick={handleCancel}
                   icon={btnCancel?.icon}
+                  size="large"
                   {...(btnCancel || {})}
                 >
                   {useValue(btnCancel?.title, '返回')}
@@ -107,6 +108,7 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
                 disabled={!isOkEnable()}
                 onClick={handleSubmit}
                 icon={btnSubmit?.icon}
+                size="large"
                 {...(btnSubmit || {})}
               >
                 {useValue(btnSubmit?.title, '确定')}
@@ -118,9 +120,9 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
                 return (<ActionWrap key={i}>{node}</ActionWrap>);
               })
             }
+            {props.children}
           </div>
         </div>
-        {props.children}
       </div>
     );
   };

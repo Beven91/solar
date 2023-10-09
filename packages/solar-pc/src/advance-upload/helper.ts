@@ -94,7 +94,7 @@ export const getExtension = (type: string, path: string) => {
 //   return regexp.test(file.type);
 // };
 
-export const checkUpload = (file: File, acceptType: AdvanceUploadProps['acceptType'], maxSize: number, config: AbstractUploadConfig) => {
+export const checkUpload = (file: File, acceptType: AdvanceUploadProps['acceptType'], maxSize: number, config: AbstractUploadConfig, realAccept: string, checkAfterAccept: boolean, acceptInvalidMessage: string) => {
   const defaultMax = 3 * 1024 * 1024;
   const media = config?.media || AbstractProvider.defaultMediaDefinitions;
   const data = media[acceptType] || { max: defaultMax };

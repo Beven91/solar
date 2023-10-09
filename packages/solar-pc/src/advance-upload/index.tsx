@@ -29,6 +29,8 @@ export default function AdvanceUpload(
     withCredentials = true,
     params,
     propagation = false,
+    acceptInvalidMessage,
+    checkAfterAccept = false,
     ...props
   }: AdvanceUploadProps
 ) {
@@ -124,7 +126,7 @@ export default function AdvanceUpload(
     const config = provider.upload || {};
     const uploadToServer = props.customRequest || config?.onUpload || defaultUploadToServer;
     const item = fileList.find((m) => m.uid == (context.file as any).uid);
-    const error = checkUpload(context.file as File, acceptType, props.maxSize, config);
+    const error = checkUpload(context.file as File, acceptType, props.maxSize, config, realAccept, checkAfterAccept, acceptInvalidMessage);
     if (error) {
       return setTimeout(() => context.onError(error), 40);
     }

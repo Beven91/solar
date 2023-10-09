@@ -1,4 +1,9 @@
 .abstract-search-form {
+  &.ant-form-horizontal {
+    .ant-form-item-control  {
+      flex: 1 1 0;
+    }
+  }
   .abstract-search-inner {
     padding: 24px 24px 0px 0px;
   }

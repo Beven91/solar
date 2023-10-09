@@ -326,7 +326,9 @@ export default function Dynamic<TRow extends AbstractRow>({
   const renderNorml = () => {
     const { groups = [], children } = props;
     const last = groups[groups.length - 1] || {};
+    const first = groups[0] || {};
     const lastIsGroup = ('group' in last) || props.name == 'AbstractSearch';
+    const firstGroup = ('group' in first);
     const node = (
       <>
         {groups.map((groupItem, index) => renderGroup(groupItem as any, index))}
@@ -338,7 +340,7 @@ export default function Dynamic<TRow extends AbstractRow>({
     }
     return (
       <React.Fragment>
-        <Row className="abstract-form-normal-inner" gutter={8}>
+        <Row className={`abstract-form-normal-inner ${firstGroup ? 'with-first-group' : 'not-first-group'} `} gutter={8}>
           {node}
           {props.formChildren}
         </Row>
