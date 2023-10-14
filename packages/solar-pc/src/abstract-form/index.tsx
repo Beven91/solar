@@ -66,11 +66,11 @@ export default function AbstractForm<TRow extends AbstractRow>(props: React.Prop
   const formContext = useContext(FormContext);
   const topContext = useContext(TopFormContext);
   const hasForm = props.form || formContext.form;
-  const ownerForm = hasForm ? Form.useFormInstance() : null;
+  const ownerForm = hasForm ? null : Form.useFormInstance();
   const form = useMemo(() => {
     return {
       get current() {
-        return hasForm ? ownerForm : props.form?.current || formContext.form?.current;
+        return hasForm ? props.form?.current || formContext.form?.current : ownerForm;
       },
     };
   }, []);
