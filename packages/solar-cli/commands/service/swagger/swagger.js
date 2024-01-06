@@ -139,7 +139,7 @@ class Swagger {
     const bodyParameter = parameters.filter((p) => p.in === 'body').pop() || {};
     const ref = getRef((method.responses['200'].schema || {}).$ref || '');
     const bodyRef = getRef((bodyParameter.schema || {}).$ref || '');
-    return definitions[ref] || definitions[bodyRef] || {};
+    return definitions[bodyRef] || definitions[ref] || {};
   }
 
   normalizeUrl(url) {

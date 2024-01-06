@@ -6,5 +6,5 @@ heroImage: /favicon.png
 tagline: $desc
 actionText: 开始 →
 actionLink: $link
-footer: 文档中心提供
+footer: 由上海杉泰健康科技有限公司-IT技术部-家医服务团队提供
 ---

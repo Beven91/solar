@@ -30,14 +30,14 @@ function createMemberTable(type, name, parentReference, isRoot) {
   type.members.forEach((member) => {
     const isObject = typeof member.defaultValue == 'object' && member.defaultValue;
     const value = isObject ? JSON.stringify(member.defaultValue, null, 2) : (member.defaultValue);
-    const hasValue = !(value === null || value == undefined);
+    const hasValue = !(value === null || value == undefined)
     htmls.push('<tr>');
     htmls.push(`<td>${member.name}</td>`);
     htmls.push(`<td>${html(member.comments || '')}</td>`);
     createTypeReference(member, htmls, reference);
     htmls.push(`<td>${hasValue ? `<code class="default-value">${html(value)}</code>` : '-'}</td>`);
     htmls.push('</tr>');
-  });
+  })
   htmls.push('</tbody>');
   htmls.push('</table>');
   if (isRoot) {
@@ -76,16 +76,17 @@ function buildReferenceMembers(reference, type) {
 }
 
 function buildObjectType(member, reference, code) {
-  // const name = member.reference || member.type;
+  const name = member.reference || member.type;
   if (member.members.length > 1) {
     const id = buildReferenceMembers(reference, member);
     return `<td>${buildReferenceLink(id)}</td>`;
+  } else {
+    return `<td><code>${code}</code></td>`;
   }
-  return `<td><code>${code}</code></td>`;
 }
 
 function buildArrayType(member, htmls, reference, code) {
-  // const rhtmls = [];
+  const rhtmls = [];
   if (member.elementType.type == 'uiontype') {
     return buildUionTypes(member.elementType, reference, code, true);
   } else if (member.elementType && member.elementType.reference) {
@@ -93,8 +94,9 @@ function buildArrayType(member, htmls, reference, code) {
     return `<td>${buildReferenceLink(id, '[]')}</td>`;
   } else if (member.elementType.elementType) {
     return buildArrayType(member.elementType, htmls, reference, code);
+  } else {
+    return `<td><code>${code}</code></td>`;
   }
-  return `<td><code>${code}</code></td>`;
 }
 
 function buildUionTypes(member, reference, code, isArray) {
@@ -103,15 +105,15 @@ function buildUionTypes(member, reference, code, isArray) {
   member.uionTypes.forEach((itemType) => {
     if (itemType.type == 'function') {
       const id = buildReferenceMembers(reference, itemType);
-      ids.push(`<a href="#${normalizeId(itemType.reference)}">${html(id)}${suffix}</a>`);
+      ids.push(`<a href="#${normalizeId(itemType.reference)}">${html(id)}${suffix}</a>`)
     } else if (!itemType.reference || itemType.members.length < 1) {
       const name = (itemType.code || '').replace(/^'/, '').replace(/'$/, '');
-      ids.push(`<span class="keyword">${html(name)}${suffix}</span>`);
+      ids.push(`<span class="keyword">${html(name)}${suffix}</span>`)
     } else {
       const id = buildReferenceMembers(reference, itemType);
-      ids.push(`<a href="#${normalizeId(id)}">${html(id)}${suffix}</a>`);
+      ids.push(`<a href="#${normalizeId(id)}">${html(id)}${suffix}</a>`)
     }
-  });
+  })
   return `<td><code>${ids.join(' | ')}</div></code></td>`;
 }
 
@@ -120,7 +122,7 @@ function buildReferenceLink(name, suffix) {
 }
 
 function normalizeId(name) {
-  return name.toLowerCase().replace('<', '-').replace('>', '');
+  return name.toLowerCase().replace('<', '-').replace('>', '')
 }
 
 function html(content) {
@@ -128,12 +130,12 @@ function html(content) {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
-    '\'': '&#39;',
+    "'": '&#39;',
     '"': '&quot;',
-    '`': '\\`',
+    '`': '\\`'
   };
   content = (content || '').toString().replace(/[&<>'"`]/g, (value) => esca[value]);
-  return `{{\`${content.replace(/\n/g, '\\n')}\`}}`;
+  return `{{\`${content.replace(/\n/g, '\\n')}\`}}`
 }
 
 module.exports = async function findComponentProps(site, item) {
@@ -141,7 +143,7 @@ module.exports = async function findComponentProps(site, item) {
   let componentPath = null;
   if (typeof repo.findComponent == 'function') {
     const file = repo.findComponent(item.name, item.filePath);
-    componentPath = path.isAbsolute(file) ? file : path.join(site.sourceRoot, file);
+    componentPath = path.isAbsolute(file) ? file : path.join(site.sourceRoot, file)
   } else if (repo.findComponent) {
     const key = item.name.replace(/\\/g, '/');
     componentPath = repo.findComponent[key] || defaultFindComponentPath(item.name, item.filePath);
@@ -150,10 +152,15 @@ module.exports = async function findComponentProps(site, item) {
   }
   if (!componentPath || !fs.existsSync(componentPath)) return '';
   const parser = new JavascriptParser();
-  const metadata = await parser.parseComponentProps(componentPath);
-  const type = metadata.propType;
-  item.reasons = metadata.reasons;
-  return createMemberTable(type, '属性', {}, true);
-};
+  try {
+    const metadata = await parser.parseComponentProps(componentPath);
+    const type = metadata.propType;
+    item.reasons = metadata.reasons;
+    return createMemberTable(type, '属性', {}, true);
+  } catch (ex) {
+    console.log('@at', componentPath);
+    throw ex;
+  }
+}
 
 module.exports.createMemberTable = createMemberTable;

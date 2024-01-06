@@ -12,35 +12,39 @@ const DevLogPlugin = require('@vuepress/core/lib/node/webpack/DevLogPlugin');
 const PageRegisterPlugin = require('./plugins/page-register-plugin');
 const WebpackBar = require('webpackbar');
 const loadConfig = require('./loadConfig');
-const docsProcess = require('./process');
-const vuepressConfig = require('../src/.vuepress/config');
+const generateFindTests = require('./process/template');
+const vuepressConfig = require('../src/.vuepress/config')
 
 function resolveMain(dir) {
   const pkgPath = path.join(dir, 'package.json');
   if (fs.existsSync(pkgPath)) {
     const pkg = require(pkgPath);
-    const id = resolve(path.join(dir, pkg.main || 'index'));
-    return fs.existsSync(id) ? id : resolve(path.join(dir, 'src/index'));
+    const id = resolve(path.join(dir, pkg.main || 'index'))
+    return fs.existsSync(id) ? id : resolve(path.join(dir, 'src/index'))
   }
   return resolve(dir);
 }
 
 function resolve(id) {
-  const extensions = ['.js', '.tsx', '.vue', '.ts'];
+  const extensions = ['.js', '.tsx', '.vue', '.ts']
   const ext = extensions.find((ext) => fs.existsSync(id + ext));
   return ext ? id + ext : null;
 }
 
-module.exports = function(options) {
+module.exports = function (options) {
   options = options || {};
   const sites = options.sites;
   const findTests = options.findTests || [];
   const { sourceRoot, name } = loadConfig.getRepositoryInfo();
   const isProduction = options.dev !== true;
-  const publicPath = '/vendors/';
+  const publicPath = '/vendors/'
   const config = loadConfig();
-  const devServer = loadConfig.getDevServer({ publicPath });
+  const devServer = loadConfig.getDevServer({ publicPath })
   const hot = 'http://localhost:' + devServer.port + publicPath;
+  const transformInclude = options.transformInclude || [];
+  const alias = options.extend.alias;
+
+  console.log('sourceRoot....', sourceRoot)
 
   PageRegisterPlugin.registerFindTests = findTests;
 
@@ -50,7 +54,7 @@ module.exports = function(options) {
       port: devServer.port,
       displayHost: 'localhost',
       publicPath: publicPath + 'index.js',
-      clearScreen: true,
+      clearScreen: false,
     }),
     new ReactRefreshWebpackPlugin({ overlay: false }),
     new webpack.HotModuleReplacementPlugin(),
@@ -65,13 +69,13 @@ module.exports = function(options) {
   sites.forEach((site) => {
     const files = [
       resolveMain(site.sourceRoot),
-      docsProcess.generateFindTestsTemplate(findTests.filter((m) => m.name == site.name).map((m) => m.file), site.name),
+      generateFindTests(findTests.filter((m) => m.name == site.name).map((m) => m.file), site.name)
     ].filter((v) => Boolean(v));
     if (files.length > 0) {
       const prefix = (isProduction && sourceRoot == site.sourceRoot) ? '' : site.name + '/';
       entry[prefix + 'index'] = files;
     }
-  });
+  })
 
   if (Object.keys(entry).length < 1) {
     return;
@@ -96,14 +100,14 @@ module.exports = function(options) {
       path: path.join(sourceRoot, '.vuepress/public/'),
       filename: '[name].js',
       chunkFilename: '[name].js',
-      publicPath: isProduction ? vuepressConfig.base + 'vendors/' : hot,
+      publicPath: isProduction ? vuepressConfig.base + 'vendors/' + (options.useDir) : hot,
     },
     plugins: [
       ...(isProduction ? proPlugins : devPlugins),
       new WebpackBar({
         name: 'Repository',
         color: '#41b883',
-        compiledIn: false,
+        compiledIn: false
       }),
       new webpack.DefinePlugin({}),
       new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
@@ -114,7 +118,8 @@ module.exports = function(options) {
         {
           test: /\.(ts|tsx|js|jsx)$/i,
           include: (file) => {
-            return !/node_modules/.test(file);
+            const isMatch = transformInclude.find((reg) => reg.test(file));
+            return isMatch || !/node_modules/.test(file)
           },
           use: [
             {
@@ -122,21 +127,32 @@ module.exports = function(options) {
               options: {
                 babelrc: false,
                 comments: true,
-                presets: [require.resolve('metro-react-native-babel-preset')],
+                configFile: false,
+                root: path.join(__dirname, '..'),
+                presets: [
+                  [
+                    require.resolve('@babel/preset-env'),
+                    {
+                      'targets': {
+                        'chrome': '67',
+                        'safari': '11.1',
+                      },
+                      "modules": "commonjs",
+                      'corejs': require('core-js/package.json').version,
+                    },
+                  ],
+                  require.resolve('@babel/preset-react'),
+                  require.resolve('@babel/preset-typescript'),
+                ],
                 plugins: [
                   [require.resolve('@babel/plugin-proposal-decorators'), { 'legacy': true }],
                   [
                     require.resolve('babel-plugin-refer-import'),
                     {
-                      modules: [
-                        { 'libraryName': 'solar-core', 'style': false, 'libraryDirectory': 'src' },
-                        { 'libraryName': 'solar-pc', 'style': false, 'libraryDirectory': 'src' },
-                        { 'libraryName': '@ant-design/icons', 'libraryDirectory': '', 'style': false, 'camel2DashComponentName': false },
-                        { 'libraryName': 'antd', 'style': 'css' },
-                      ],
+                      modules: config.importModules || [],
                     },
                   ],
-                  isProduction ? false : 'react-refresh/babel',
+                  isProduction ? false : path.join(__dirname, '../node_modules/react-refresh/babel'),
                 ].filter(Boolean),
               },
             },
@@ -145,8 +161,8 @@ module.exports = function(options) {
               options: {
                 sourceRoot: sourceRoot,
                 include: findTests,
-              },
-            },
+              }
+            }
           ],
         },
         {
@@ -190,17 +206,23 @@ module.exports = function(options) {
     },
     resolveLoader: {
       modules: [
-        path.resolve(__dirname, '../node_modules'),
-      ],
+        path.join(__dirname, '../node_modules'),
+        path.resolve('node_modules'),
+        path.join(__dirname, './loaders')
+      ]
     },
     resolve: {
+      alias: {
+        '@babel': path.join(__dirname, '..', 'node_modules', '@babel'),
+        ...(alias || {})
+      },
       extensions: ['.ts', '.tsx', '.js'],
     },
-  };
+  }
 
   if (typeof config.configureWebpack == 'function') {
     config.configureWebpack(webpackConfig);
   }
 
-  return webpack(webpackConfig);
-};
+  return webpack(webpackConfig)
+}

@@ -267,6 +267,7 @@ export default class Network {
         const { status } = response;
         const isOK = status >= 200 && status < 300 || status === 304;
         const cloneData = response.clone();
+        context.response = response.clone();
         tunnel.push('end', cloneData, context);
         return isOK ? response : Promise.reject(new BizError(500, 'http:' + response.status, response));
       })

@@ -11,4 +11,4 @@ module.exports = function findComponentDemoUrl(repo, name) {
     demoUrl = repo.demoBase + demoUrl;
   }
   return demoUrl;
-};
+}

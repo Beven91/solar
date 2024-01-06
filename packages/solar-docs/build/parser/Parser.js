@@ -2,34 +2,37 @@
 const fs = require('fs');
 const path = require('path');
 const babelParser = require('@babel/parser');
+const nodeToString = require('../loaders/nodeToString');
 const babelTraverse = require('@babel/traverse').default;
-const babelGenerator = require('@babel/generator').default;
 
 class Parser {
-  plugins = [];
 
-  extensions = ['.js'];
+  plugins = []
+
+  extensions = ['.js']
 
   // 当前文件解析出来的所有类型字典
-  interfaces = {};
+  interfaces = {}
 
   // 当前文件导入的模块变量
-  importAvariables = {};
+  importAvariables = {}
 
   // 顶级作用域下的变量类型申明
-  topDeclarationNodes = [];
+  topDeclarationNodes = []
 
   // 导出的类型
-  exportDeclarations = [];
+  exportDeclarations = []
+
+  referenceTypes = [];
 
   // 默认导出的类型名
-  defaultExportNode = null;
+  defaultExportNode = null
 
   // 所有依赖文件
-  allReasons = [];
+  allReasons = []
 
   // 当前解析文件的路径
-  id = '';
+  id = ''
 
   constructor(id) {
     this.id = id;
@@ -55,7 +58,7 @@ class Parser {
         resolve();
         console.error(ex);
       }
-    });
+    })
   }
 
   /**
@@ -109,7 +112,9 @@ class Parser {
       generic: [],
       // 是否处理完毕
       handled: false,
-    };
+      // 是否可选
+      optional: false
+    }
   }
 
   mergeReferenceType(type, sourceType) {
@@ -130,19 +135,18 @@ class Parser {
 
   /**
    * 将一个节点转换成代码字符串
-   * @param {*} node
+   * @param {*} node 
    * @returns {String}
    */
   nodeToString(node) {
-    const res = babelGenerator(node, { filename: 'a.js', retainLines: false });
-    return res.code.replace(/\n+/, '').replace(/^:\s*/, '');
+    return nodeToString(node);
   }
 
   /**
    * 解析模块位置
    * @param {*} request 请求字符
    * @param {*} file 所在文件
-   * @returns
+   * @returns 
    */
   resolveModule(request, file) {
     if (/\.\//.test(request)) {

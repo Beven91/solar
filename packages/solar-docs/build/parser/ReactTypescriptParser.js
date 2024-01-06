@@ -1,15 +1,19 @@
 
 
 const fs = require('fs');
+const fpath = require('path');
 const Parser = require('./Parser');
 const globalRuntimes = require('./Runtimes');
 
 class ReactTypescriptParser extends Parser {
+
   plugins = [
     'jsx',
     'classProperties',
     'typescript',
-  ];
+  ]
+
+  reactComponents = [];
 
   extensions = ['.d.ts', '.tsx', '.ts'];
 
@@ -17,7 +21,6 @@ class ReactTypescriptParser extends Parser {
     await super.parse({
       enter: (path) => {
         const node = path.node;
-        // console.log(node.type);
         switch (node.type) {
           case 'ImportDeclaration':
             const request = (node.source || {}).value;
@@ -38,6 +41,26 @@ class ReactTypescriptParser extends Parser {
               this.topDeclarationNodes.push(...node.declarations);
             }
             break;
+          case 'ClassMethod':
+          case 'TSDeclareMethod':
+            node.params.map((param) => {
+              const type = this.createType();
+              this.readTSType(type, param.typeAnnotation);
+              this.referenceTypes.push(type)
+            });
+            if (node.returnType) {
+              const type = this.createType();
+              this.readTSType(type, node.returnType.typeAnnotation);
+              if (type.type === 'promise') {
+                if (type.elementType.type == 'array') {
+                  this.referenceTypes.push(type.elementType.elementType);
+                } else {
+                  this.referenceTypes.push(type.elementType);
+                }
+              }
+              this.referenceTypes.push(type)
+            }
+            break;
           case 'TSTypeAliasDeclaration':
             if (node.id) {
               const aliasNode = node.typeAnnotation || node.type;
@@ -49,11 +72,19 @@ class ReactTypescriptParser extends Parser {
             break;
           case 'ClassDeclaration':
           case 'TSInterfaceDeclaration':
-            this.readClassInterfaceType(node);
+            this.readClassInterfaceType(node)
             break;
           case 'ExportDefaultDeclaration':
-            this.topDeclarationNodes.push(node.declaration);
-            this.defaultExportNode = node.declaration;
+            if (node.declaration.type == 'CallExpression') {
+              if (node.declaration.callee.property.name == 'forwardRef') {
+                const argNode = node.declaration.arguments[0];
+                this.topDeclarationNodes.push(argNode);
+                this.defaultExportNode = argNode;
+              }
+            } else {
+              this.topDeclarationNodes.push(node.declaration);
+              this.defaultExportNode = node.declaration;
+            }
             break;
         }
       },
@@ -64,8 +95,8 @@ class ReactTypescriptParser extends Parser {
 
   async parseComponentProps() {
     await this.parse();
-    const name = this.findNodeName(this.defaultExportNode);
-    const propName = this.readComponentPropsType() || `${name}Props`;
+    const name = this.findNodeName(this.defaultExportNode) || fpath.basename(fpath.dirname(this.id));
+    const propName = this.tryReadComponentPropsType() || `${name}Props`;
     let propType = this.interfaces[propName];
     const exportType = this.interfaces[name];
     if (propName && !propType) {
@@ -76,7 +107,7 @@ class ReactTypescriptParser extends Parser {
       this.mergeUionTypes(propType);
     }
     if (propType && exportType && exportType.generic.length > 0) {
-      await this.renderGeneric(propType, exportType.generic);
+      await this.renderGeneric(propType, exportType.generic)
     }
     if (exportType && propType) {
       const defaultProps = exportType.members.find((m) => m.name == 'defaultProps');
@@ -88,21 +119,21 @@ class ReactTypescriptParser extends Parser {
     return {
       interfaces: this.interfaces,
       propType: propType,
-      reasons: this.allReasons,
-    };
+      reasons: this.allReasons
+    }
   }
 
   async renderGeneric(type, generic) {
-    return this.asyncEach(type.members, async(memberType) => {
+    return this.asyncEach(type.members, async (memberType) => {
       const genericType = generic.find((m) => m.name == memberType.code);
       if (genericType) {
         const value = genericType.defaultValue;
         const dest = value ? value.code : genericType.type;
         memberType.referenceNode = {
           typeName: {
-            name: dest,
-          },
-        };
+            name: dest
+          }
+        }
         return this.processTypeReferences(memberType, generic);
       }
     });
@@ -110,9 +141,9 @@ class ReactTypescriptParser extends Parser {
 
   readClassInterfaceType(node) {
     const type = this.createOrGetType(node.id.name, 'object');
-    type.extends = [...(node.implements || [])]; // .map((m) => m.expression.name);
+    type.extends = [...(node.implements || [])]; //.map((m) => m.expression.name);
     if (node.extends) {
-      const ids = node.extends; // .map((m) => m.expression.name);
+      const ids = node.extends; //.map((m) => m.expression.name);
       type.extends = type.extends.concat(ids);
     }
     if (node.superClass) {
@@ -125,9 +156,9 @@ class ReactTypescriptParser extends Parser {
 
   readTypeExtend(node) {
     if (!node.expression) {
-      return { name: node.name, exclude: {} };
+      return { name: node.name, exclude: {} }
     }
-    const advanceType = ['Omit', 'Partial', 'Readonly', 'Pick', 'Required', 'Exclude', 'Extract'];
+    const advanceType = ['Omit', 'Partial', 'Readonly', 'Pick', 'Required', 'Exclude', 'Extract']
     if (advanceType.indexOf(node.expression.name) > -1) {
       const exclude = {};
       const name = node.typeParameters.params[0].typeName.name;
@@ -137,9 +168,10 @@ class ReactTypescriptParser extends Parser {
           this.readOmitExclude(param, exclude);
           break;
       }
-      return { name, exclude };
+      return { name, exclude }
+    } else {
+      return { name: node.expression.name }
     }
-    return { name: node.expression.name };
   }
 
   renderAvanceType(type, node) {
@@ -168,10 +200,10 @@ class ReactTypescriptParser extends Parser {
           genericType.defaultValue = this.createType();
           this.readTSType(genericType.defaultValue, m.default);
         } else if (m.constraint) {
-          genericType.type = m.constraint.typeName.name;
+          genericType.type = (m.constraint.typeName || {}).name;
         }
         genericType.type = genericType.type || m.name;
-        return genericType;
+        return genericType
       });
     }
   }
@@ -201,7 +233,7 @@ class ReactTypescriptParser extends Parser {
           this.readTSType(itemType, itemNode);
           itemType.code = this.nodeToString(itemNode);
           return itemType;
-        });
+        })
         break;
       case 'TSFunctionType':
         type.type = 'function';
@@ -218,12 +250,16 @@ class ReactTypescriptParser extends Parser {
       case 'ClassProperty':
       case 'ObjectProperty':
       case 'TSPropertySignature':
+
         const memberType = this.createType(node.key.name, '');
         const typeAnnotation = node.typeAnnotation || (node.value || {}).typeAnnotation;
         if (typeAnnotation) {
           this.readTSType(memberType, typeAnnotation);
         } else {
           memberType.type = 'value';
+        }
+        if (node.type == 'TSPropertySignature') {
+          memberType.optional = node.optional;
         }
         if (node.value && node.value.type == 'ObjectExpression') {
           this.readTSType(memberType, node.value);
@@ -233,7 +269,7 @@ class ReactTypescriptParser extends Parser {
           });
           memberType.defaultValue = value;
         } else {
-          memberType.defaultValue = this.valueToString(node.value);
+          memberType.defaultValue = this.valueToString(node.value)
         }
         const comments = (node.leadingComments || []).map((item) => item.value).join(' ').replace(/\*/g, '');
         memberType.code = this.nodeToString(node.typeAnnotation || node.value);
@@ -266,6 +302,11 @@ class ReactTypescriptParser extends Parser {
         }
         this.renderAvanceType(type, node);
         break;
+      case 'Promise':
+        type.type = 'promise';
+        type.elementType = this.createType();
+        this.readTSType(type.elementType, node.typeParameters.params[0]);
+        break;
       case 'Array':
         type.type = 'array';
         if (node.typeParameters) {
@@ -279,11 +320,25 @@ class ReactTypescriptParser extends Parser {
     }
   }
 
+  tryReadComponentPropsType() {
+    const type = this.readComponentPropsType();
+    if (type) {
+      return type;
+    }
+    for (let i = 0, k = this.exportDeclarations.length; i < k; i++) {
+      const declaration = this.exportDeclarations[i].declaration;
+      const type = this.readComponentPropsType(declaration);
+      if (type) {
+        return type;
+      }
+    }
+  }
+
   readComponentPropsType(node) {
     if (node == null) {
       const declarations = this.topDeclarationNodes;
       const name = this.findNodeName(this.defaultExportNode);
-      node = declarations.find((declaration) => declaration.id.name == name);
+      node = declarations.find((declaration) => (declaration.id || {}).name == name);
     }
     node = node || {};
     switch (node.type) {
@@ -295,6 +350,9 @@ class ReactTypescriptParser extends Parser {
         return cid;
       case 'VariableDeclarator':
         return node.init ? this.readComponentPropsType(node.init) : '';
+      case 'VariableDeclaration':
+        const dnode = node.declarations[0] || {};
+        return dnode.id ? dnode.id.name + 'Props' : '';
       case 'CallExpression':
         if (node.callee.name == 'forwardRef') {
           const typeNode = node.arguments[0].params[0].typeAnnotation;
@@ -305,7 +363,8 @@ class ReactTypescriptParser extends Parser {
       case 'FunctionExpression':
         const params = node.params || [];
         const isSfc = params.length > 0 && params[0].typeAnnotation;
-        const name = isSfc ? params[0].typeAnnotation.typeAnnotation.typeName.name : '';
+        const typeName = isSfc ? params[0].typeAnnotation.typeAnnotation.typeName || {} : {};
+        const name = isSfc ? typeName.name || '' : '';
         if (isSfc) {
           const type = this.createType();
           const memberValues = {};
@@ -330,7 +389,7 @@ class ReactTypescriptParser extends Parser {
         }
         return '';
       default:
-        return '';
+        return ''
     }
   }
 
@@ -344,7 +403,7 @@ class ReactTypescriptParser extends Parser {
   async processFallbackTypes() {
     globalRuntimes.imports[this.id] = this.interfaces;
     await this.processExportSpecifiers();
-    await this.asyncEach(Object.keys(this.interfaces), async(key) => {
+    await this.asyncEach(Object.keys(this.interfaces), async (key) => {
       const type = this.interfaces[key];
       if (!type) {
         return;
@@ -352,6 +411,15 @@ class ReactTypescriptParser extends Parser {
       const generic = type.generic;
       return this.processFallbackType(type, generic);
     });
+    await Promise.all(
+      this.referenceTypes.map(async (type) => {
+        if (type.name) {
+          const type2 = await this.processTypeReferences(type, type.generic);
+          // console.log('type', type.name,type2);
+          this.interfaces[type.name] = type;
+        }
+      })
+    )
   }
 
   async processFallbackType(type, generic) {
@@ -368,7 +436,7 @@ class ReactTypescriptParser extends Parser {
   }
 
   async processExportSpecifiers() {
-    return this.asyncEach(this.exportDeclarations, async(node) => {
+    return this.asyncEach(this.exportDeclarations, async (node) => {
       if (!node.source) return;
       const source = node.source.value;
       const specifiers = node.specifiers || [];
@@ -380,7 +448,7 @@ class ReactTypescriptParser extends Parser {
           if (!this.interfaces[name]) {
             this.interfaces[name] = interfaces[itemNode.exported.name];
           }
-        });
+        })
       }
     });
   }
@@ -389,7 +457,7 @@ class ReactTypescriptParser extends Parser {
     const allMembers = {};
     const extendsNodes = type.extends || [];
     type.members.forEach((m) => allMembers[m.name] = true);
-    return this.asyncEach(extendsNodes, async(extendsNode) => {
+    return this.asyncEach(extendsNodes, async (extendsNode) => {
       const meta = this.readTypeExtend(extendsNode);
       const exclude = meta.exclude || {};
       const extendsType = await this.resolveReferenceType(meta.name);
@@ -399,7 +467,7 @@ class ReactTypescriptParser extends Parser {
           allMembers[member.name] = true;
           type.members.push(member);
         }
-      });
+      })
     });
   }
 
@@ -470,6 +538,7 @@ class ReactTypescriptParser extends Parser {
       return type;
     }
     const interfaces = await this.requireTypeFile(id);
+    // console.log(name,interfaces[name]);
     return interfaces[name];
   }
 
@@ -485,7 +554,7 @@ class ReactTypescriptParser extends Parser {
 
   /**
    * 将一个值节点转换成代码字符串
-   * @param {*} node
+   * @param {*} node 
    * @returns {String}
    */
   valueToString(node) {
@@ -514,6 +583,10 @@ class ReactTypescriptParser extends Parser {
   findNodeName(node) {
     if (!node) return null;
     switch (node.type) {
+      case 'ExportNamedDeclaration':
+        return this.findNodeName(node.declaration);
+      case 'TSTypeAliasDeclaration':
+        return node.id.name;
       case 'Identifier':
         return node.name;
       default:

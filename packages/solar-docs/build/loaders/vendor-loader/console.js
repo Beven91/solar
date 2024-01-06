@@ -4,6 +4,7 @@ const adapterKeys = ['assert', 'clear', 'context', 'count', 'countReset', 'dir',
 const console = window.console;
 
 class AppCodeboxConsole {
+
   constructor(hook) {
     this.proxyLogger();
     this.overrideLogger();
@@ -12,13 +13,12 @@ class AppCodeboxConsole {
 
   proxyLogger() {
     adapterKeys.forEach((name) => {
-      this[name] = function() {
+      this[name] = function () {
         const handler = console[name];
         if (typeof handler == 'function') {
-          // eslint-disable-next-line prefer-rest-params
           return handler.apply(console, arguments);
         }
-      };
+      }
     });
   }
 
@@ -34,7 +34,6 @@ class AppCodeboxConsole {
   createLogger(type) {
     const scope = this;
     return function() {
-      // eslint-disable-next-line prefer-rest-params
       const args = arguments;
       const handler = console[type];
       if (scope.hook.write) {
@@ -43,8 +42,8 @@ class AppCodeboxConsole {
       if (typeof handler == 'function') {
         return handler.apply(console, args);
       }
-    };
+    }
   }
 }
 
-module.exports = AppCodeboxConsole;
+module.exports = AppCodeboxConsole

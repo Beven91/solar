@@ -3,6 +3,7 @@ const processRepository = require('../process');
 const Repository = require('../process/repository');
 const chokidar = require('chokidar');
 const Runtimes = require('../parser/Runtimes');
+const generateFindTests = require('../process/template');
 
 const repository = new Repository();
 const sourceRegexp = /\.(tsx|ts)/i;
@@ -10,16 +11,18 @@ const sourceDir = path.resolve('');
 const runtime = {
   pages: [],
   sites: [],
-};
+}
 
-processRepository.clearCache();
+if(process.env.mainBuild !== "yes") {
+  generateFindTests.clearCache();
+}
 
 async function updateAllReasons(id) {
   const relatedPages = runtime.pages.filter((item) => {
     const reasons = item.reasons || [];
     return reasons.indexOf(id) > -1;
   });
-  relatedPages.forEach((page) => hotUpdatePageItem(page));
+  relatedPages.forEach((page) => hotUpdatePageItem(page))
 }
 
 async function hotUpdatePageItem(page) {
@@ -35,9 +38,13 @@ async function handleUpdate(ctx, type, target) {
   delete Runtimes.imports[id];
   switch (type) {
     case 'change':
-      if (/\.ts|\.tsx|\.ts/.test(id)) {
+      if (/d\.ts|\.tsx|\.ts/.test(id)) {
         // 如果是依赖文件改动
         return updateAllReasons(id);
+      }
+      if(/package\.json/.test(id)) {
+        ctx.devProcess.handleUpdate(type, target);
+        return;
       }
       const page = runtime.pages.find((page) => page.originPath == id);
       hotUpdatePageItem(page);
@@ -52,7 +59,7 @@ async function handleUpdate(ctx, type, target) {
         registerFindTests.push(...newRegisterFindTests);
         registerFindTests.push(...files);
         // 如果是改新增了源码文件
-        processRepository.generateFindTestsTemplate(files.map((m) => m.file), site.name);
+        generateFindTests(files.map((m) => m.file), site.name);
       } else {
         ctx.devProcess.handleUpdate(type, target);
       }
@@ -60,7 +67,7 @@ async function handleUpdate(ctx, type, target) {
   }
 }
 
-module.exports = function(options, ctx) {
+module.exports = function (options, ctx) {
   return {
     name: 'page-register-plugin',
     beforeDevServer() {
@@ -68,26 +75,30 @@ module.exports = function(options, ctx) {
         const pagesWatcher = chokidar.watch([
           '**/*.md',
           '.vuepress/components/**/*.vue',
-          '**/*.d.ts',
-          '**/*.tsx',
-          '**/*.ts',
+          "**/*.d.ts",
+          "**/*.tsx",
+          "**/*.ts",
+          "**/package.json"
         ], {
           cwd: sourceDir,
           ignored: ['.vuepress/**/*.md', 'node_modules'],
-          ignoreInitial: true,
-        });
-        pagesWatcher.on('add', target => handleUpdate(ctx, 'add', target));
-        pagesWatcher.on('unlink', target => handleUpdate(ctx, 'unlink', target));
-        pagesWatcher.on('change', target => handleUpdate(ctx, 'change', target));
+          ignoreInitial: true
+        })
+        pagesWatcher.on('add', target => handleUpdate(ctx, 'add', target))
+        pagesWatcher.on('unlink', target => handleUpdate(ctx, 'unlink', target))
+        pagesWatcher.on('change', target => handleUpdate(ctx, 'change', target))
       }
     },
-    async additionalPages() {
+    async additionalPages(updater) {
       const data = await processRepository(ctx);
       runtime.pages = data.pages;
       runtime.sites = data.sites;
       return runtime.pages;
     },
-  };
-};
+    extendMarkdown(md) {
+      md.use(require('./markdown/link'));
+    }
+  }
+}
 
 module.exports.registerFindTests = [];

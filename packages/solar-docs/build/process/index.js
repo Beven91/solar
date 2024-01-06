@@ -4,19 +4,16 @@ const Repository = require('./repository');
 const util = require('../loaders/vendor-loader/index');
 const generateComponentProps = require('./features/generate.component.props');
 const generateDemoUrl = require('./features/generate.demo.url');
+const template = require('./template');
+const child_process = require('child_process');
 
-const VENDOR_PATH = '.vuepress/public/vendors/';
+const VENDOR_PATH = '.vuepress/public/vendors/'
 const repository = new Repository();
-const cacheRoot = path.join(__dirname, '../../.cache');
-
-// if(!fs.existsSync(cacheRoot)){
-//   fs.ensureDirSync(cacheRoot,{  })
-// }
 
 const saveAs = (file, content) => {
   fs.ensureDirSync(path.dirname(file));
   fs.writeFileSync(file, content);
-};
+}
 
 async function processPageItem(item, site) {
   const from = item.filePath;
@@ -26,7 +23,7 @@ async function processPageItem(item, site) {
   if (reg.test(content)) {
     content = content.replace(reg, props);
   } else {
-    content = content + '\n' + props;
+    content = content + '\n' + props
   }
   return content;
 }
@@ -40,7 +37,7 @@ async function processPages(pages, site) {
 }
 
 function createPage(content, item, site, suffix) {
-  const file = path.join(cacheRoot, item.relative);
+  const file = path.join(template.cacheRoot, item.relative);
   fs.ensureDirSync(path.dirname(file));
   fs.writeFileSync(file, content);
   return {
@@ -51,14 +48,14 @@ function createPage(content, item, site, suffix) {
     relative: item.relative,
     reasons: item.reasons,
     // content: content
-  };
+  }
 }
 
 function processAssets(site, sourceRoot) {
   const fromAssets = path.join(site.sourceRoot, '.vuepress/public');
-  const destAssets = path.join(sourceRoot, VENDOR_PATH, site.name);
+  const destAssets = path.join(sourceRoot, VENDOR_PATH, site.name)
   if (fs.existsSync(fromAssets)) {
-    console.log('copy asset', fromAssets);
+    console.log('copy asset', fromAssets)
     fs.mkdirsSync(destAssets);
     fs.copySync(fromAssets, destAssets, { overwrite: true });
   }
@@ -74,35 +71,38 @@ async function processDemoPageItem(item, site) {
     title,
     src: item.src.replace(site.name + '/', ''),
     url: demoUrl,
-    props,
-  });
+    props
+  })
   return template;
 }
 
 async function processDemoPages(pages, site, sourceRoot) {
   const sources = [];
-  const dest = path.join(sourceRoot, VENDOR_PATH, site.name, 'index.js');
+  const dest = path.join(sourceRoot, VENDOR_PATH, site.name, 'index.js')
   for (let i = 0, k = site.pages.length; i < k; i++) {
     const item = site.pages[i];
-    const from = item.filePath;
-    const content = fs.readFileSync(from).toString('utf-8');
+    const from = item.demoPath || item.filePath;
+    let content = '';
+    if (fs.existsSync(from)) {
+      content = fs.readFileSync(from).toString('utf-8');
+    }
     const template = await processDemoPageItem(item, site);
     sources.push(util.createVendor(item.src, content, {}, from));
     pages.push(createPage(template, item, site, '.html'));
   }
-  saveAs(dest, sources.join(';\n'));
+  saveAs(dest, sources.join(';\n'))
 }
 
 function processFallbackUrls(site, sourceRoot) {
   const urls = [
     path.join(sourceRoot, VENDOR_PATH, site.name, 'index.js'),
-    path.join(sourceRoot, VENDOR_PATH, site.name, 'index.css'),
-  ];
+    path.join(sourceRoot, VENDOR_PATH, site.name, 'index.css')
+  ]
   urls.forEach((file) => {
     if (!fs.existsSync(file)) {
-      saveAs(file, '');
+      saveAs(file, '')
     }
-  });
+  })
 }
 
 function processHomeFallback(pages, site, sourceRoot) {
@@ -112,38 +112,76 @@ function processHomeFallback(pages, site, sourceRoot) {
   const items = sidebar.items || [];
   const hasIndex = items.find((item) => item.path == base);
   if (hasIndex || items.length < 1) return;
-  items.unshift({ title: 'Index', path: base });
+  items.unshift({ title: 'Index', path: base })
   const name = repo.name;
-  const content = processTemplate('index.npm.md', {
+  const templateId = repo.npm !== false ? 'index.npm.md' : 'index.md';
+  const content = processTemplate(templateId, {
     name: name,
     title: JSON.stringify(name),
     desc: repo.description || '',
-    link: items[1].path,
+    link: items[1].path
   });
   const item = {
     path: '/' + site.name + '/',
-    relative: site.name + '/index.md',
+    relative: site.name + '/index.md'
   };
   pages.push(createPage(content, item, site));
 }
 
 function processTemplate(name, data) {
   const id = path.join(__dirname, '../template', name);
-  let template = fs.readFileSync(id).toString('utf-8');
+  let template = fs.readFileSync(id).toString('utf-8')
   Object.keys(data || {}).forEach((key) => {
     template = template.replace(new RegExp('\\$' + key, 'g'), data[key]);
-  });
+  })
   return template;
 }
 
 function eachRepositories(ctx, handler) {
-  const id = path.join(__dirname, '..', '..');
-  const pwd = path.resolve('');
-  const dev = id != pwd;
+  const dev = __dirname.indexOf(path.resolve('')) < 0;
   if (dev) {
     return Promise.resolve(handler({ dir: path.resolve('') }));
+  } else if (ctx.isProd) {
+    return repository.eachRepositories(handler);
   }
-  return repository.eachRepositories(handler);
+}
+
+const sortSidebarItems = (site) => {
+  const items = site.sidebar.items || [];
+  const repo = site.repo;
+  const sidebarIndeies = repo.sidebarIndeies || [];
+  if (sidebarIndeies.length < 1) return items;
+  const newItems = [];
+  sidebarIndeies.forEach((value) => {
+    const item = items.find((m) => m.fileName == value);
+    if (item) {
+      newItems.push(item);
+    }
+  })
+  return newItems;
+}
+
+async function buildRepoWebpack(repo, sourceRoot) {
+  const pkgFile = path.join(sourceRoot || '', 'package.json');
+  if (!repo.mainBuild || !sourceRoot) return;
+  if (!fs.existsSync(pkgFile)) return;
+  const pkg = require(pkgFile);
+  delete pkg.devDependencies;
+  const idx = path.resolve('bin/index.js');
+  pkg.scripts = {
+    "build": `node ${idx} build`,
+  }
+  console.log('Build ', pkg.name, '......');
+  fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
+  child_process.execSync('npm install', { cwd: sourceRoot, stdio: [process.stdin, process.stdout, process.stderr] })
+  child_process.execSync(`node ${idx} build`, {
+    cwd: sourceRoot,
+    env: {
+      ...process.env,
+      mainBuild: 'yes'
+    },
+    stdio: [process.stdin, process.stdout, process.stderr]
+  })
 }
 
 module.exports = async function process(ctx) {
@@ -154,7 +192,7 @@ module.exports = async function process(ctx) {
   const pages = [];
   const allSites = [];
   // 克隆相关文档库
-  await eachRepositories(ctx, async(repo) => {
+  await eachRepositories(ctx, async (repo) => {
     // 整理项目文档文件
     const sites = await repository.findRepositorySite(repo);
     if (repo.isWorkspaces) {
@@ -164,15 +202,19 @@ module.exports = async function process(ctx) {
     for (let i = 0, k = sites.length; i < k; i++) {
       const site = sites[i];
       const repo = site.repo;
-      sidebars[site.sidebar.name] = site.sidebar.items;
+      if (ctx.isProd) {
+        // 本地即时构建
+        await buildRepoWebpack(repo, site.sourceRoot);
+      }
+      sidebars[site.sidebar.name] = sortSidebarItems(site);
       repositories[repo.name] = {
         name: repo.name,
         version: repo.version,
         desc: repo.description,
         author: repo.author,
         type: repo.type,
-        title: repo.name,
-      };
+        title: repo.name
+      }
       switch (site.repo.type) {
         case 'demo':
           await processDemoPages(pages, site, sourceRoot);
@@ -181,18 +223,19 @@ module.exports = async function process(ctx) {
           await processPages(pages, site, sourceRoot);
           break;
       }
+      console.log('site', site.sourceRoot)
       processAssets(site, sourceRoot);
       processHomeFallback(pages, site, sourceRoot);
       processFallbackUrls(site, sourceRoot);
     }
-  });
+  })
   return {
     pages,
-    sites: allSites,
+    sites: allSites
   };
-};
+}
 
-module.exports.processAutoPage = async function(item, site) {
+module.exports.processAutoPage = async function (item, site) {
   switch (site.repo.type) {
     case 'demo':
       const content = await processDemoPageItem(item, site);
@@ -201,22 +244,5 @@ module.exports.processAutoPage = async function(item, site) {
       const content2 = await processPageItem(item, site);
       return createPage(content2, item, site);
   }
-};
+}
 
-module.exports.cacheRoot = cacheRoot;
-
-module.exports.clearCache = function() {
-  if (fs.existsSync(cacheRoot)) {
-    fs.removeSync(cacheRoot);
-  }
-};
-
-module.exports.generateFindTestsTemplate = (files, name) => {
-  const file = path.join(cacheRoot, name, 'findTests.tsx');
-  fs.ensureDirSync(path.dirname(file));
-  const code = files
-    .filter((name) => /\.(ts|tsx|vue|js)/.test(name))
-    .map((item) => `import '${item.replace(/\\/g, '/')}';`).join('\n');
-  fs.writeFileSync(file, code);
-  return file;
-};
