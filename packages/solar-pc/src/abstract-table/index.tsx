@@ -63,7 +63,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   inject,
   ...props
 }: AbstractTableProps<TRow>,
-ref: React.MutableRefObject<AbstractTableInstance>
+  ref: React.MutableRefObject<AbstractTableInstance>
 ) {
   const [memo] = useState({
     isInitQuery: true,
@@ -83,7 +83,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const [updateId, setUpdateId] = useState(0);
   const useInnerLoading = !('loading' in props);
   const [innerLoading, setInnerLoading] = useState(props.loading);
-  const searchOptions = useMemo(()=>{
+  const searchOptions = useMemo(() => {
     return {
       ...(props.searchOptions || {}),
       btnQuery: {
@@ -284,7 +284,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
     }
   }, []);
 
-  useEffect(() => {setDataSource(props.data);}, [props.data]);
+  useEffect(() => { setDataSource(props.data); }, [props.data]);
 
   useImperativeHandle(ref, () => {
     const paginateTo = (pageNo: number) => {
@@ -302,7 +302,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
       pagination: memo,
       // 重新记载表格数据
       reload: () => {
-        onSearch();
+        handleQuery(memo.pageNo, memo.pageSize, memo.sort);
       },
       // 跳转到指定页
       paginateTo: paginateTo,

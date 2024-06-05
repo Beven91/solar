@@ -137,7 +137,7 @@ export default function AdvancePicker<TRow = PlainObject>({
 }: AdvancePickerProps<TRow, SelectValue>
 ) {
   const [options, setOptions] = useState(createSource<TRow>(props.data, valueName, labelName));
-  const memo = useRef({ init: true });
+  const memo = useRef({ init: true, uniqueCount: 0 });
   const [pagination, setPagination] = useState({ search: '', loading: false, page: 0, hasMore: false });
   const [tagsValue, setTagsValue] = useState('');
   const [internalValue, setInternalValue] = useState<any>();
@@ -229,9 +229,13 @@ export default function AdvancePicker<TRow = PlainObject>({
         const { count } = result || {};
         const models = (result?.models || []) as TRow[];
         const orinalRows = isPagination ? options : [];
+        if (orinalRows.length == 0) {
+          memo.current.uniqueCount = 0;
+        }
         const rows = models.map((row) => createOption<TRow>(row, valueName, labelName));
         const allRows = uniqueRows([...orinalRows, ...rows]);
-        const hasMore = count ? allRows.length < count : false;
+        memo.current.uniqueCount += rows.length;
+        const hasMore = count ? memo.current.uniqueCount < count : false;
         setPagination({ ...pagination, page, hasMore, loading: false });
         setOptions(allRows);
       });

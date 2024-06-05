@@ -11,7 +11,7 @@ import EditableCell from './EditableCell';
 import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, AbstractButton } from '../abstract-table/types';
 import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel, AbstractAction } from '../interface';
 import { FormInstance } from 'antd/lib/form';
-import AbstractForm from 'solar-pc/src/abstract-form';
+import AbstractForm from '../abstract-form';
 import TopActions from '../abstract-table/parts/TopActions';
 import AbstractTableContext from '../abstract-table/context';
 
@@ -69,6 +69,10 @@ const components = {
   },
 };
 
+const ensureArray = (v:any)=> {
+  return v instanceof Array ? v : [v].filter(Boolean);
+}
+
 export default function AbstractTableInput<TRow extends AbstractRow>({
   rules = {},
   rowKey = 'id',
@@ -88,7 +92,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   const tableRef = useRef<AbstractTableInstance>();
   const [editRow, setEditRow] = useState<TRow>();
   const tableContext = useContext(AbstractTableContext);
-  const vrows = useMemo(() => props.value || [], [props.value]);
+  const vrows = useMemo(() => ensureArray(props.value), [props.value]);
   const memoRef = useRef({
     updateReason: 'none' as UpdateReason,
     id: Date.now(),

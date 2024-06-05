@@ -124,7 +124,7 @@ export interface AbstractFormItemType<TRow> {
   // 是否显示输入反馈
   hasFeedback?: boolean
   // 关联数据变更，在当前表单数据发生改变时，可以设置其他表单数据的变化
-  cascade?: (value: any, model: TRow, prevValue?: TRow) => Partial<TRow>
+  cascade?: (value: any, model: TRow, prevValue?: TRow) => Partial<TRow> | Promise<Partial<TRow>>
   // 当前表单输入发生改变时触发此函数
   onChange?: (...params: Array<any>) => void
   // 分组时，单个表单项FormItem的布局配置,和ant design 的FormItem对应的layout一致
@@ -224,7 +224,7 @@ export interface AbstractUploadConfig {
   public?: string
   // 私有云上传地址
   private?: string
-  onPreview?: (url: string, accept: string, onCancel: () => void, urls: string[], defaultPreview: DefaultPreview) => React.ReactNode
+  onPreview?: (url: string, accept: string, onCancel: () => void, urls: string[], defaultPreview: DefaultPreview, isImage:boolean) => React.ReactNode
   onUpload?: (options: RcCustomRequestOptions, config: AbstractUploadConfig) => Promise<string>
   onRemove?: (file: UploadFile) => void | boolean | Promise<void | boolean>
 }
