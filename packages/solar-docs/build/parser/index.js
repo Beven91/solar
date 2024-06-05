@@ -49,8 +49,8 @@ class JavascriptParser {
 // })
 
 // const mm = require('../process/features/generate.component.props');
-// const id = '/Users/admin/office/fluxy/src/fluxy-pc/src/abstract-object/index.tsx';
-// // const id = '/Users/admin/office/stjkdocs/repos/fluxy/src/fluxy-pc/src/abstract-table/index.tsx';
+// const id = '/Users/admin/office/fluxy/src/solar-pc/src/abstract-object/index.tsx';
+// // const id = '/Users/admin/office/stjkdocs/repos/fluxy/src/solar-pc/src/abstract-table/index.tsx';
 // const id = '/Users/admin/office/bilis/src/modules/jssdk/src/sdk.ts'
 // const parser2 = new ReactTypescriptParser(id);
 // parser2.parseComponentProps().then((res) => {
@@ -61,7 +61,7 @@ class JavascriptParser {
 // })
 
 
-// const id = '/Users/admin/office/stjkdocs/repos/fluxy/src/fluxy-pc/src/abstract-object/index.tsx';
+// const id = '/Users/admin/office/stjkdocs/repos/fluxy/src/solar-pc/src/abstract-object/index.tsx';
 // new JavascriptParser('react').parseComponentProps(id).then((r)=>{
 //   console.log(r.interfaces[r.propsName].members[1].referenceType.members[1].referenceType);
 // })
