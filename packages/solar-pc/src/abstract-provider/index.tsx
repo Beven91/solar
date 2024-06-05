@@ -1,6 +1,6 @@
 /**
  * @module AbstractProvider
- * @description 统一配置fluxy-pc
+ * @description 统一配置solar-pc
  */
 import React, { Consumer, Provider } from 'react';
 import { AbstractConfig } from '../interface';

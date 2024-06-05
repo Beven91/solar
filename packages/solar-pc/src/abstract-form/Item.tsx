@@ -2,7 +2,7 @@
  * @module Item
  * @description 动态antd FormItem
  */
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Col, Form, Input } from 'antd';
 import { FormInstance, Rule, RuleObject } from 'antd/lib/form';
 import InputWrap, { getAllValues } from './InputWrap';
@@ -13,6 +13,7 @@ import { useInjecter } from '../abstract-injecter';
 import { IsolationError } from './context';
 import { FormGroupContext } from '../form-group';
 import { ColProps } from 'antd/lib/grid';
+import { NamePath } from 'antd/lib/form/interface';
 
 const FormItem = Form.Item;
 
@@ -141,15 +142,15 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const item = props.item;
   const context = useContext(ConfigConsumer.Context);
   const groupContext = useContext(FormGroupContext);
-  const model = useMemo(() => getAllValues(props), [props.model, props.form?.current]);
-  const [visible, setVisible] = useState(isVisible(item, model));
-  const [disabled, setDisabled] = useState(isDisabled(item, model));
+  const formValues = getAllValues(props);
   const [updateId, setUpdateId] = useState<number>(0);
   const [updater] = useState({ formatUpdate: false });
-  const extraNode = useExtraNode(item.extra, props.form, model);
+  const extraNode = useExtraNode(item.extra, props.form, formValues);
   const contextOriginal = useRef<ContextOriginalValue>({} as ContextOriginalValue);
   const injecter = useInjecter(props.inject);
   const memo = useRef({ isInputTrigger: false });
+  const visible = isVisible(item, formValues);
+  const disabled = isDisabled(item, formValues);
   const colOptions = useMemo(() => {
     const span = props.colOption?.span;
     return {
@@ -163,14 +164,6 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
       },
     };
   }, [props.colOption?.span, props.colOption?.offset]);
-
-  useEffect(() => {
-    setVisible(isVisible(item, model));
-  }, [item.visible]);
-
-  useEffect(() => {
-    setDisabled(isDisabled(item, model));
-  }, [item.disabled]);
 
   const name = useMemo(() => {
     if (item.name instanceof Array) return item.name;
@@ -186,7 +179,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
         keys.push(key);
       }
     });
-    return keys;
+    return keys as NamePath;
   }, [item.name]);
 
   const isolationRuler = useMemo(() => {
@@ -269,12 +262,8 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
       updater.formatUpdate = true;
       form?.setFieldsValue({ [item.name as string]: v });
     }
-    if (changed) {
-      setDisabled(innerDisabled);
-      setVisible(innerVisible);
-    }
     updater.formatUpdate = false;
-    if (typeof item.extra == 'function') {
+    if (typeof item.extra == 'function' || changed) {
       setUpdateId(updateId + 1);
     }
   };
@@ -283,15 +272,23 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     const item = props.item;
     const form = props.form.current;
     if (item.cascade && form) {
-      const model = {
-        ...(item.cascade(value, prevValues, prevValue)),
-      };
-      (form as any).updateKeys = model;
-      form.setFieldsValue(model);
-      (form as any).updateKeys = {};
-      const selfValue = getValue(name, model as TRow);
-      if (selfValue !== undefined) {
-        value = selfValue;
+      const paylod = (item.cascade(value, prevValues, prevValue));
+      if (paylod instanceof Promise) {
+        // 如果是异步，则获取数据后单独setFields
+        paylod.then((model) => {
+          form.setFieldsValue(model);
+        });
+      } else {
+        const model = {
+          ...paylod,
+        };
+        (form as any).updateKeys = model;
+        form.setFieldsValue(model);
+        (form as any).updateKeys = {};
+        const selfValue = getValue(name, model as TRow);
+        if (selfValue !== undefined) {
+          value = selfValue;
+        }
       }
     }
     if (item.normalize) {
