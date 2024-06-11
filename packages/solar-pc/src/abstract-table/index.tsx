@@ -6,7 +6,7 @@
 import './index.scss';
 import React, { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Table, TablePaginationConfig } from 'antd';
-import AbstractSearch from '../abstract-search';
+import AbstractSearch, { AbstractSearchProps } from '../abstract-search';
 import TopActions from './parts/TopActions';
 import CellActions from './parts/CellActions';
 import Formatters2 from './util/formatters';
@@ -20,6 +20,7 @@ import useScrollResizeable from './hooks/use-scroll-resizeable';
 import { FormInstance } from 'antd/lib/form';
 import { SorterResult } from 'antd/lib/table/interface';
 import { useInjecter } from '../abstract-injecter';
+import DrawerFilter from './parts/DrawerFilter';
 
 function Title(props: { column: AbstractColumnType<any>, inject: boolean }) {
   const column = props.column;
@@ -56,6 +57,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   pageSize = 10,
   select = 'none',
   rowKey = 'id',
+  layoutMode = 'normal',
   initQuery = true,
   initialPageIndex = 1,
   extraNode,
@@ -63,7 +65,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   inject,
   ...props
 }: AbstractTableProps<TRow>,
-  ref: React.MutableRefObject<AbstractTableInstance>
+ref: React.MutableRefObject<AbstractTableInstance>
 ) {
   const [memo] = useState({
     isInitQuery: true,
@@ -83,11 +85,12 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   const [updateId, setUpdateId] = useState(0);
   const useInnerLoading = !('loading' in props);
   const [innerLoading, setInnerLoading] = useState(props.loading);
+  const { drawer, ...sOptions } = (props.searchOptions || {});
   const searchOptions = useMemo(() => {
     return {
-      ...(props.searchOptions || {}),
+      ...sOptions,
       btnQuery: {
-        ...(props.searchOptions?.btnQuery || {}),
+        ...(sOptions?.btnQuery || {}),
         loading: innerLoading,
       },
     };
@@ -103,11 +106,12 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
     }
     const total = dataSource?.count || 0;
     return {
-      ...(props.pagination || {}),
       current: memo.pageNo,
       pageSize: memo.pageSize,
       total: total,
       pageCount: Math.ceil(total / pageSize),
+      showSizeChanger: true,
+      ...(props.pagination || {}),
     };
   }, [memo.pageNo, memo.pageSize, dataSource, props.pagination]);
 
@@ -284,7 +288,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
     }
   }, []);
 
-  useEffect(() => { setDataSource(props.data); }, [props.data]);
+  useEffect(() => {setDataSource(props.data);}, [props.data]);
 
   useImperativeHandle(ref, () => {
     const paginateTo = (pageNo: number) => {
@@ -302,7 +306,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
       pagination: memo,
       // 重新记载表格数据
       reload: () => {
-        handleQuery(memo.pageNo, memo.pageSize, memo.sort);
+        onSearch();
       },
       // 跳转到指定页
       paginateTo: paginateTo,
@@ -355,32 +359,52 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   const injecter = useInjecter(inject);
   const onlyTable = (!showFilters && topOperators.length < 1);
 
-  return (
-    <div
-      ref={containerRef}
-      className={`${className} ${lessCls} ${topClass} ${heightCls} abstract-table-wrapper abstract-flex`}
-      style={style}
-    >
-      {children && children}
+  const renderSearch = (props?: Partial<AbstractSearchProps<TRow>>) => {
+    return (
       <AbstractSearch
         fields={searchFields}
         className={searchBoxCls}
         actionsCls={searchBoxActionCls}
-        onQuery={onSearch}
         inject={inject}
+        {...props}
         {...(searchOptions)}
+        onQuery={(query) => {
+          onSearch();
+          props.onQuery?.(query);
+        }}
         formRef={searchFormRef}
       >
       </AbstractSearch>
+    );
+  };
+
+  const topGetContainer = getActionsContainer || tableContext.getActionsContainer;
+  const hasSelfTopActions = topOperators?.length > 0 && typeof topGetContainer !== 'function';
+
+  return (
+    <div
+      ref={containerRef}
+      className={`${className || ''} ${lessCls} ${topClass} ${heightCls} abstract-table-wrapper abstract-flex table-layout-${layoutMode || 'normal'} ${hasSelfTopActions ? '' : 'no-self-top-actions'}`}
+      style={style}
+    >
+      {children && children}
+      {layoutMode == 'mini' ? null : renderSearch()}
       <div className={`abstract-table abstract-flex ${onlyTable ? 'only-table' : ''}`}>
-        <TopActions
-          className={buttonBoxCls}
-          onAction={onAction}
-          buttons={topOperators}
-          getContainer={getActionsContainer || tableContext.getActionsContainer}
-          renderTopBar={renderTopBar}
-          selectedRows={selectedRows}
-        />
+        <div className="top-actions-wrapper">
+          <TopActions
+            className={buttonBoxCls}
+            onAction={onAction}
+            buttons={topOperators}
+            getContainer={topGetContainer}
+            renderTopBar={renderTopBar}
+            selectedRows={selectedRows}
+          />
+          {
+            layoutMode == 'mini' && (
+              <DrawerFilter {...drawer} search={renderSearch} />
+            )
+          }
+        </div>
         {extraNode}
         {
           showFilters && (

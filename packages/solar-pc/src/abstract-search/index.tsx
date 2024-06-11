@@ -10,7 +10,7 @@ import { Button, ButtonProps, Col, ConfigProvider, Form, Input } from 'antd';
 import { AbstractQueryType, PlainObject, AbstractSField, RecordModel, AbstractRow } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import AdvancePicker from '../advance-picker';
-import AbstractForm from '../abstract-form';
+import AbstractForm, { AbstractFormProps } from '../abstract-form';
 import { useInjecter } from '../abstract-injecter';
 
 export interface AbstractSearchProps<TRow> {
@@ -55,6 +55,8 @@ export interface AbstractSearchProps<TRow> {
   defaultCount?: number
   // 是否开启回车搜索
   enterKeySubmit?: boolean
+  // 表单布局配置
+  formItemLayout?: AbstractFormProps<TRow>['formItemLayout']
 }
 
 const FormItem = Form.Item;
@@ -178,7 +180,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
   // 渲染搜索按钮
   const renderSearchActions = () => {
     return (
-      <FormItem >
+      <FormItem className="search-action-form-item">
         <div className={`${props.actionsCls || ''} search-actions-btns`}>
           <Button
             type="primary"
@@ -265,6 +267,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
             itemStyle={props.itemStyle}
             name="AbstractSearch"
             inject={props.inject}
+            formItemLayout={props.formItemLayout}
             formItemCls={`${props.formItemCls || ''} abstract-search-form-item`}
             formChildren={renderInlineActions()}
           />

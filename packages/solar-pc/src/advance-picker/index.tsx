@@ -146,10 +146,15 @@ export default function AdvancePicker<TRow = PlainObject>({
     const rows = [...options];
     if (valueMode == 'object') {
       const value = props.value;
+      const mappings = {} as Record<string, any>;
+      rows.forEach((m) => mappings[m.value] = true);
       const valueRows = ((value as any) instanceof Array ? value as TRow[] : [value].filter(Boolean) as TRow[]);
-      const myRows = valueRows.filter((m) => (m || {} as any)[valueName] !== undefined);
+      const myRows = valueRows.filter((m) => {
+        const v = m?.[valueName];
+        return v !== undefined && !mappings[v];
+      });
       rows.unshift(...myRows.map((item) => createOption<TRow>(item, valueName, labelName)));
-      return uniqueRows(rows);
+      return rows;
     }
     return rows;
   }, [options, props.value, valueMode, valueName, labelName]);

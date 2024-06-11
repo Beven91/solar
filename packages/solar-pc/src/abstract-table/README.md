@@ -45,3 +45,10 @@
   title="选择表格" 
   desc="通过设置select属性，可以让表格进入选择模式，选择后会触发onSelectRows事件,实际业务场景推荐使用AbstractTablePicker" 
 />
+
+<AppCodebox 
+  console="true"
+  src="src/abstract-table/demo/index.mini" 
+  title="精简模式" 
+  desc="通过设置layoutMode=mini 可以让表格布局尽可能精简(主要包含：搜索条件，操作按钮等操作位置)" 
+/>

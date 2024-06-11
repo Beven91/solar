@@ -7,6 +7,7 @@ import { GetPopupContainer, GetRowKey, SortOrder, TableLocale, TablePaginationCo
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { SpinProps } from 'antd/lib/spin';
 import { AbstractSearchProps } from '../abstract-search';
+import { DrawerProps } from 'antd';
 
 export type ForeignRequest = (row: PlainObject) => Promise<PlainObject>
 
@@ -157,7 +158,7 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   // onQuery参数模式 scope ： 分页，排序等参数与查询参数分开， mix:则表示分页与查询参数混合再一起
   paramMode?: 'scope' | 'mix'
   // 查询容器配置
-  searchOptions?: Partial<AbstractSearchProps<TRow>>
+  searchOptions?: Partial<AbstractSearchProps<TRow>> & { drawer?: DrawerProps }
   // 搜索容器样式名
   searchBoxCls?: string
   // 搜搜容器按钮容器样式名
@@ -183,6 +184,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   inject?: boolean
   // 操作按钮描述
   extraNode?: React.ReactNode
+  // 布局模式
+  layoutMode?: 'mini' | 'normal'
 }
 
 
