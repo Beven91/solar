@@ -11,7 +11,7 @@ import EditableCell from './EditableCell';
 import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, AbstractButton } from '../abstract-table/types';
 import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel, AbstractAction } from '../interface';
 import { FormInstance } from 'antd/lib/form';
-import AbstractForm from '../abstract-form';
+import AbstractForm from 'solar-pc/src/abstract-form';
 import TopActions from '../abstract-table/parts/TopActions';
 import AbstractTableContext from '../abstract-table/context';
 
@@ -69,9 +69,9 @@ const components = {
   },
 };
 
-const ensureArray = (v:any)=> {
+const ensureArray = (v: any) => {
   return v instanceof Array ? v : [v].filter(Boolean);
-}
+};
 
 export default function AbstractTableInput<TRow extends AbstractRow>({
   rules = {},
@@ -96,6 +96,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   const memoRef = useRef({
     updateReason: 'none' as UpdateReason,
     id: Date.now(),
+    count: 0,
     needFillRowForms: false,
     throttleId: null as any,
     rows: vrows || [],
@@ -104,6 +105,9 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
   memoRef.current.rows = vrows;
   const isLocal = !props.onQuery && pagination != false;
   const resetFields = () => formRef.current?.resetFields?.();
+  if (isLocal) {
+    memoRef.current.count = vrows?.length || 0;
+  }
 
   // 当前表格列配置
   const mergedColumns = useMemo(() => {
@@ -141,6 +145,9 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
     if (onQuery) {
       const data = await Promise.resolve(onQuery(query) as Promise<AbstractResponseModel<TRow>>);
       formRef.current.setFieldsValue({ rows: data.models });
+      memoRef.current.count = data.count;
+      memoRef.current.rows = data.models;
+      props.onChange?.(data.models);
       return data;
     }
   };
@@ -426,7 +433,7 @@ export default function AbstractTableInput<TRow extends AbstractRow>({
           emptyText: renderAddButton(),
         }}
         components={components}
-        data={{ models: memoRef.current.rows, count: 0 }}
+        data={{ models: memoRef.current.rows, count: memoRef.current.count }}
         buttons={buttons}
         footer={renderFooter}
         className={`abstract-table-input ${props.className || ''}`}
