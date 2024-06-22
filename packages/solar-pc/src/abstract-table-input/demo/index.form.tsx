@@ -32,6 +32,10 @@ const formLayout = {
 
 const description = '澳门特区政府部门的公开微博发布了头条文章一个人在一';
 
+const tableRules: AbstractRules = {
+  name: [{ required: true, message: '请输入姓名' }],
+};
+
 export default function App() {
   const formRef = useRef<FormInstance>();
 
@@ -54,6 +58,7 @@ export default function App() {
       render: (
         <AbstractTableInput
           columns={columns}
+          rules={tableRules}
         />
       ),
     },
@@ -64,7 +69,7 @@ export default function App() {
       onFinish={(values) => console.log(values)}
       ref={formRef}
     >
-      <AbstractForm formItemLayout={formLayout} autoFocus="activityId" groups={groups} rules={rules} form={formRef} />
+      <AbstractForm formItemLayout={formLayout} autoFocus="activityId" groups={groups} rules={rules} />
       <div style={{ textAlign: 'center' }}>
         <Button type="primary" htmlType="submit" >提交</Button>
       </div>

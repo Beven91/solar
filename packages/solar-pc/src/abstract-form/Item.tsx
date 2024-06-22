@@ -4,8 +4,8 @@
  */
 import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Col, Form, Input } from 'antd';
-import { FormInstance, Rule, RuleObject } from 'antd/lib/form';
-import InputWrap, { getAllValues } from './InputWrap';
+import { Rule, RuleObject } from 'antd/lib/form';
+import InputWrap, { } from './InputWrap';
 import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler, FunctionItemType } from '../interface';
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { ISolationContextValue } from './isolation';
@@ -14,6 +14,7 @@ import { IsolationError } from './context';
 import { FormGroupContext } from '../form-group';
 import { ColProps } from 'antd/lib/grid';
 import { NamePath } from 'antd/lib/form/interface';
+import { useContextFormValuer } from './hooks';
 
 const FormItem = Form.Item;
 
@@ -55,8 +56,6 @@ export interface AbstractItemProps<TRow> {
   layout?: AbstractFormLayout
   // 配置项信息
   item: AbstractFormItemType<TRow>
-  // form 对象
-  form: React.RefObject<FormInstance>
   // 校验规则
   rules?: Rule[]
   // 对象数据
@@ -113,10 +112,9 @@ function getValue<TRow extends AbstractRow = AbstractRow>(name: string[], curVal
   return value;
 }
 
-function useExtraNode<TRow>(extra: AbstractFormItemType<TRow>['extra'], formRef: React.MutableRefObject<FormInstance>, model: TRow) {
+function useExtraNode<TRow>(extra: AbstractFormItemType<TRow>['extra'], model: TRow) {
   if (typeof extra == 'function') {
-    const formValues = formRef.current?.getFieldsValue() || model;
-    return extra(formValues || {});
+    return extra(model || {} as TRow);
   }
   return extra;
 }
@@ -125,12 +123,12 @@ export interface FunctionItemProps<TRow = any> {
   isReadonly: boolean
   item: FunctionItemType<TRow>
   model: TRow
-  form: React.RefObject<FormInstance>
 }
 
 export function FunctionItem<TRow = any>(props: FunctionItemProps<TRow>) {
   const groupContext = useContext(FormGroupContext);
-  const model = getAllValues(props);
+  const valuer = useContextFormValuer(props.model);
+  const model = valuer.getValues();
   return (
     <>
       {props.item(model, groupContext.isReadonly || props.isReadonly)}
@@ -140,15 +138,15 @@ export function FunctionItem<TRow = any>(props: FunctionItemProps<TRow>) {
 
 export default function Item<TRow extends AbstractRow = AbstractRow>(props: AbstractItemProps<TRow>) {
   const item = props.item;
+  const valuer = useContextFormValuer(props.model);
   const context = useContext(ConfigConsumer.Context);
   const groupContext = useContext(FormGroupContext);
-  const formValues = getAllValues(props);
+  const formValues = valuer.getValues();
   const [updateId, setUpdateId] = useState<number>(0);
   const [updater] = useState({ formatUpdate: false });
-  const extraNode = useExtraNode(item.extra, props.form, formValues);
+  const extraNode = useExtraNode(item.extra, formValues);
   const contextOriginal = useRef<ContextOriginalValue>({} as ContextOriginalValue);
   const injecter = useInjecter(props.inject);
-  const memo = useRef({ isInputTrigger: false });
   const visible = isVisible(item, formValues);
   const disabled = isDisabled(item, formValues);
   const colOptions = useMemo(() => {
@@ -187,10 +185,6 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
       validator: () => {
         return new Promise<void>((resolve, reject) => {
           if (!contextOriginal.current.isolationValidator) {
-            return resolve();
-          }
-          if (memo.current.isInputTrigger) {
-            memo.current.isInputTrigger = false;
             return resolve();
           }
           Promise.resolve(contextOriginal.current.isolationValidator()).then(() => {
@@ -239,7 +233,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
 
   const shouldUpdate = (prevValues: TRow, curValues: TRow, info: { source: string }) => {
     if (!info.source) return false;
-    const form = props.form.current;
+    const form = valuer.form;
     const anyForm = form as any;
     const item = props.item;
     const innerVisible = isVisible(item, curValues);
@@ -270,7 +264,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
 
   const normalize = (value: TRow, prevValue: TRow, prevValues: TRow) => {
     const item = props.item;
-    const form = props.form.current;
+    const form = valuer.form;
     if (item.cascade && form) {
       const paylod = (item.cascade(value, prevValues, prevValue));
       if (paylod instanceof Promise) {
@@ -316,7 +310,6 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     if (typeof props.item?.extra == 'function') {
       setUpdateId((id) => id + 1);
     }
-    memo.current.isInputTrigger = true;
     props.onValuesChange?.(prevValues, curValues);
   }, [props.onValuesChange]);
 
@@ -362,8 +355,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
             autoFocus={autoFocusAt && autoFocusAt == item.name}
             onValuesChange={onValuesChange}
             valueFormatter={context.valueFormatter}
-            record={record}
-            form={props.form}
+            model={record}
             isReadOnly={isReadOnly}
           />
         </FormItem>
@@ -386,8 +378,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
         data-name={props.item.name?.toString()}
         onDoubleClick={(e) => {
           if (injecter?.listener?.onFieldDbClick) {
-            e.stopPropagation();
-            injecter?.listener?.onFieldDbClick(props.item, props?.formName);
+            injecter?.listener?.onFieldDbClick(props.item, props?.formName, e);
           }
         }}
         className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}

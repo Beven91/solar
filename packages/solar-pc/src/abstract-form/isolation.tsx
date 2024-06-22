@@ -4,13 +4,12 @@
  *  一个隔离的form容器,其中配置的表单项和dyanmic相互独立，
  *  不过在abstract-object提交时，会进行提交
  */
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import Dynamic from './dynamic';
 import FormContext, { TopFormContext } from './context';
 import { AbstractFormProps } from './index';
 import { AbstractRow } from '../interface';
-import { Form } from 'antd';
-import { FormInstance } from 'antd/lib/form';
+import { Form, FormInstance } from 'antd';
 import { mergeFormValues } from './deepmerge';
 
 const runtime = {
@@ -26,8 +25,11 @@ export interface ISolationContextValue {
 export const ISolationContext = React.createContext<ISolationContextValue>({} as ISolationContextValue);
 
 export interface ISolationHookProps<TRow extends AbstractRow> extends AbstractFormProps<TRow> {
+  formRef?: React.MutableRefObject<FormInstance>
   onChange?: (values: TRow) => void
   value?: TRow
+  // 是否不渲染html节点
+  pure?: boolean
 }
 
 export interface ISolationHookState<TRow> {
@@ -35,61 +37,57 @@ export interface ISolationHookState<TRow> {
   value: TRow
 }
 
-export default function ISolation<TRow>({ onChange, ...props }: React.PropsWithChildren<ISolationHookProps<TRow>>) {
-  const formRef = useRef<FormInstance>();
+export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: React.PropsWithChildren<ISolationHookProps<TRow>>) {
+  const [formInstance] = Form.useForm();
   const context = useContext(FormContext);
   const isolationContext = useContext(ISolationContext);
-  const useFormRef = props.form || formRef;
   const topContext = useContext(TopFormContext);
-
-  const name = useMemo(() => {
-    return `iso_${runtime.id++}`;
-  }, []);
+  const name = useMemo(() => `iso_${runtime.id++}`, []);
   const onValuesChange = useCallback((changedValues: TRow, values: TRow) => {
-    const model = mergeFormValues(values, useFormRef.current) as TRow;
+    const model = mergeFormValues(props.value || values, formInstance) as TRow;
     onChange && onChange(model);
     props.onValuesChange && props.onValuesChange(changedValues, values);
-  }, [onChange, props.onValuesChange]);
+  }, [onChange, props.onValuesChange, formInstance, props.value]);
+
+  if (formRef) {
+    formRef.current = formInstance;
+  }
 
   useEffect(() => {
-    const formInstance = useFormRef.current;
-    if (formInstance) {
-      formInstance.setFieldsValue(props.value || {});
-      isolationContext?.setValidator?.(() => {
-        return formInstance.validateFields().catch((ex) => {
-          const isTrigging = runtime.triggerMappings[topContext.name];
-          if (!isTrigging) {
-            return new Promise((resolve, reject) => {
-              runtime.triggerMappings[topContext.name] = true;
-              setTimeout(() => {
-                runtime.triggerMappings[topContext.name] = false;
-              }, 300);
-              formInstance.scrollToField(ex.errorFields[0].name, context.intoViewOptions);
-              reject(ex);
-            });
-          }
-          return Promise.reject(ex);
-        });
+    formInstance.setFieldsValue(props.value || {});
+    isolationContext?.setValidator?.(() => {
+      return formInstance.validateFields().catch((ex) => {
+        const isTrigging = runtime.triggerMappings[topContext.name];
+        if (!isTrigging) {
+          return new Promise((resolve, reject) => {
+            runtime.triggerMappings[topContext.name] = true;
+            setTimeout(() => {
+              runtime.triggerMappings[topContext.name] = false;
+            }, 300);
+            formInstance.scrollToField(ex.errorFields[0].name, context.intoViewOptions);
+            reject(ex);
+          });
+        }
+        return Promise.reject(ex);
       });
-    }
+    });
     return () => {
       isolationContext?.setValidator?.(null);
     };
-  }, [useFormRef]);
+  }, []);
 
   const childContext = useMemo(() => {
     return {
       isReadOnly: context.isReadOnly,
-      form: useFormRef,
       record: props.value,
       intoViewOptions: context.intoViewOptions,
     };
-  }, [context.isReadOnly, useFormRef, props.value]);
+  }, [context.isReadOnly, props.value]);
 
   return (
     <Form
       name={name}
-      ref={useFormRef}
+      form={formInstance}
       component={false}
       initialValues={props.value}
       onValuesChange={onValuesChange}
@@ -97,7 +95,7 @@ export default function ISolation<TRow>({ onChange, ...props }: React.PropsWithC
       <FormContext.Provider
         value={childContext}
       >
-        <Dynamic {...childContext} {...props} />
+        <Dynamic {...childContext} {...props} pure={pure} />
       </FormContext.Provider>
     </Form>
   );

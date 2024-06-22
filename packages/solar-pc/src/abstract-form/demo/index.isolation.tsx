@@ -55,7 +55,7 @@ export default function App() {
 
   return (
     <Form onFinish={(d) => console.log('finish', d)} onValuesChange={onValuesChange} initialValues={record} ref={formRef}>
-      <AbstractForm rules={rules} model={record} groups={groups} form={formRef} />
+      <AbstractForm rules={rules} model={record} groups={groups} />
       <div style={{ textAlign: 'center' }}>
         <Button type="primary" htmlType="submit" >提交</Button>
       </div>

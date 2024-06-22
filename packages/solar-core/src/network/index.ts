@@ -704,12 +704,13 @@ function merge(data: any, merge: any) {
   if (!(data instanceof FormData)) {
     return { ...merge, ...data };
   }
+  const fd = data as FormData;
   Object.keys(merge).forEach((k) => {
-    if (!data.get(k)) {
-      data.append(k, merge[k]);
+    if (!fd.get(k)) {
+      fd.append(k, merge[k]);
     }
   });
-  return data;
+  return fd;
 }
 
 /**

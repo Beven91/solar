@@ -50,7 +50,7 @@ export default function App() {
     {
       group: '条码配置',
       visible: (r)=>{
-        console.log('sku visible');
+        console.log(r.hideSku);
         return r.hideSku !== true;
       },
       items: [
@@ -71,7 +71,7 @@ export default function App() {
 
   return (
     <Form onFinish={() => message.success('已提交')} ref={formRef}>
-      <AbstractForm groupStyle={groupStyle} groups={groups} rules={rules} form={formRef} />
+      <AbstractForm groupStyle={groupStyle} groups={groups} rules={rules} />
       <div style={{ marginTop: 40 }}>
         <FormItem label="分组样式" >
           <RadioList

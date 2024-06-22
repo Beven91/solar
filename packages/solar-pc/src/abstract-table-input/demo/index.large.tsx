@@ -60,7 +60,6 @@ export default function App() {
       style={{ height: 640, overflowY: 'auto' }}
     >
       <AbstractTableInput
-        rowKey="id"
         moveable
         onSave={onSave}
         onChange={onChange}

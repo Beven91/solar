@@ -201,7 +201,7 @@ export default function App() {
       >
         <Button onClick={onFill} type="primary">填充</Button>
       </div>
-      <AbstractForm autoFocus="activityId" groups={groups} rules={rules} form={formRef} />
+      <AbstractForm autoFocus="activityId" groups={groups} rules={rules}/>
       <div style={{ textAlign: 'center' }}>
         <Button type="primary" htmlType="submit" >提交</Button>
       </div>

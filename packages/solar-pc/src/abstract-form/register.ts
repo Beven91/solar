@@ -1,5 +1,5 @@
 import { Switch, Checkbox, Radio } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from 'moment';
 import Registrations from '../input-factory/Registration';
 
 export interface ValueConverter {

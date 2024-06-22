@@ -24,17 +24,36 @@ const demoRows2 = [
 
 export default function App() {
   const [rows, setRows] = useState<ActivityModel[]>(demoRows);
+  const [disabled, setDisabled] = useState(false);
   const [id, setId] = useState(0);
 
   const columns: AbstractEColumns<ActivityModel> = [
     { title: '商品名', name: 'name', width: 160 },
-    { title: '商品价格', width: 160, name: 'price', editor: () => <InputNumber /> },
+    {
+      title: '商品价格',
+      name: 'price',
+      width: 120,
+      editor: {
+        cascade: (price) => {
+          return {
+            status: price > 19000 ? 'good' : 'low',
+          };
+        },
+        render: <InputNumber />,
+      },
+    },
     {
       title: '售卖价',
       name: 'discount',
       width: 120,
-      editor: (row) => {
-        return <InputNumber disabled={(row.price || 0) <= 0} />;
+      editor: {
+        cascade: (r) => {
+          return {
+            status: r.price > 19000 ? 'low' : 'good',
+          };
+        },
+        visible: (r) => r.price > 18000,
+        render: (row) => <InputNumber disabled={(row.price || 0) <= 0} />,
       },
     },
   ];
@@ -47,6 +66,8 @@ export default function App() {
     { title: '切换数据源', click: () => setRows([...demoRows2]), type: 'default' },
     { title: '模拟刷新', click: () => setId(id + 1), type: 'dashed', danger: true },
     { title: '提交', click: () => console.log(rows) },
+    { title: '禁用', click: () => setDisabled(true) },
+    { title: '启用', click: () => setDisabled(false) },
   ];
 
   const onChange = (values: ActivityModel[]) => {
@@ -59,7 +80,7 @@ export default function App() {
       style={{ height: 360, overflow: 'auto' }}
     >
       <AbstractTableInput
-        rowKey="id"
+        disabled={disabled}
         onChange={onChange}
         columns={columns}
         value={rows}

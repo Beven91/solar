@@ -11,6 +11,7 @@ import { Drawer } from 'antd';
 import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
 import FormActions, { FormActionsInstance } from '../abstract-object/FormActions';
+import { useInjecter } from '../abstract-injecter';
 
 interface ActionProps {
   action?: string
@@ -125,6 +126,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const objectRef = useRef<AbstractObjectInstance>();
   const actionsRef = useRef<FormActionsInstance<TRow>>();
   const c = useContext(Context);
+  const injecter = useInjecter('inject' in props ? props.inject : c.inject);
   const realtime = props.realtime == true;
   const context = getMatchContext(c, props);
   const visible = !!context;
@@ -178,12 +180,14 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                 showOk={showOk}
                 className={props.className ? `${props.className}-footer` : ''}
                 okEnable={props.okEnable}
-                isReadOnly={props.action === 'view' || props.isReadOnly}
+                isReadOnly={context.action === 'view' || props.isReadOnly}
                 handleCancel={onCancel}
                 handleSubmit={handleSubmit}
                 okLoading={context.loading}
                 actions={props.footActions}
-              />
+              >
+                {injecter?.node?.appendAbstractObjectFooter?.(context.action)}
+              </FormActions>
             )
           }
         </div>
@@ -194,7 +198,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       rootStyle={style}
       contentWrapperStyle={myStyle}
       width={finalWidth}
-      rootClassName={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
+      className={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
       title={props.title || ''}
       open={visible}
       onClose={onCancel}

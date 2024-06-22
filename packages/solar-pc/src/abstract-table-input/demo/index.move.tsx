@@ -43,7 +43,6 @@ export default function App() {
       style={{ height: 360 }}
     >
       <AbstractTableInput
-        rowKey="id"
         moveable
         onSave={onSave}
         onChange={onChange}

@@ -103,6 +103,9 @@ $width: 5px;
     flex-wrap: nowrap;
     flex-direction: row;
     align-items: center;
+    .cell-operator:last-child {
+      margin-right: 0;
+    }
 
     .cell-operator {
       padding: 0px;

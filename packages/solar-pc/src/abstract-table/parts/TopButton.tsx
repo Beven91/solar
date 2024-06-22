@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Popconfirm } from 'antd';
 import { AbstractButton } from '../types';
 import { CellActionsProps } from './CellActions';
@@ -46,10 +46,6 @@ export function TopButton<TRow>(props: CellButtonProps<TRow>) {
   const [loading, setLoading] = useState(false);
   const memo = useRef({ timerId: 0 as any });
   const realClick = button.click || Noop;
-  const isVisible = useMemo(() => {
-    if (select && select !== 'none') return true;
-    return visible?.({} as TRow, -1) !== false;
-  }, [select, visible]);
 
   const handleAction = (row: TRow | TRow[], rowId: any, e: any) => {
     if (action && onAction) {
@@ -58,9 +54,7 @@ export function TopButton<TRow>(props: CellButtonProps<TRow>) {
     }
     const r = realClick(row as any, rowId, e) as any;
     if (r instanceof Promise) {
-      memo.current.timerId = setTimeout(() => {
-        setLoading(true);
-      }, 80);
+      memo.current.timerId = setTimeout(() => {setLoading(true);}, 80);
       setLoading(true);
       Promise.resolve(r).finally(() => {
         clearTimeout(memo.current.timerId);
@@ -101,10 +95,6 @@ export function TopButton<TRow>(props: CellButtonProps<TRow>) {
     }
     return createButton(href, onClick);
   };
-
-  if (isVisible === false) {
-    return null;
-  }
 
   return (
     <Popconfirm

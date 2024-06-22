@@ -72,7 +72,7 @@ export default function App() {
       >
         <Slider value={bottom} onChange={setBottom} min={0} max={30} />
       </Form.Item>
-      <AbstractForm itemStyle={style} model={record} isReadOnly={readonly} groups={groups} form={formRef} />
+      <AbstractForm itemStyle={style} model={record} isReadOnly={readonly} groups={groups} />
 
     </Form>
   );

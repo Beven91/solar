@@ -3,18 +3,17 @@
  * @name Dynamic
  * @description 一个表单生成视图
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Row, Col, Tabs, Input, Form } from 'antd';
-import { FormInstance } from 'antd/lib/form';
+import React from 'react';
+import { Row, Col } from 'antd';
 import FormGroup from '../form-group';
-import FormItem, { FunctionItem } from './Item';
 import {
   AbstractFormGroupItemType, AbstractGroups,
-  AbstractFormItemType, AbstractFormLayout, AbstractRules,
-  FunctionItemType, FormGroupStyle, onValuesChangeHandler, AbstractRow, FormItemLayout, AbstractGroupItem,
+  AbstractFormLayout, AbstractRules,
+  FormGroupStyle, onValuesChangeHandler, AbstractRow,
 } from '../interface';
 import { useInjecter } from '../abstract-injecter';
-import { IsolationError } from './context';
+import TabsGroup from './tabs';
+import { renderFormItem } from './render';
 
 export interface DynamicProps<TRow> {
   // 是否使用外包裹
@@ -31,24 +30,14 @@ export interface DynamicProps<TRow> {
   rules?: AbstractRules
   // 是否为查看模式
   isReadOnly?: boolean
-  // antd的form对象
-  form: React.RefObject<FormInstance>
   // 表单组展示模式
   groupStyle?: FormGroupStyle
   // 表单值发生改变时间
   onValuesChange?: onValuesChangeHandler
   // 拼接在表单控件后的字元素
   formChildren?: React.ReactNode
-  // 如果分组风格为tabs其对应的tabs类型
-  tabType?: 'line' | 'card'
-  // 如果分组风格为tabs其对应的tabs位置
-  tabPosition?: 'top' | 'left' | 'bottom' | 'right'
-  // 如果分组风格为tabs其对应的tabs间隔
-  tabBarGutter?: number
   // 让指定表单获取焦点，仅在初始化时有效
   autoFocus?: string
-  // 初始化的tab焦点
-  defaultActiveIndex?: number
   // 表单项样式名
   formItemCls?: string
   // 表单容器外在宽度
@@ -61,118 +50,35 @@ export interface DynamicProps<TRow> {
   name?: string
   // 是否使用injecter
   inject?: boolean
+  // 是否不渲染html节点
+  pure?: boolean
+  // 默认选中tab下标
+  defaultActiveIndex?: number
+  // 如果分组风格为tabs其对应的tabs类型
+  tabType?: 'line' | 'card'
+  // 如果分组风格为tabs其对应的tabs位置
+  tabPosition?: 'top' | 'left' | 'bottom' | 'right'
+  // 如果分组风格为tabs其对应的tabs间隔
+  tabBarGutter?: number
 }
 
 export interface DynamicState {
   activeIndex: number
 }
 
-const defaultFormItemLayout: FormItemLayout = {
-  labelCol: {
-    span: 5,
-  },
-  wrapperCol: {
-    span: 19,
-    xs: {
-      span: 17,
-    },
-  },
-};
-
 export default function Dynamic<TRow extends AbstractRow>({
-  rules = {},
-  model = {} as TRow,
   wrapper = true,
+  pure,
   ...props
 }: React.PropsWithChildren<DynamicProps<TRow>>) {
   const groups = props.groups || [];
-  const [plainFields] = useState<Record<string, number>>({});
-  const [accessedKeys] = useState<Record<string, boolean>>({});
-  const memo = useRef({ callback: () => { }, keepIndex: -1 });
-  const [activeIndex, setActiveIndex] = useState(props.defaultActiveIndex || 0);
   const injecter = useInjecter(props.inject);
-
-  useEffect(() => {
-    if (memo.current.callback) {
-      memo.current.callback();
-      memo.current.callback = null;
-    }
-  }, [activeIndex]);
-
-  const controlRules = [
-    (form: FormInstance) => {
-      return {
-        validator: () => {
-          return new Promise<void>((resolve, reject) => {
-            setTimeout(() => {
-              const ok = checkTabsValidator(form);
-              ok ? resolve() : reject(<IsolationError />);
-            }, 20);
-          });
-        },
-      };
-    },
-  ];
-
-  const toggleActiveIndex = (index: string | number) => {
-    accessedKeys[index.toString()] = true;
-    setActiveIndex(Number(index));
-  };
-
-  const checkTabsValidator = (form: FormInstance) => {
-    const errorField = form.getFieldsError().filter((m) => m.errors?.length > 0)[0];
-    const key = Object.keys(accessedKeys).find((k) => accessedKeys[k] == false);
-    if (!key && !errorField) {
-      memo.current.keepIndex > -1 && toggleActiveIndex(memo.current.keepIndex);
-      memo.current.keepIndex = -1;
-      return true;
-    }
-    if (errorField) {
-      memo.current.keepIndex = -1;
-      toggleActiveIndex(plainFields[errorField.name.join('.')]);
-    } else if (key) {
-      if (memo.current.keepIndex === -1) {
-        memo.current.keepIndex = activeIndex;
-      }
-      memo.current.callback = () => {
-        setTimeout(() => form.submit?.(), 20);
-      };
-      toggleActiveIndex(key);
-    }
-    return false;
-  };
-
-  // 获取tabs风格的分组表单
-  const tabGroups = useMemo(() => {
-    if (props.groupStyle != 'tabs') return [];
-    const normal = [] as Array<AbstractFormItemType<TRow>>;
-    const tabs = [{ group: '', items: normal }] as AbstractFormGroupItemType<TRow>[];
-    groups.forEach((group) => {
-      if ('group' in group) {
-        tabs.push(group);
-      } else {
-        normal.push(group as AbstractFormItemType<TRow>);
-      }
-    });
-    Object.keys(accessedKeys).forEach((k) => {
-      delete accessedKeys[k];
-    });
-    const tabGroups = tabs.filter((tab) => tab.items?.length > 0);
-    tabGroups.forEach((group, index) => {
-      group.items.forEach((item) => {
-        plainFields[item.name?.toString()] = index;
-      });
-      accessedKeys[index] = index == activeIndex;
-    });
-    return tabGroups;
-  }, [props.groupStyle, groups.map((g: any) => g.group || g.name).join('-')]);
-
 
   // 渲染分组
   const renderGroup = (groupItem: AbstractFormGroupItemType<TRow>, index: number) => {
     const { group, items, span } = groupItem;
     if (!('group' in groupItem)) {
-      return renderFormItem(groupItem as any, props.span, null, index);
+      return renderFormItem(groupItem as any, props, props.span, null, index);
     }
     const classNames = [] as string[];
     if (index == 0) {
@@ -184,7 +90,7 @@ export default function Dynamic<TRow extends AbstractRow>({
         data-name={groupItem.group}
         data-group-id={groupItem.group}
         span={24}
-        onDoubleClick={() => injecter?.listener?.onFieldGroupDbClick?.(groupItem, props.name)}
+        onDoubleClick={(e) => injecter?.listener?.onFieldGroupDbClick?.(groupItem, props.name, e)}
         key={`from-group-${groupItem.group}-${index}`}
       >
         <FormGroup
@@ -193,16 +99,16 @@ export default function Dynamic<TRow extends AbstractRow>({
           icon={groupItem.icon}
           group={groupItem}
           title={group}
-          form={props.form}
-          model={model}
+          model={props.model}
           className={`abstract-form-group ${classNames.join(' ')}`}
         >
           <Row gutter={24}>
             {items?.map((item, i) => renderFormItem(
               item,
+              props,
               span || props.span,
               groupItem,
-              i
+              i,
             ))}
           </Row>
           {injecter?.node?.appendFormGroup?.(groupItem)}
@@ -211,116 +117,13 @@ export default function Dynamic<TRow extends AbstractRow>({
     );
   };
 
-  // 渲染表单
-  const renderFormItem = (item: AbstractGroupItem<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, index?: number) => {
-    if (typeof item === 'function') {
-      return renderFreeFunction(item, group, index);
-    }
-    return renderNormalLayoutInput(item as AbstractFormItemType<TRow>, span, group, index);
-  };
-
-  // 渲染一个自定义布局表单
-  const renderFreeFunction = (item: FunctionItemType<TRow>, group: AbstractFormGroupItemType<TRow>, index: number) => {
-    return (
-      <Col
-        key={`form-group-item-${index || 0}-${item.name}`}
-        span={24}
-      >
-        <FunctionItem
-          item={item}
-          model={model}
-          form={props.form}
-          isReadonly={props.isReadOnly}
-        />
-      </Col>
-    );
-  };
-
-  // 渲染常规布局表单
-  const renderNormalLayoutInput = (item: AbstractFormItemType<TRow>, span?: number, group?: AbstractFormGroupItemType<TRow>, i?: number) => {
-    const { formItemLayout } = props;
-    const title = item.render2 ? '' : item.title;
-    const layout = group?.layout;
-    const itemStyle = group?.itemStyle;
-    const layout2 = title ? item.layout || layout || formItemLayout || defaultFormItemLayout : {};
-    const num = 24 / span;
-    const name = item.name instanceof Array ? item.name.join('.') : item.name;
-    const itemRules = (rules || {})[name];
-    const colOption = {
-      span: item.span || span || 24,
-      offset: item.offset,
-      className: `${num <= 3 ? 'three' : 'than-three'} ${props.formItemCls}`,
-    };
-    return (
-      <React.Fragment
-        key={`form-group-item-${i}-${item.name}`}
-      >
-        {
-          item.break ? (<Col span={24} className="break-form-item"></Col>) : null
-        }
-        <FormItem
-          layout={layout2}
-          item={item}
-          autoFocusAt={props.autoFocus}
-          colOption={colOption}
-          onValuesChange={props.onValuesChange}
-          isReadOnly={props.isReadOnly}
-          form={props.form}
-          rules={itemRules}
-          validateFirst={props.validateFirst}
-          model={model}
-          inject={props.inject}
-          formName={props.name}
-          style={{
-            ...(props.itemStyle || {}),
-            ...(itemStyle || {}),
-            ...((item as any).itemStyle || {}),
-          }}
-        />
-      </React.Fragment>
-    );
-  };
-
   const renderStyle = () => {
     switch (props.groupStyle) {
       case 'tabs':
-        return renderTabs();
+        return <TabsGroup {...props} />;
       default:
         return renderNorml();
     }
-  };
-
-  const renderTabs = () => {
-    const { tabPosition, tabType, tabBarGutter } = props;
-    const items = tabGroups.map((group, index) => {
-      return {
-        key: `${index}`,
-        label: <div>{group.icon}{group.group || index}</div>,
-        children: (
-          <Row className="tabs-group-form-inner" gutter={8}>
-            {group.items?.map((item) => renderFormItem(item, group.span || props.span, group, index))}
-          </Row>
-        ),
-      };
-    });
-    return (
-      <React.Fragment>
-        <Tabs
-          className="abstract-form-tabs"
-          tabBarStyle={{ paddingLeft: 20 }}
-          activeKey={activeIndex.toString()}
-          type={tabType}
-          tabPosition={tabPosition}
-          tabBarGutter={tabBarGutter}
-          onChange={(activeKey) => toggleActiveIndex(activeKey)}
-          items={items}
-        >
-        </Tabs>
-        <Form.Item name="tabsValidator" rules={controlRules} style={{ display: 'none' }} >
-          <Input type="hidden" />
-        </Form.Item>
-      </React.Fragment>
-    );
   };
 
   const renderNorml = () => {
@@ -348,6 +151,14 @@ export default function Dynamic<TRow extends AbstractRow>({
       </React.Fragment>
     );
   };
+
+  if (pure) {
+    return (
+      <>
+        {groups.length < 1 ? props.children : renderStyle()}
+      </>
+    );
+  }
 
   // 渲染
   return (

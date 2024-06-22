@@ -48,6 +48,14 @@
 <AppCodebox 
   src="src/abstract-table-input/demo/index.form" 
   title="位于form下" 
-  desc="测试在form下更新，是否回导致输入框失去焦点" 
+  console="true"
+  desc="测试在form下更新，是否会导致输入框失去焦点" 
+/>
+
+<AppCodebox 
+  src="src/abstract-table-input/demo/index.shallow" 
+  title="位于form下" 
+  console="true"
+  desc="测试onChange后生成新的数据，是否会对编辑行输入框产生失焦" 
 />
 

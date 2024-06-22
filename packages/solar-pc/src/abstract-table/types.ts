@@ -47,10 +47,11 @@ export interface AbstractColumnType<TRow extends AbstractRow> extends Omit<Colum
   sort?: string
 }
 
+export type CellEditor<TRow = any> = (row: TRow, index: number) => ReactElement
+
 export interface AbstractEditColumnType<TRow extends AbstractRow> extends AbstractColumnType<TRow> {
   initialValue?: any
-  editor?: (row: TRow, index: number) => ReactElement
-  formProps?: Omit<AbstractFormItemType<TRow>, 'name' | 'title' | 'render' | 'initialValue'>
+  editor?: CellEditor<TRow> | Omit<AbstractFormItemType<TRow>, 'name' | 'title' | 'initialValue'>
 }
 
 type RenderButton = (href: string, onClick: (e: React.MouseEventHandler<HTMLElement>) => void) => ReactElement | React.ReactNode

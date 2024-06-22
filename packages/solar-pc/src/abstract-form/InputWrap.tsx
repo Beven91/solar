@@ -3,18 +3,7 @@ import { Input } from 'antd';
 import { AbstractFormItemType, AbstractRow, onValuesChangeHandler } from '../interface';
 import Registry, { ValueConverter } from './register';
 import ReadOnly from './readOnly';
-import { FormInstance } from 'antd/lib/form';
-import { mergeFormValues } from './deepmerge';
-
-interface RecordProps<TRow> {
-  record: TRow
-  form: React.MutableRefObject<FormInstance>
-}
-
-interface ModelProps<TRow> {
-  model: TRow
-  form: React.MutableRefObject<FormInstance>
-}
+import { useContextFormValuer } from './hooks';
 
 const useGenericKeys = (item: AbstractFormItemType<any>) => {
   return item.genericKeys && typeof item.name == 'string';
@@ -29,19 +18,13 @@ export interface InputWrapProps<TRow extends AbstractRow> {
   isReadOnly: boolean
   value?: any,
   id?: string
-  record: TRow
-  form: React.RefObject<FormInstance>
+  model: TRow
   item: AbstractFormItemType<TRow>
   valueFormatter?: (v: any) => any
   onChange?: (...params: Array<any>) => any
   // 表单值发生改变时间
   onValuesChange?: onValuesChangeHandler
   autoFocus?: boolean
-}
-
-export function getAllValues<TRow>(props: RecordProps<TRow> | ModelProps<TRow>) {
-  const model = (props as ModelProps<TRow>).model || (props as RecordProps<TRow>).record;
-  return mergeFormValues(model, props.form?.current) as TRow;
 }
 
 const getValue = (v: any, converter: ConverterInfo, valueFormatter: InputWrapProps<any>['valueFormatter'], valuePropName: string) => {
@@ -79,16 +62,17 @@ const mappingToValue = (item: AbstractFormItemType<any>, value: any, record: Rec
 
 export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
   const containerRef = useRef<HTMLDivElement>();
+  const valuer = useContextFormValuer(props.model);
+  const allValues = valuer.getValues();
   const converter = useMemo<ConverterInfo>(() => {
     const { item } = props;
-    const record = getAllValues(props);
-    const convert = typeof item.convert === 'function' ? item.convert(record) : item.convert;
+    const convert = typeof item.convert === 'function' ? item.convert(allValues) : item.convert;
     const values = convert instanceof Array ? convert : [convert];
     return {
       args: values.slice(1),
       convert: Registry.getConverter(values[0] as string),
     };
-  }, [props.item?.convert, props.form, props.record]);
+  }, [props.item?.convert, valuer.getValues, props.model]);
 
   useEffect(() => {
     // 自动聚焦
@@ -116,7 +100,7 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
       return <ReadOnly value={initialValue} item={item} />;
     }
     if (typeof render === 'function') {
-      return render(getAllValues(props));
+      return render(allValues);
     } else if (render) {
       return render;
     }
@@ -129,7 +113,6 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
   if (!component) return null;
   const valuePropName = component?.type?.valuePropName || 'value';
   const inputValue = converter?.convert ? converter.convert.setInput(props.value, ...converter.args) : props.value;
-  const allValues = getAllValues(props);
   const options = {
     [valuePropName]: mappingToValue(item, inputValue, allValues),
     disabled: component.props.disabled || isReadOnly,
@@ -138,10 +121,10 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
       if (useGenericKeys(item)) {
         v = v || {};
         const model = mappingToValue(item, undefined, v, true);
-        props.form.current?.setFieldsValue(model);
+        valuer.form?.setFieldsValue(model);
         v = model[item.name as string];
       }
-      const prevValues = getAllValues(props);
+      const prevValues = valuer.getValues();
       const onChange = component.props.onChange;
       const value = getValue(v, converter, props.valueFormatter, valuePropName);
       if (onChange != item.onChange) {
@@ -153,7 +136,7 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
       // 触发form传递的onChange ---> 执行当前代码后，getModel()将获取到最新的值
       props.onChange?.(value, ...params);
       // 触发onValuesChnage
-      props.onValuesChange?.(prevValues, getAllValues(props));
+      props.onValuesChange?.(prevValues, valuer.getValues());
     },
   };
   if (item.customKey) {

@@ -45,8 +45,8 @@ interface SortMeta {
 export const Formatters = Formatters2;
 
 export interface AbstractTableInstance {
-  paginateIntoView: (total: number) => void
-  reload: () => void
+  paginateIntoView: (total: number, needQuery?:boolean) => void
+  reload: (pageNo?: number) => void
   pagination: { pageNo: number, pageSize: number },
   paginateTo: (pageNo: number) => void,
 }
@@ -117,7 +117,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
 
   const getRowKey = (row: TRow, index: number) => {
     const isFn = typeof rowKey == 'function';
-    return (isFn ? rowKey(row, index) : rowKey) as string;
+    return isFn ? rowKey(row, index) : row[rowKey];
   };
 
   const onAction = (action: AbstractAction<TRow>) => {
@@ -134,7 +134,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
   // 选中行信息
   const rowSelection = useMemo(() => {
     const { onSelectRows } = props;
-    const selectedRowKeys = selectedRows.map((row) => row[getRowKey(row, -1)]);
+    const selectedRowKeys = selectedRows.map((row) => getRowKey(row, -1));
     const shouldSelect = select && select != 'none' || topOperators.find(op => !!op.select);
     if (!shouldSelect) return null;
     return {
@@ -152,7 +152,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
         } else {
           // 取消选中
           newSelectedRows = selectedRows.filter(
-            row2 => row2[getRowKey(row2, -1)] != row[getRowKey(row, -1)]
+            row2 => getRowKey(row2, -1) != getRowKey(row, -1)
           );
         }
         memo.selectedRows = newSelectedRows;
@@ -167,10 +167,10 @@ ref: React.MutableRefObject<AbstractTableInstance>
           newSelectedRows.push(...changeRows);
         } else {
           const changeRowKeys = changeRows.reduce((all, row) => {
-            all[row[getRowKey(row, -1)]] = row;
+            all[getRowKey(row, -1)] = row;
             return all;
           }, {} as any);
-          newSelectedRows = selectedRows.filter(row => !changeRowKeys[row[getRowKey(row, -1)]]);
+          newSelectedRows = selectedRows.filter(row => !changeRowKeys[getRowKey(row, -1)]);
         }
         memo.selectedRows = newSelectedRows;
         onSelectRows?.(newSelectedRows);
@@ -201,7 +201,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
           onAction={onAction}
           style={style}
           buttons={cellOperators}
-          rowId={row[getRowKey(row, index)]}
+          rowId={getRowKey(row, index)}
         />
       ),
     } as any;
@@ -291,22 +291,24 @@ ref: React.MutableRefObject<AbstractTableInstance>
   useEffect(() => {setDataSource(props.data);}, [props.data]);
 
   useImperativeHandle(ref, () => {
-    const paginateTo = (pageNo: number) => {
+    const paginateTo = (pageNo: number, needQuery = true) => {
       memo.pageNo = pageNo;
-      handleQuery(pageNo, memo.pageSize, memo.sort);
+      if (needQuery) {
+        handleQuery(pageNo, memo.pageSize, memo.sort);
+      }
     };
     return {
-      paginateIntoView: (total: number) => {
+      paginateIntoView: (total: number, needQuery = true) => {
         const { pageSize } = memo;
         const pageNo = Math.ceil(total / pageSize);
         if (pageNo > memo.pageNo) {
-          paginateTo(pageNo);
+          paginateTo(pageNo, needQuery);
         }
       },
       pagination: memo,
       // 重新记载表格数据
-      reload: () => {
-        onSearch();
+      reload: (pageNo: number) => {
+        handleQuery(pageNo === undefined ? memo.pageNo : pageNo, memo.pageSize, memo.sort);
       },
       // 跳转到指定页
       paginateTo: paginateTo,

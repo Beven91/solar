@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns } from 'solar-pc';
+import { AbstractActions, AbstractForm, SubmitAction, AbstractTable, AbstractButtons, AbstractColumns, RadioList } from 'solar-pc';
 import { AbstractAction, AbstractGroups, AbstractResponseModel, AbstractRules } from 'solar-pc/src/interface';
+import { Form } from 'antd';
 
 interface ActivityModel {
   id: number
   name: string
   price: number
+  type?: string
 }
 
+const typeOptions = [
+  { label: 'gap', value: 'gap' },
+  { label: 'tabs', value: 'tabs' },
+  { label: 'normal', value: 'normal' },
+];
+
 // 这个组件推荐单独放到一个文件中，这里为了演示直观需要，直接写到此处。
-function ActivityView() {
+function ActivityView(props: any) {
+  const type = props.groupStyle;
   const rules: AbstractRules = {
     name: [{ required: true, message: '请填写活动名称' }],
     price: [{ required: true, message: '请设置活动价格' }],
@@ -18,10 +27,17 @@ function ActivityView() {
   const groups: AbstractGroups<ActivityModel> = [
     { title: '活动名称', name: 'name' },
     { title: '价格', name: 'price' },
+    {
+      group: '商品信息',
+      items: [
+        { title: '商品名称', name: 'productName' },
+        { title: '商品标题', name: 'title' },
+      ],
+    },
   ];
 
   return (
-    <AbstractForm rules={rules} groups={groups} />
+    <AbstractForm rules={rules} groups={groups} groupStyle={type} />
   );
 }
 
@@ -30,6 +46,7 @@ const demo = [
 ];
 
 export default function App() {
+  const [type, setType] = useState('gap');
   const [action, setAction] = useState<AbstractAction<ActivityModel>>({ id: '', action: '', model: {} as ActivityModel });
   const [data, setRows] = useState<AbstractResponseModel<ActivityModel>>({ count: 0, models: demo });
 
@@ -80,9 +97,15 @@ export default function App() {
       onSubmit={onSubmit}
       style={{ height: 300 }}
       primaryKey="id"
+      groupStyle={type}
       onCancel={() => setAction({ action: '', id: '' })}
     >
       <AbstractActions.List>
+        <Form.Item
+          label="类型"
+        >
+          <RadioList defaultValue={type} onChange={(e) => setType(e.target.value)} options={typeOptions} />
+        </Form.Item>
         <AbstractTable
           columns={columns}
           data={data}

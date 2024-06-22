@@ -141,6 +141,7 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
     record,
     subRecord: subModel,
     ...props,
+    inject: props.inject,
     onMatch: (action) => {
     },
     onCancel: () => {

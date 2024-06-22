@@ -7,11 +7,9 @@ import React, { useContext, useMemo } from 'react';
 import Dynamic from './dynamic';
 import register, { ConverterRegistry, ValueConverter } from './register';
 import { AbstractGroups, AbstractFormLayout, AbstractRules as AbstractRules, FormGroupStyle, onValuesChangeHandler, AbstractRow } from '../interface';
-import { FormInstance } from 'antd/lib/form';
 import FormContext, { TopFormContext } from './context';
 import AbstractProvider from '../abstract-provider';
 import ISolation from './isolation';
-import { Form } from 'antd';
 
 const runtime = {
   id: 0,
@@ -23,8 +21,6 @@ export interface AbstractFormProps<TRow> {
   onValuesChange?: onValuesChangeHandler
   // 当前表单的默认填充值
   model?: TRow
-  // antd的formRef对象 不传递formRef情况下，默认会通过context获取form
-  form?: React.RefObject<FormInstance>
   // 表单配置
   groups: AbstractGroups<TRow>
   // 统一表单布局配置
@@ -59,21 +55,14 @@ export interface AbstractFormProps<TRow> {
   name?: string
   // 是否使用injecter
   inject?: boolean
+  // 使用独立的form
+  useForm?: boolean
 }
 
 export default function AbstractForm<TRow extends AbstractRow>(props: React.PropsWithChildren<AbstractFormProps<TRow>>) {
   const config = useContext(AbstractProvider.Context);
   const formContext = useContext(FormContext);
   const topContext = useContext(TopFormContext);
-  const hasForm = props.form || formContext.form;
-  const ownerForm = hasForm ? null : Form.useFormInstance();
-  const form = useMemo(() => {
-    return {
-      get current() {
-        return hasForm ? props.form?.current || formContext.form?.current : ownerForm;
-      },
-    };
-  }, []);
 
   formContext.cacheGroups = props.groups;
 
@@ -91,7 +80,6 @@ export default function AbstractForm<TRow extends AbstractRow>(props: React.Prop
         formItemLayout={config.formItemLayout}
         {...formContext}
         {...props}
-        form={form}
         name={props.name || 'AbstractForm'}
         containerWidth={formContext.width}
       />

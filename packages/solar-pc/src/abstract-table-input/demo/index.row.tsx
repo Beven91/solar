@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AbstractTableInput } from 'solar-pc';
 import { AbstractButtons, AbstractEColumns } from 'solar-pc/src/interface';
-import { InputNumber } from 'antd';
+import { Input, InputNumber } from 'antd';
 
 interface ActivityModel {
   id: number
@@ -25,10 +25,32 @@ const demoRows2 = [
 export default function App() {
   const [rows, setRows] = useState<ActivityModel[]>(demoRows);
   const [id, setId] = useState(0);
+  const [disabled, setDisabled] = useState(false);
 
   const columns: AbstractEColumns<ActivityModel> = [
-    { title: '商品名', name: 'name' },
-    { title: '商品价格', name: 'price', editor: () => <InputNumber /> },
+    { title: '商品名', name: 'name', width: 120 },
+    {
+      title: '商品价格',
+      name: 'price',
+      width: 120,
+      editor: {
+        cascade: (price) => {
+          return {
+            status: price > 19000 ? 'good' : 'low',
+          };
+        },
+        render: <InputNumber />,
+      },
+    },
+    {
+      title: '状态',
+      name: 'status',
+      width: 100,
+      editor: {
+        visible: (r) => r.price > 18000,
+        render: <Input />,
+      },
+    },
   ];
 
   const rules = {
@@ -39,6 +61,8 @@ export default function App() {
     { title: '切换数据源', click: () => setRows([...demoRows2]), type: 'default' },
     { title: '模拟刷新', click: () => setId(id + 1), type: 'dashed', danger: true },
     { title: '提交', click: () => console.log(rows) },
+    { title: '禁用', click: () => setDisabled(true) },
+    { title: '启用', click: () => setDisabled(false) },
   ];
 
   const onChange = (values: ActivityModel[]) => {
@@ -66,13 +90,13 @@ export default function App() {
 
   return (
     <div
-      style={{ height: 360 }}
+      style={{ height: 360, overflowY: 'auto' }}
     >
       <AbstractTableInput
-        rowKey="id"
         mode="row"
         buttons={buttons}
         onSave={onSave}
+        disabled={disabled}
         removeConfirm="您确定要删除该商品?"
         onRemove={onRemove}
         onChange={onChange}

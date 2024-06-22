@@ -31,7 +31,6 @@ export default function App() {
       style={{ height: 360 }}
     >
       <AbstractTableInput
-        rowKey="id"
         onChange={onChange}
         columns={columns}
         buttons={buttons}

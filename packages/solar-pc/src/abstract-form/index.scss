@@ -8,6 +8,12 @@
 .abstract-form {
   overflow-x: hidden;
 
+  .abstract-form-item {
+    .abstract-form-normal-inner.not-first-group {
+      padding-top: 0 !important;
+    }
+  }
+
   .readonly-form-item {
     border: 0px !important;
     padding-left: 0px !important;
