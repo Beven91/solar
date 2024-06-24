@@ -59,8 +59,14 @@ export default function App() {
   const [data, setRows] = useState<AbstractResponseModel<ActivityModel>>({ count: 0, models: demo });
 
   const columns: AbstractColumns<ActivityModel> = [
-    { title: '活动名称', name: 'name' },
-    { title: '活动价格', name: 'price' },
+    { title: '活动名称', name: 'name', width: 100 },
+    { title: '活动价格', name: 'price', width: 100 },
+    { title: '价格2', name: 'price2', width: 100 },
+    { title: '价格3', name: 'price3', width: 100 },
+    { title: '价格4', name: 'price4', width: 100 },
+    { title: '价格5', name: 'price5', width: 100 },
+    { title: '价格6', name: 'price6', width: 100 },
+    { title: '价格7', name: 'price7', width: 100 },
   ];
 
   const buttons: AbstractButtons<ActivityModel> = [
@@ -87,7 +93,7 @@ export default function App() {
         setAction({ action: '', id: '' });
         break;
       case 'addproduct':
-        alert('子动作提交'+JSON.stringify(item.model, null, 2));
+        alert('子动作提交' + JSON.stringify(item.model, null, 2));
         // 退出子动作
         setSubAction('');
         break;

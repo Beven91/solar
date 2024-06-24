@@ -92,7 +92,6 @@ const normalizeUrl = (url: string) => {
 
 export default function AbstractActions<TRow extends AbstractRow>(props: AbstractActionsProps<TRow>) {
   const { onCancel, onSubCancel, subModel, subAction, action, className, style, onSubmit, model: record } = props;
-  const listRef = useRef<HTMLDivElement>();
   const containerRef = useRef<HTMLDivElement>();
   const [memo] = useState({
     preRouteAction: null as InitialAction,
@@ -114,12 +113,16 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
   useEffect(() => {
     if (memo.mounted) {
       fallbackActions();
-      if (containerRef.current) {
+      const container = containerRef.current;
+      if (container) {
         const name = memo.shouldHideObject ? 'add' : 'remove';
-        containerRef.current.classList[name]('sub-covered');
+        container.classList[name]('sub-covered');
+        if (memo.shouldHideList) {
+          container.classList.add('should-hide-list');
+        } else {
+          container.classList.remove('should-hide-list');
+        }
       }
-      if (!listRef.current) return;
-      listRef.current.style.display = memo.shouldHideList ? 'none' : 'block';
     }
     memo.mounted = true;
   });
@@ -168,7 +171,6 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
       }
     },
     getActionsContainer: getActionsContainer,
-    listRef: listRef,
     subConfirmLoading: props.subConfirmLoading,
     confirmLoading: props.confirmLoading,
     action: props.action,
