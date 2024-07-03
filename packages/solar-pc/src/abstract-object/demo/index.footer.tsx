@@ -34,7 +34,7 @@ export default function App() {
       footActions={
         [
           (row: CommodityModel, ctx) => {
-            return <Button onClick={ctx.bindValidate(() => alert('审核成功'))} type="primary">审核({row.name})</Button>;
+            return <Button size="large" onClick={ctx.bindValidate(() => alert('审核成功'))} type="primary">审核({row.name})</Button>;
           },
         ]
       }

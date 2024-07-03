@@ -372,7 +372,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
         {...(searchOptions)}
         onQuery={(query) => {
           onSearch();
-          props.onQuery?.(query);
+          props?.onQuery?.(query);
         }}
         formRef={searchFormRef}
       >

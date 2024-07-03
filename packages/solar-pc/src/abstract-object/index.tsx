@@ -189,7 +189,12 @@ ref: React.MutableRefObject<AbstractObjectInstance>
 
   const validateForms = async() => {
     const form = formRef.current;
-    await form.validateFields();
+    try {
+      await form.validateFields();
+    } catch (ex) {
+      onFinishFailed(ex);
+      return Promise.reject(ex);
+    }
   };
 
   // 处理提交操作
