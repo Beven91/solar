@@ -94,8 +94,8 @@ export interface AbstractItemState {
 }
 
 interface ContextOriginalValue {
-  isolationValidator: Parameters<ISolationContextValue['setValidator']>[0]
-  mergeValidator: Parameters<ISolationContextValue['setMergeValidator']>[0]
+  isolationValidators: Parameters<ISolationContextValue['addValidator']>[0][]
+  mergeValidators: Parameters<ISolationContextValue['addMergeValidator']>[0][]
 }
 
 function getValue<TRow extends AbstractRow = AbstractRow>(name: string[], curValues: TRow) {
@@ -145,7 +145,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const [updateId, setUpdateId] = useState<number>(0);
   const [updater] = useState({ formatUpdate: false });
   const extraNode = useExtraNode(item.extra, formValues);
-  const contextOriginal = useRef<ContextOriginalValue>({} as ContextOriginalValue);
+  const contextOriginal = useRef<ContextOriginalValue>({ isolationValidators: [], mergeValidators: [] } as ContextOriginalValue);
   const injecter = useInjecter(props.inject);
   const visible = isVisible(item, formValues);
   const disabled = isDisabled(item, formValues);
@@ -184,10 +184,15 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     return {
       validator: () => {
         return new Promise<void>((resolve, reject) => {
-          if (!contextOriginal.current.isolationValidator) {
+          const len = contextOriginal.current.isolationValidators?.length || 0;
+          if (len < 1) {
             return resolve();
           }
-          Promise.resolve(contextOriginal.current.isolationValidator()).then(() => {
+          Promise.all(
+            contextOriginal.current.isolationValidators.map((validate) => {
+              return validate?.();
+            })
+          ).then(() => {
             resolve();
           }).catch((ex) => {
             reject(<IsolationError />);
@@ -201,10 +206,15 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
     return {
       validator: (rule: RuleObject) => {
         return new Promise<void>((resolve, reject) => {
-          if (!contextOriginal.current.mergeValidator) {
+          const len = contextOriginal.current.mergeValidators?.length || 0;
+          if (len < 1) {
             return resolve();
           }
-          Promise.resolve(contextOriginal.current.mergeValidator()).then(() => {
+          Promise.all(
+            contextOriginal.current.mergeValidators.map((validate) => {
+              return validate?.();
+            })
+          ).then(() => {
             resolve();
           }).catch((message: string) => {
             rule.message = message;
@@ -220,12 +230,29 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   }, [visible, props.rules, isolationRuler, mergeValidatorRuler]);
 
   const isolationContext = useMemo(() => {
+    const removeValidator = (handler) => {
+      const handlers = contextOriginal.current.isolationValidators;
+      const idx = handlers.indexOf(handler);
+      if (idx > -1) {
+        handlers.splice(idx, 1);
+      }
+    };
+    const removeMergeValidator = (handler) => {
+      const validators = contextOriginal.current.mergeValidators;
+      const idx = validators.indexOf(handler);
+      if (idx > -1) {
+        validators.splice(idx, 1);
+      }
+    };
     return {
-      setValidator: (handler) => {
-        contextOriginal.current.isolationValidator = handler;
+      addValidator: (handler) => {
+        contextOriginal.current.isolationValidators.push(handler);
+        return () => removeValidator(handler);
       },
-      setMergeValidator: (handler) => {
-        contextOriginal.current.mergeValidator = handler;
+      removeValidator: removeValidator,
+      addMergeValidator: (handler) => {
+        contextOriginal.current.mergeValidators.push(handler);
+        return () => removeMergeValidator(handler);
       },
     } as ISolationContextValue;
   }, []);

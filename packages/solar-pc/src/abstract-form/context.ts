@@ -3,7 +3,6 @@ import { AbstractFormContext } from '../interface';
 
 export default React.createContext<AbstractFormContext>({
   isReadOnly: false,
-  intoViewOptions: {},
   record: {},
 });
 

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AbstractForm, AbstractGroups } from 'solar-pc';
 import { Form, FormInstance, Button, Input } from 'antd';
 
@@ -29,9 +29,12 @@ function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
 const MergeRuleInput: React.FC = (props: { value: string, onChange: () => void }) => {
   const ctx = useContext(AbstractForm.ISolation.Context);
 
-  ctx.setMergeValidator(()=>{
-    return props.value == '111' ? Promise.reject('输入值不能为:111') : Promise.resolve();
+  useEffect(()=>{
+    return ctx.addMergeValidator(()=>{
+      return props.value == '111' ? Promise.reject('输入值不能为:111') : Promise.resolve();
+    });
   });
+
   return (
     <Input onChange={props.onChange} value={props.value} />
   );

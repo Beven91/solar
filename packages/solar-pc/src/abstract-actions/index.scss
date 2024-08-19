@@ -4,6 +4,7 @@
   &.should-hide-list {
     .abstract-actions-list {
       height: 0;
+      overflow: hidden;
     }
   }
 

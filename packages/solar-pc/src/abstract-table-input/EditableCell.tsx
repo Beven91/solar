@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 // import { Form } from 'antd';
 import FormItem from '../abstract-form/Item';
 import { Rule } from 'antd/lib/form';
@@ -9,12 +9,19 @@ export interface EditableCellProps {
   rules: Rule[]
   editing: boolean
   item: AbstractFormItemType<any>
+  style?: React.CSSProperties
 }
 
 export default function EditableCell(props: React.PropsWithChildren<EditableCellProps>) {
   const { item, record, rules, editing, children, ...restProps } = props;
+  const style = useMemo(() => {
+    return {
+      verticalAlign: 'top',
+      ...props.style,
+    };
+  }, [props.style]);
   return (
-    <td {...restProps}>
+    <td {...restProps} style={style}>
       {
         editing ? (
           <FormItem

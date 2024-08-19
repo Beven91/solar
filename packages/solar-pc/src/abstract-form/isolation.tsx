@@ -17,9 +17,13 @@ const runtime = {
   triggerMappings: {} as Record<string, boolean>,
 };
 
+type removeValidatorHandler = () => void
+
 export interface ISolationContextValue {
-  setValidator: (handler: () => Promise<void>) => void
-  setMergeValidator: (handler: () => Promise<void>) => void
+  addValidator: (handler: () => Promise<void>) => removeValidatorHandler
+  removeValidator: (handler: () => Promise<void>) => void
+  addMergeValidator: (handler: () => Promise<void>) => removeValidatorHandler
+  removeMergeValidator: (handler: () => Promise<void>) => void
 }
 
 export const ISolationContext = React.createContext<ISolationContextValue>({} as ISolationContextValue);
@@ -55,7 +59,7 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
 
   useEffect(() => {
     formInstance.setFieldsValue(props.value || {});
-    isolationContext?.setValidator?.(() => {
+    return isolationContext?.addValidator?.(() => {
       return formInstance.validateFields().catch((ex) => {
         const isTrigging = runtime.triggerMappings[topContext.name];
         if (!isTrigging) {
@@ -71,9 +75,6 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
         return Promise.reject(ex);
       });
     });
-    return () => {
-      isolationContext?.setValidator?.(null);
-    };
   }, []);
 
   const childContext = useMemo(() => {
