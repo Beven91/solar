@@ -70,6 +70,14 @@ export interface AdvanceUploadProps<T = any> extends Omit<UploadProps<T>, 'onCha
   customRequest?: (options: RcCustomRequestOptions, config: AbstractUploadConfig) => Promise<string>
   // 是否冒泡： 默认情况下会关闭drag的冒泡
   propagation?: boolean
+  // 是否开启选择文件后格式校验
+  checkAfterAccept?: boolean
+  // 格式校验失败的提示文案
+  acceptInvalidMessage?: string
+  // 预览配置
+  previewOptions?: import('rc-image/lib/PreviewGroup').PreviewGroupPreview
+  // 自定义预览
+  customPreview?: AbstractUploadConfig['onPreview']
 }
 
 export type ProcessUploadInterceptor = (type: string, file: UploadFileExtend, props: AdvanceUploadProps) => Promise<any>

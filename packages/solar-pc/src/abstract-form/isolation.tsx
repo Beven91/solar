@@ -20,6 +20,7 @@ const runtime = {
 type removeValidatorHandler = () => void
 
 export interface ISolationContextValue {
+  needUpdate: boolean
   addValidator: (handler: () => Promise<void>) => removeValidatorHandler
   removeValidator: (handler: () => Promise<void>) => void
   addMergeValidator: (handler: () => Promise<void>) => removeValidatorHandler
@@ -51,7 +52,7 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
     const model = mergeFormValues(props.value || values, formInstance) as TRow;
     onChange && onChange(model);
     props.onValuesChange && props.onValuesChange(changedValues, values);
-  }, [onChange, props.onValuesChange, formInstance, props.value]);
+  }, [onChange, props.onValuesChange, formInstance, props.value, isolationContext]);
 
   if (formRef) {
     formRef.current = formInstance;

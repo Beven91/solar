@@ -117,7 +117,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
 
   const getRowKey = (row: TRow, index: number) => {
     const isFn = typeof rowKey == 'function';
-    return isFn ? rowKey(row, index) : row[rowKey];
+    return isFn ? rowKey(row, index) : row?.[rowKey] || -1;
   };
 
   const onAction = (action: AbstractAction<TRow>) => {

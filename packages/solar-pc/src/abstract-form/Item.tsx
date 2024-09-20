@@ -2,7 +2,7 @@
  * @module Item
  * @description 动态antd FormItem
  */
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Col, Form, Input } from 'antd';
 import { Rule, RuleObject } from 'antd/lib/form';
 import InputWrap, { } from './InputWrap';
@@ -245,6 +245,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
       }
     };
     return {
+      needUpdate: true,
       addValidator: (handler) => {
         contextOriginal.current.isolationValidators.push(handler);
         return () => removeValidator(handler);
@@ -334,6 +335,8 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   };
 
   const onValuesChange = useCallback((prevValues: RecordModel, curValues: RecordModel) => {
+    // 如果是isolation子元素触发，则当前表单无需更新
+    isolationContext.needUpdate = contextOriginal.current.isolationValidators.length < 1;
     if (typeof props.item?.extra == 'function') {
       setUpdateId((id) => id + 1);
     }
@@ -356,6 +359,13 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
       ...(layout?.wrapperCol || {}),
       className: `${layout.wrapperCol?.className || ''} ${isReadOnly ? 'readonly-wrapper' : ''}`,
     };
+
+    const RInput = useMemo(() => {
+      return memo(InputWrap, () => {
+        return !isolationContext.needUpdate;
+      });
+    }, [isolationContext]);
+
     return (
       <ISolation.Context.Provider
         value={isolationContext}
@@ -377,7 +387,7 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
           className={`${visibleCls} abstract-form-item ${readonlyCls} abstract-input-${item.name} ${type} ${item.className || ''}`}
           hasFeedback={item.hasFeedback}
         >
-          <InputWrap
+          <RInput
             item={item}
             autoFocus={autoFocusAt && autoFocusAt == item.name}
             onValuesChange={onValuesChange}

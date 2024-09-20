@@ -2,6 +2,7 @@
   text-align: left;
   overflow: hidden;
   .upload-hide {
+    &.ant-upload-drag,
     .ant-upload {
       display: none;
     }

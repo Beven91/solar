@@ -31,6 +31,8 @@ export default function AdvanceUpload(
     propagation = false,
     acceptInvalidMessage,
     checkAfterAccept = false,
+    previewOptions,
+    customPreview,
     ...props
   }: AdvanceUploadProps
 ) {
@@ -217,7 +219,15 @@ export default function AdvanceUpload(
           {showUpload ? uploadButton : null}
         </UploadFile>
       </div>
-      <ItemPreview fileList={fileList} formatUrl={previewFormatUrl} file={previewItem} onCancel={() => setPreview(null)} accept={accept} />
+      <ItemPreview
+        fileList={fileList}
+        formatUrl={previewFormatUrl}
+        file={previewItem}
+        onCancel={() => setPreview(null)}
+        accept={accept}
+        previewOptions={previewOptions}
+        onPreview={customPreview || provider.upload?.onPreview}
+      />
     </div>
   );
 }

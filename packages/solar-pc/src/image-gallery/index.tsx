@@ -5,7 +5,6 @@ import BucketImage, { BucketImageProps } from '../bucket-image';
 
 export type RuntimeProps = Omit<BucketImageProps, 'src'> & {
   value?: string[] | string
-
 }
 
 export default function ImageGallery({ width = 100, height = 100, value, ...props }: RuntimeProps) {

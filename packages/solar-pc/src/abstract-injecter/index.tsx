@@ -5,8 +5,8 @@ import { AbstractFormGroupItemType, AbstractFormItemType } from '../interface';
 export interface AbstractInjecterContextValue {
   listener?: {
     onColumnDbClick?: (column: AbstractColumnType<any>) => void
-    onFieldDbClick?: (item: AbstractFormItemType<any>, type: string) => void
-    onFieldGroupDbClick?: (group: AbstractFormGroupItemType<any>, type: string) => void
+    onFieldDbClick?: (item: AbstractFormItemType<any>, type: string, e: React.MouseEvent) => void
+    onFieldGroupDbClick?: (group: AbstractFormGroupItemType<any>, type: string, e: React.MouseEvent) => void
   },
   node?: {
     appendSearchAfter?: () => React.ReactNode

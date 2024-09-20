@@ -2,11 +2,11 @@
  * @module ItemPreview
  * @description 预览指定项
  */
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { Image } from 'antd';
-import AbstractProvider from '../abstract-provider';
 import { FileList } from './type';
+import { AbstractUploadConfig } from '../interface';
 
 const imgExtRegexp = /\.(jpg|png|gif|jpeg|bmp|webp|ico)/;
 
@@ -16,13 +16,14 @@ export interface ItemPreviewProps {
   fileList: FileList
   accept: string
   formatUrl: (key: string) => string
+  onPreview?: AbstractUploadConfig['onPreview'],
+  previewOptions?: any
 }
 
 export default function ItemPreview(props: ItemPreviewProps) {
   const { fileList, file, accept } = props;
   const url = file?.response?.url || file?.url || file?.thumbUrl;
   const onCancel = () => props.onCancel?.();
-  const config = useContext(AbstractProvider.Context);
 
   const urls = useMemo(() => {
     return fileList.map((item) => {
@@ -31,8 +32,9 @@ export default function ItemPreview(props: ItemPreviewProps) {
     });
   }, [fileList]);
 
+  const isImage = imgExtRegexp.test(url) || /image/.test(accept);
+
   const defaultPreview = () => {
-    const isImage = imgExtRegexp.test(url) || /image/.test(accept);
     if (!isImage) {
       setTimeout(onCancel, 20);
       window.open(url);
@@ -40,7 +42,12 @@ export default function ItemPreview(props: ItemPreviewProps) {
     }
     return (
       <Image.PreviewGroup
-        preview={{ current: urls.indexOf(url), onVisibleChange: onCancel, visible: true }}
+        preview={{
+          ...(props.previewOptions || {}),
+          current: urls.indexOf(url),
+          onVisibleChange: onCancel,
+          visible: true,
+        }}
       >
         {
           urls.map((url, index) => {
@@ -53,8 +60,8 @@ export default function ItemPreview(props: ItemPreviewProps) {
   };
 
   if (!file) return null;
-  if (config?.upload?.onPreview) {
-    return config.upload.onPreview(url, accept, onCancel, urls, defaultPreview) as React.ReactElement;
+  if (props?.onPreview) {
+    return props.onPreview(url, accept, onCancel, urls, defaultPreview, isImage) as React.ReactElement;
   }
 
   return defaultPreview();

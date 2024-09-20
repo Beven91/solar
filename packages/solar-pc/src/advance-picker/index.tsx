@@ -139,7 +139,7 @@ export default function AdvancePicker<TRow = PlainObject>({
   const [options, setOptions] = useState(createSource<TRow>(props.data, valueName, labelName));
   const memo = useRef({ init: true, uniqueCount: 0 });
   const [pagination, setPagination] = useState({ search: '', loading: false, page: 0, hasMore: false });
-  const [tagsValue, setTagsValue] = useState('');
+  const [tagsValue, setTagsValue] = useState();
   const [internalValue, setInternalValue] = useState<any>();
   const [timerId, setTimerId] = useState<TimerId>();
   const allOptions = useMemo(() => {
