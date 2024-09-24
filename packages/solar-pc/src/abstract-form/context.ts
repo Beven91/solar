@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbstractFormContext } from '../interface';
 
-export default React.createContext<AbstractFormContext>({
+export default React.createContext<Omit<AbstractFormContext, 'form'>>({
   isReadOnly: false,
   record: {},
 });
@@ -14,6 +14,6 @@ export const TopFormContext = React.createContext<TopFormContextValue>({
   name: '',
 });
 
-export const IsolationError = ()=>{
+export const IsolationError = () => {
   return null as React.ReactElement;
 };

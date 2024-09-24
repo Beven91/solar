@@ -8,7 +8,7 @@ import { Rule, RuleObject } from 'antd/lib/form';
 import InputWrap, { } from './InputWrap';
 import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler, FunctionItemType } from '../interface';
 import ConfigConsumer from '../abstract-provider';
-import ISolation, { ISolationContextValue } from './isolation';
+import ISolation, { ISolationContextValue, ValidatorHandler } from './isolation';
 import { useInjecter } from '../abstract-injecter';
 import { IsolationError } from './context';
 import { FormGroupContext } from '../form-group';
@@ -230,14 +230,14 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   }, [visible, props.rules, isolationRuler, mergeValidatorRuler]);
 
   const isolationContext = useMemo(() => {
-    const removeValidator = (handler) => {
+    const removeValidator = (handler: ValidatorHandler) => {
       const handlers = contextOriginal.current.isolationValidators;
       const idx = handlers.indexOf(handler);
       if (idx > -1) {
         handlers.splice(idx, 1);
       }
     };
-    const removeMergeValidator = (handler) => {
+    const removeMergeValidator = (handler: ValidatorHandler) => {
       const validators = contextOriginal.current.mergeValidators;
       const idx = validators.indexOf(handler);
       if (idx > -1) {

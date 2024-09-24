@@ -4,7 +4,7 @@
  *  一个隔离的form容器,其中配置的表单项和dyanmic相互独立，
  *  不过在abstract-object提交时，会进行提交
  */
-import React, { useCallback, useContext, useEffect, useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import Dynamic from './dynamic';
 import FormContext, { TopFormContext } from './context';
 import { AbstractFormProps } from './index';
@@ -19,12 +19,14 @@ const runtime = {
 
 type removeValidatorHandler = () => void
 
+export type ValidatorHandler = () => Promise<void>
+
 export interface ISolationContextValue {
   needUpdate: boolean
-  addValidator: (handler: () => Promise<void>) => removeValidatorHandler
-  removeValidator: (handler: () => Promise<void>) => void
-  addMergeValidator: (handler: () => Promise<void>) => removeValidatorHandler
-  removeMergeValidator: (handler: () => Promise<void>) => void
+  addValidator: (handler: ValidatorHandler) => removeValidatorHandler
+  removeValidator: (handler: ValidatorHandler) => void
+  addMergeValidator: (handler: ValidatorHandler) => removeValidatorHandler
+  removeMergeValidator: (handler: ValidatorHandler) => void
 }
 
 export const ISolationContext = React.createContext<ISolationContextValue>({} as ISolationContextValue);
@@ -47,11 +49,16 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
   const context = useContext(FormContext);
   const isolationContext = useContext(ISolationContext);
   const topContext = useContext(TopFormContext);
+  const timerIdRef = useRef(null);
   const name = useMemo(() => `iso_${runtime.id++}`, []);
   const onValuesChange = useCallback((changedValues: TRow, values: TRow) => {
     const model = mergeFormValues(props.value || values, formInstance) as TRow;
-    onChange && onChange(model);
     props.onValuesChange && props.onValuesChange(changedValues, values);
+    // 用于解决嵌套表单，在子表单内容多的场景，连续输入会卡顿问题
+    clearTimeout(timerIdRef.current);
+    timerIdRef.current = setTimeout(() => {
+      onChange && onChange(model);
+    }, 16);
   }, [onChange, props.onValuesChange, formInstance, props.value, isolationContext]);
 
   if (formRef) {
