@@ -181,18 +181,20 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
     },
   } as ActionsContext<TRow>;
 
-  const tableContext = {
-    onAction: (action) => {
-      const { onRoute, route } = props;
-      const data = cellRenders.createAction(action);
-      const url = data.create(route.path || '', { ...(route.params || {}), ...action });
-      runtime.isInitialize = false;
-      props?.history?.push(normalizeUrl(url));
-      memo.reasonAction = action?.action;
-      onRoute && onRoute(action);
-    },
-    getActionsContainer: getActionsContainer,
-  } as AbstractTableContextValue;
+  const tableContext = useMemo(() => {
+    return {
+      onAction: (action) => {
+        const { onRoute, route } = props;
+        const data = cellRenders.createAction(action);
+        const url = data.create(route.path || '', { ...(route.params || {}), ...action });
+        runtime.isInitialize = false;
+        props?.history?.push(normalizeUrl(url));
+        memo.reasonAction = action?.action;
+        onRoute && onRoute(action);
+      },
+      getActionsContainer: getActionsContainer,
+    } as AbstractTableContextValue;
+  }, [props.onRoute, props.route, props?.history]);
 
   const navigateBack = () => {
     const { onRouteBack, route } = props;

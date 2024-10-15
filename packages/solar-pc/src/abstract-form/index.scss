@@ -8,6 +8,10 @@
 .abstract-form {
   overflow-x: hidden;
 
+  .abstract-form-tabs.hidden {
+    visibility: hidden;
+  }
+
   .abstract-form-item {
     .abstract-form-normal-inner.not-first-group {
       padding-top: 0 !important;

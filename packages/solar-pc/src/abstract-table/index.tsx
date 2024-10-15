@@ -48,7 +48,7 @@ export interface AbstractTableInstance {
   paginateIntoView: (total: number, needQuery?:boolean) => void
   reload: (pageNo?: number) => void
   pagination: { pageNo: number, pageSize: number },
-  paginateTo: (pageNo: number) => void,
+  paginateTo: (pageNo: number, needQuery?:boolean) => void,
 }
 
 export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>({
@@ -201,7 +201,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
           onAction={onAction}
           style={style}
           buttons={cellOperators}
-          rowId={getRowKey(row, index)}
+          rowId={getRowKey(row, index) as string}
         />
       ),
     } as any;
@@ -301,7 +301,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
       paginateIntoView: (total: number, needQuery = true) => {
         const { pageSize } = memo;
         const pageNo = Math.ceil(total / pageSize);
-        if (pageNo > memo.pageNo) {
+        if (pageNo > -1 && pageNo != memo.pageNo) {
           paginateTo(pageNo, needQuery);
         }
       },

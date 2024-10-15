@@ -3,7 +3,7 @@
  * @description 操作动作
  */
 
-import React, { useContext, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import Context, { ActionsContext } from './context';
 import AbstractObject, { AbstractObjectInstance, BaseObjectProps } from '../abstract-object';
 import AbstractForm from '../abstract-form';
@@ -125,6 +125,9 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   const ActionInternal = use;
   const objectRef = useRef<AbstractObjectInstance>();
   const actionsRef = useRef<FormActionsInstance<TRow>>();
+  const memo = useMemo(() => {
+    return { data: { isFullOpened: false } };
+  }, []);
   const c = useContext(Context);
   const injecter = useInjecter('inject' in props ? props.inject : c.inject);
   const realtime = props.realtime == true;
@@ -144,14 +147,21 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
   }, []);
 
   const onSubmit = async(values: any) => {
+    if (props.realtime) {
+      memo.data.isFullOpened = false;
+    }
     const { onSubmit } = context;
     onSubmit && onSubmit(values);
   };
 
   const onCancel = () => {
+    if (!memo.data.isFullOpened) {
+      return;
+    }
     if (props.realtime) {
       return objectRef.current?.handleSubmit();
     }
+    memo.data.isFullOpened = false;
     objectRef.current?.handleCancel();
   };
 
@@ -162,6 +172,14 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       actionsRef.current.refresh({ ...allValues, ...changedValues });
     }
   };
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        memo.data.isFullOpened = true;
+      }, 800);
+    }
+  }, [visible]);
 
   return (
     <Drawer

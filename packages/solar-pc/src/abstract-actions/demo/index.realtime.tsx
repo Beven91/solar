@@ -20,8 +20,8 @@ const typeOptions = [
 function ActivityView(props: any) {
   const type = props.groupStyle;
   const rules: AbstractRules = {
-    name: [{ required: true, message: '请填写活动名称' }],
-    price: [{ required: true, message: '请设置活动价格' }],
+    // name: [{ required: true, message: '请填写活动名称' }],
+    // price: [{ required: true, message: '请设置活动价格' }],
   };
 
   const groups: AbstractGroups<ActivityModel> = [
@@ -51,7 +51,9 @@ export default function App() {
   const [data, setRows] = useState<AbstractResponseModel<ActivityModel>>({ count: 0, models: demo });
 
   const columns: AbstractColumns<ActivityModel> = [
-    { title: '活动名称', name: 'name' },
+    { title: '活动名称', name: 'name', render: (v)=>{
+      return <a onClick={()=> enterAction({ action: 'update', id: 0 })} >{v}</a>;
+    } },
     { title: '活动价格', name: 'price' },
   ];
 
@@ -111,6 +113,7 @@ export default function App() {
           data={data}
           buttons={buttons}
           rowKey="id"
+          operation={{ fixed: 'left' }}
           onActionRoute={enterAction}
         />
       </AbstractActions.List>

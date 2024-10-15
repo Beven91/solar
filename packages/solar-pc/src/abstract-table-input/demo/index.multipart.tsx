@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AbstractTableInput } from 'solar-pc';
 import { AbstractButtons, AbstractEColumns } from 'solar-pc/src/interface';
-import { Input, InputNumber } from 'antd';
+import { InputNumber } from 'antd';
 
 interface ActivityModel {
   id: number
@@ -20,16 +20,15 @@ const demoRows2 = [
   { id: 1, name: 'Surface Book4', price: 22000, status: 'new' },
   { id: 2, name: 'Mac Book Pro4', price: 20000, status: 'online' },
   { id: 3, name: 'Thinkpad4', price: 15000, status: 'offline' },
-  { id: 4, name: 'iWatch', price: 10, status: 'offline' },
 ];
 
 export default function App() {
   const [rows, setRows] = useState<ActivityModel[]>(demoRows);
-  const [id, setId] = useState(0);
   const [disabled, setDisabled] = useState(false);
+  const [id, setId] = useState(0);
 
   const columns: AbstractEColumns<ActivityModel> = [
-    { title: '商品名', name: 'name', width: 120 },
+    { title: '商品名', name: 'name', width: 160 },
     {
       title: '商品价格',
       name: 'price',
@@ -44,12 +43,17 @@ export default function App() {
       },
     },
     {
-      title: '状态',
-      name: 'status',
-      width: 100,
+      title: '售卖价',
+      name: 'discount',
+      width: 120,
       editor: {
+        cascade: (r) => {
+          return {
+            status: r.price > 19000 ? 'low' : 'good',
+          };
+        },
         visible: (r) => r.price > 18000,
-        render: <Input />,
+        render: (row) => <InputNumber disabled={(row.price || 0) <= 0} />,
       },
     },
   ];
@@ -71,39 +75,17 @@ export default function App() {
     setRows([...values]);
   };
 
-  const onSave = (row: ActivityModel) => {
-    console.log('save row', row);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({});
-      }, 1000);
-    });
-  };
-
-  const onRemove = (row: ActivityModel) => {
-    console.log('remove row', row);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({});
-      }, 1000);
-    });
-  };
-
   return (
     <div
-      style={{ height: 360, overflowY: 'auto' }}
+      style={{ height: 360, overflow: 'auto' }}
     >
       <AbstractTableInput
-        mode="row"
-        buttons={buttons}
-        onSave={onSave}
         disabled={disabled}
-        removeConfirm="您确定要删除该商品?"
-        onRemove={onRemove}
         onChange={onChange}
         columns={columns}
         value={rows}
         rules={rules}
+        buttons={buttons}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { AbstractForm, AdvancePicker, AbstractGroups, AbstractRules } from 'solar-pc';
+import { AbstractForm, AdvancePicker, AbstractGroups, AbstractRules, AdvanceUpload } from 'solar-pc';
 import { Button, Form, FormInstance, InputNumber, Input, Switch, DatePicker } from 'antd';
 
 export interface ActivityModel {
@@ -46,11 +46,11 @@ const rules = {
   age: [{ required: true, message: '请设置年龄' }],
 };
 
-function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
+function NestedApp(props: { name: string, value?: any, onChange?: (value: any) => void }) {
   const [name, setName] = useState();
   const groups: AbstractGroups<any> = [
     {
-      title: '编号',
+      title: '编号-' + props.name,
       name: 'id',
       initialValue: 200,
       onChange: (v) => setName(v),
@@ -64,7 +64,9 @@ function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
   ];
 
   return (
-    <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
+    <div>
+      <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
+    </div>
   );
 }
 
@@ -92,10 +94,11 @@ export default function App() {
     {
       title: '',
       name: 'iso',
-      render2: <NestedApp />,
+      render2: <NestedApp name={name} />,
     },
     {
       title: '用户年龄',
+      for: true,
       name: 'user.age',
       extra: '多级属性例如: user.age',
     },
@@ -166,6 +169,11 @@ export default function App() {
     {
       title: '省份名称',
       name: 'provName',
+    },
+    {
+      title: '图片列表',
+      name: 'imageUrls',
+      render: <AdvanceUpload maxCount={5} />,
     },
     {
       title: '派生表单',

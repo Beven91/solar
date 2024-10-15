@@ -438,8 +438,8 @@ ref: React.MutableRefObject<AbstractObjectInstance>
           <AbstractForm.Context.Provider value={formContext}>
             {props.children}
           </AbstractForm.Context.Provider>
+          {injecter?.node?.appendAbstractObjectBody?.(action)}
         </Form>
-        {injecter?.node?.appendAbstractObjectBody?.(action)}
       </CrashProvider>
     );
   };

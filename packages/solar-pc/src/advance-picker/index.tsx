@@ -61,6 +61,7 @@ export interface AdvancePickerProps<TRow, ValueType> extends SelectProps<ValueTy
   labelName?: string
   // 是否多选时通过join链接，从而达到返回一个字符串形式
   joinChar?: string
+  value?: any
   // 当选择值改变时
   onChange?: (value: any) => void,
   // 是否默认生成 【全部】 选项
@@ -139,7 +140,7 @@ export default function AdvancePicker<TRow = PlainObject>({
   const [options, setOptions] = useState(createSource<TRow>(props.data, valueName, labelName));
   const memo = useRef({ init: true, uniqueCount: 0 });
   const [pagination, setPagination] = useState({ search: '', loading: false, page: 0, hasMore: false });
-  const [tagsValue, setTagsValue] = useState();
+  const [tagsValue, setTagsValue] = useState<string>();
   const [internalValue, setInternalValue] = useState<any>();
   const [timerId, setTimerId] = useState<TimerId>();
   const allOptions = useMemo(() => {

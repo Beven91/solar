@@ -19,11 +19,11 @@ export interface FormatContext<T = any, O = any> {
 }
 
 export interface FormatRegistration extends RegistrationBase {
-  format: (v: any, options: FormatContext<AbstractRow>) => string | React.ReactNode | React.ReactElement
+  format<TRow = any>(v: any, options: FormatContext<TRow>): string | React.ReactNode | React.ReactElement
 }
 
 class FormatterRegistrations extends Registrations<FormatRegistration> {
-  call(name: string, value: string, ctx: FormatContext<AbstractRow>) {
+  call<TRow = any>(name: string, value: string, ctx: FormatContext<TRow>) {
     const registration = this.getRegistration(name);
     if (!registration) {
       return value;

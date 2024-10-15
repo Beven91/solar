@@ -48,6 +48,14 @@ export default function App() {
       ],
     },
     {
+      group: '库存配置',
+      readonly: true,
+      items: [
+        { title: '数量', name: 'num', initialValue: '' },
+        { title: '预警库存数', name: 'num2' },
+      ],
+    },
+    {
       group: '条码配置',
       visible: (r)=>{
         console.log(r.hideSku);
@@ -57,14 +65,6 @@ export default function App() {
         { title: '条码信息', name: 'skuId', initialValue: 'aaa' },
         { title: '条码信息', name: 'skuId2' },
         { title: '', name: 'sku', render2: <NestedApp /> },
-      ],
-    },
-    {
-      group: '库存配置',
-      readonly: true,
-      items: [
-        { title: '数量', name: 'num', initialValue: '' },
-        { title: '预警库存数', name: 'num2' },
       ],
     },
   ];

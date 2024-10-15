@@ -262,7 +262,6 @@ export default function AbstractSearch<TRow = AbstractRow>({
           onFinish={handleSearch}
         >
           <AbstractForm
-            form={formRef}
             groups={useFields}
             itemStyle={props.itemStyle}
             name="AbstractSearch"

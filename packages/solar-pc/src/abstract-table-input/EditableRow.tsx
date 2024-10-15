@@ -10,32 +10,39 @@ export interface EditableRowProps<TRow = any> {
   record: TRow
   disabled?: boolean
   index: number
+  editIndex: number
   className?: string
   onChange?: (value: TRow, record: TRow) => void
 }
 
-export default function EditableRow({ onChange, disabled, record, index, ...props }: React.PropsWithChildren<EditableRowProps>) {
+export default function EditableRow({ onChange, children, disabled, record, index, ...props }: React.PropsWithChildren<EditableRowProps>) {
   const formRef = useRef<FormInstance>();
+  const memoRef = useRef<any>(0);
   const onValueChange = useCallback((values) => {
-    onChange?.(values, record);
+    clearTimeout(memoRef.current);
+    memoRef.current = setTimeout(() => {
+      onChange?.(values, record);
+    }, 100);
   }, [onChange, index]);
 
 
   if (!record || disabled) {
-    return <tr {...props} />;
+    return <tr {...props} >{children}</tr>;
   }
 
   record[formRefSymbol] = formRef;
 
   return (
-    <AbstractForm.ISolation
-      pure
-      value={record}
-      groups={NOOP}
-      formRef={formRef}
-      onChange={onValueChange}
-    >
-      <tr {...props} className={`${props.className || ''} abstract-form`}></tr>
-    </AbstractForm.ISolation>
+    <tr {...props} className={`${props.className || ''} abstract-form`}>
+      <AbstractForm.ISolation
+        pure
+        value={record}
+        groups={NOOP}
+        formRef={formRef}
+        onChange={onValueChange}
+      >
+        {children}
+      </AbstractForm.ISolation>
+    </tr>
   );
 }

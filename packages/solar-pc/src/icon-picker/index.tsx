@@ -83,8 +83,8 @@ export default function IconPicker({ url = '', mode = 'normal', ...props }: Icon
           trigger="click"
           title="图标库"
           placement="bottom"
-          visible={visible}
-          onVisibleChange={setVisible}
+          open={visible}
+          onOpenChange={setVisible}
           content={renderIconViewer()}
         >
           {renderCheckedIcon()}

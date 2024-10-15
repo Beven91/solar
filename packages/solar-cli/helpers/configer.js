@@ -1,6 +1,6 @@
 /**
  * @module Configer
- * @description 读取应用的package.json中的fluxy配置
+ * @description 读取应用的package.json中的solar配置
  */
 const path = require('path');
 const fs = require('fs');

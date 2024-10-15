@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 /**
  * @name AbstractTableInput
  * @description 表格输入控件
@@ -7,9 +8,9 @@ import React, { useCallback, useContext, useMemo, useRef, useState } from 'react
 import AbstractTable, { AbstractTableInstance } from '../abstract-table';
 import { Button, FormInstance } from 'antd';
 import { PlusOutlined, DeleteOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
-import EditableCell from './EditableCell';
+import EditableCell, { EditableCellProps } from './EditableCell';
 import { AbstractColumnType, AbstractEditColumnType, AbstractTableProps, AbstractButton } from '../abstract-table/types';
-import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel, AbstractAction } from '../interface';
+import { AbstractRules, AbstractRow, AbstractQueryType, AbstractResponseModel, AbstractAction, AbstractFormItemType } from '../interface';
 import TopActions from '../abstract-table/parts/TopActions';
 import AbstractTableContext from '../abstract-table/context';
 import EditableRow, { formRefSymbol } from './EditableRow';
@@ -52,7 +53,7 @@ export interface AbstractTableInputProps<TRow extends AbstractRow> extends Omit<
   // 新增按钮是否可见
   addVisible?: (rows: TRow[]) => boolean
   // 删除按钮是否可见
-  removeVisible?: (row: TRow, idx:number) => boolean
+  removeVisible?: (row: TRow, idx: number) => boolean
   // 是否显示操作列
   hideOperation?: boolean
   // 删除二次确认文案
@@ -99,19 +100,25 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
   const memoRef = useRef({
     updateReason: 'none' as UpdateReason,
     count: 0,
+    timerId: null,
     currentEditIndex: -1,
+    changingRowIndex: -1,
     isCreateRow: false,
     originEditRow: null,
     needFillRowForms: false,
-    throttleId: null as any,
     rows: vrows || [],
   });
 
   memoRef.current.rows = vrows;
   const isLocal = !props.onQuery && pagination != false;
+
   if (isLocal) {
     memoRef.current.count = vrows?.length || 0;
   }
+
+  const updateChagingIndex = (idx: number) => {
+    memoRef.current.changingRowIndex = idx;
+  };
 
   const handleReload = (() => {
     if (typeof props.onQuery === 'function' && savedReload) {
@@ -119,38 +126,57 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
     };
   });
 
+  const operation = useMemo(() => {
+    return {
+      ...props.operation as AbstractColumnType<TRow>,
+      onCell: (record: TRow, index: number) => {
+        return {
+          editor: {
+            index: index,
+            chaningIndex: memoRef.current.changingRowIndex,
+          },
+        } as EditableCellProps;
+      },
+    } as AbstractColumnType<TRow>;
+  }, [props.operation]);
+
   // 当前表格列配置
   const mergedColumns = useMemo(() => {
-    return columns.map(column => {
-      const editable = !!column.editor && !props.disabled;
-      const isFn = typeof column.editor == 'function';
-      const render = isFn ? column.editor : undefined;
-      const formProps = isFn ? { render } : column.editor || {};
+    return columns.map(({ editor, ...column }) => {
+      const editable = !!editor && !props.disabled;
+      const isFn = typeof editor == 'function';
+      const render = isFn ? editor : undefined;
+      const formProps = isFn ? { render } : editor || {};
       const item = {
         ...formProps,
+        title: '',
         initialValue: column.initialValue,
         name: column.name,
         disabled: props.disabled,
-      };
+      } as AbstractFormItemType<TRow>;
       const editRules = (rules || {})[column.name];
       return {
         ...column,
         editable: editable,
-        onCell: !editable ? null : (record: TRow) => {
-          const editable = mode == 'all' ? true : record == editRow;
+        onCell: (record: TRow, index: number) => {
+          const editing = mode == 'all' ? true : record == editRow;
           return {
-            record,
-            rules: editRules,
-            item: item,
             title: column.title,
-            editing: editable,
-          };
+            editor: {
+              record,
+              rules: editRules,
+              item: item,
+              index,
+              chaningIndex: memoRef.current.changingRowIndex,
+              editing: editable && editing,
+            },
+          } as EditableCellProps;
         },
       } as AbstractColumnType<TRow>;
     });
   }, [rules, columns, editRow, mode, isLocal, props.disabled]);
 
-  const onQuery = async(query: AbstractQueryType) => {
+  const onQuery = async (query: AbstractQueryType) => {
     const { onQuery } = props;
     if (onQuery) {
       const data = await Promise.resolve(onQuery(query) as Promise<AbstractResponseModel<TRow>>);
@@ -162,7 +188,7 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
   };
 
   // 新增行
-  const onCreateRow = async() => {
+  const onCreateRow = async () => {
     const memo = memoRef.current;
     const rows = memo.rows;
     let row = createRow(columns);
@@ -177,6 +203,7 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
     triggerChange([...rows], 'item');
     tableRef.current.paginateIntoView(rows.length, savedReload && !!customRow);
     memoRef.current.isCreateRow = true;
+    updateChagingIndex(rows.length - 1);
     if (mode == 'row' && !editRow && !customRow) {
       setEditRow(row);
     }
@@ -201,49 +228,46 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
     onActionRoute?.(action);
   };
 
-  const syncUpdates = (originalRows:TRow[], changeValue:object, originRow:TRow) => {
+  const syncUpdates = useCallback((originalRows: TRow[], changeValue: object, originRow: TRow) => {
     const id = (originRow as any)[tempId];
-    const o = originalRows.find((m:object)=> m[tempId] == id);
+    const o = originalRows.find((m: object) => m[tempId] == id);
     if (o) {
       const index = originalRows.indexOf(o);
       (originalRows as any)[index] = changeValue;
       return index;
     }
-  };
+  }, []);
+
+  const triggerChange = useCallback((rows: TRow[], reason: UpdateReason) => {
+    const memo = memoRef.current;
+    const { onChange } = props;
+    memo.updateReason = reason;
+    onChange && onChange(rows);
+  }, [props.onChange]);
 
   // 当值发生改变
-  const onValuesChange = (changeValues: Record<any, any>, originRow:TRow) => {
+  const onValuesChange = useCallback((changeValues: Record<any, any>, originRow: TRow) => {
     const memo = memoRef.current;
     const rows = memo.rows;
     if (mode == 'row') {
       syncUpdates(rows, changeValues, originRow);
       return;
     }
-    clearTimeout(memo.throttleId);
-    memo.throttleId = setTimeout(() => {
-      // 修改指定项,时不进行onChange ,如果执行onChange可能会触发整个表格重新渲染,性能欠佳
-      const idx = syncUpdates(rows, changeValues, originRow);
-      memoRef.current.currentEditIndex = idx;
-      memoRef.current.originEditRow = originRow;
-      triggerChange([...rows], 'input');
-    }, 200);
-  };
+    const idx = syncUpdates(rows, changeValues, originRow);
+    memoRef.current.currentEditIndex = idx;
+    memoRef.current.originEditRow = originRow;
+    updateChagingIndex(idx);
+    triggerChange([...rows], 'input');
+  }, [syncUpdates, triggerChange]);
 
-  const triggerChange = (rows: TRow[], reason: UpdateReason) => {
-    const memo = memoRef.current;
-    const { onChange } = props;
-    memo.updateReason = reason;
-    onChange && onChange(rows);
-  };
-
-  const handleEdit = async(row: TRow) => {
+  const handleEdit = async (row: TRow) => {
     if (!props.onEdit) {
       setEditRow(row);
       return;
     }
     const updatedRow = await props.onEdit(row, setEditRow);
     if (updatedRow) {
-      Object.keys(updatedRow).forEach((k)=> {
+      Object.keys(updatedRow).forEach((k) => {
         (row as object)[k] = updatedRow[k];
       });
       const rows = memoRef.current.rows;
@@ -282,7 +306,7 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
         target: 'cell',
         title: '保存',
         visible: (row) => editRow == row,
-        click: async(row: AbstractRow) => {
+        click: async (row: AbstractRow) => {
           const { onSave } = props;
           const formRef = (row as any)[formRefSymbol] as React.RefObject<FormInstance>;
           const values = await formRef.current.validateFields();
@@ -313,7 +337,7 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
           if (memoRef.current.isCreateRow) {
             memoRef.current.isCreateRow = false;
             // 如果新增的空行
-            const originRows = rows.filter((m)=> m!== r);
+            const originRows = rows.filter((m) => m !== r);
             triggerChange(originRows, 'item');
             setEditRow(null);
             return;
@@ -347,7 +371,11 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
         tip: '上移',
         icon: <UpOutlined />,
         size: 'small',
-        visible: (row, i) => i > 0,
+        visible: (row, i) => {
+          const rows = memoRef.current.rows;
+          const idx = rows.indexOf(row);
+          return idx > 0;
+        },
         click: (row: TRow) => {
           const memo = memoRef.current;
           const rows = memo.rows;
@@ -359,13 +387,18 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
             rows[targetIndex] = row;
           }
           onChange && onChange([...rows]);
+          tableRef.current.paginateIntoView(targetIndex + 1);
         },
       },
       {
         target: 'cell',
         tip: '下移',
         size: 'small',
-        visible: (row, i) => i < (memoRef.current.rows.length - 1),
+        visible: (row) => {
+          const rows = memoRef.current.rows;
+          const idx = rows.indexOf(row);
+          return idx < (rows.length - 1);
+        },
         icon: <DownOutlined />,
         click: (row: TRow) => {
           const memo = memoRef.current;
@@ -378,6 +411,7 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
             rows[targetIndex] = row;
           }
           onChange && onChange([...rows]);
+          tableRef.current.paginateIntoView(targetIndex + 1);
         },
       },
     ] as AbstractButton<TRow>[];
@@ -449,10 +483,10 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
     } as any;
   }, [props.disabled, mode, editRow]);
 
-  const models = useMemo(()=>{
+  const models = useMemo(() => {
     const editIndex = memoRef.current.currentEditIndex;
     const editRow = memoRef.current.originEditRow;
-    return (memoRef.current.rows || []).map((m, index)=>{
+    return (memoRef.current.rows || []).map((m, index) => {
       if (!m[tempId]) {
         // 这里如果存在正在编辑的行，则需要将编辑行的id保持原始值，方式输入框失去焦点
         const id = editRow && index == editIndex ? editRow[tempId] : Date.now().toString() + '_' + index;
@@ -475,6 +509,7 @@ export default function AbstractTableInput<TRow extends AbstractRow = AbstractRo
       locale={{
         emptyText: renderAddButton(),
       }}
+      operation={operation}
       components={components}
       data={{ models: models, count: memoRef.current.count }}
       buttons={buttons}

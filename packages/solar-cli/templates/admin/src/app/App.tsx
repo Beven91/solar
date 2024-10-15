@@ -9,7 +9,7 @@ import Router from './router';
 
 const Provider = store.Provider;
 
-export default function FluxyAdminApp() {
+export default function SolarAdminApp() {
   return (
     <div className="app-root-view $projectName$-root">
       <Provider store={store.store}>

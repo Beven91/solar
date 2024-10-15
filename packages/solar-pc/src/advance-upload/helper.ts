@@ -10,14 +10,19 @@ export const getFileList = memoize((value, format, fileList, props: AdvanceUploa
   if (props.selectOnly) {
     return [...value];
   }
+  let valueIndex = 0;
   const items = fileList?.length > value.length ? fileList : value;
   const normalize = (url: any) => typeof url === 'string' ? { url } : (url || {});
   return items.map((a: UploadedValueOrList, i: number) => {
-    const v = value[i];
+    const oItem = fileList[i] || {};
+    if (oItem.status === 'error' || oItem.status == 'uploading') {
+      return oItem;
+    }
+    const v = value[valueIndex];
     const item = normalize(v) as UploadFileValue;
     const key = item.url || '';
     const url = format ? format(key, props) : key;
-    const oItem = fileList[i] || {};
+    valueIndex++;
     return {
       uid: oItem.uid || -i,
       originFileObj: oItem.originFileObj,

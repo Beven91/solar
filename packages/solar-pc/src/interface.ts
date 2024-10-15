@@ -86,11 +86,13 @@ export interface GenericKey {
   fromKey: string
 }
 
-export interface AbstractFormItemType<TRow> {
+export interface AbstractFormItemType<TRow = any> {
   // 表单id
   id?: string | number
   // 表单标题
   title: React.ReactNode
+  // 是否生成for
+  for?: boolean
   // 表单字段名称
   name: string | Array<string>
   // 派生映射字段，用于实现一个输入可以派生出额外的表单值，例如：下拉框组件选择后，需要同时获取id和name
@@ -155,11 +157,11 @@ export type FunctionItemType<TRow> = (record: TRow, isReadonly: boolean) => Reac
 
 export type AbstractGroupItem<TRow = any> = AbstractFormItemType<TRow> | AbstractFormGroupItemType<TRow> | FunctionItemType<TRow>
 
-export type AbstractGroups<TRow> = Array<AbstractGroupItem<TRow>>
+export type AbstractGroups<TRow> = AbstractGroupItem<TRow>[]
 
-export interface AbstractFormGroupItemType<TRow> {
+export interface AbstractFormGroupItemType<TRow = any> {
   // 控制分组是否可见
-  visible?: ((record: TRow) => boolean)
+  visible?: boolean | ((record: TRow) => boolean)
   // 组图标
   icon?: ReactNode
   // 为分组时，单个表单布局占比 总计24份
@@ -186,7 +188,6 @@ export interface AbstractInputComponent extends React.ComponentClass<any, any>, 
 
 export interface AbstractFormContext {
   isReadOnly?: boolean
-  form: React.RefObject<FormInstance>
   record: RecordModel
   // 容器宽度
   width?: number | string

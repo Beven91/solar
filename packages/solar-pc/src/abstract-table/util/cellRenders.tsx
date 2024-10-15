@@ -1,9 +1,9 @@
-import { AbstractAction, AbstractRow, PlainObject } from '../../interface';
+import { AbstractAction, PlainObject } from '../../interface';
 import { AbstractColumnType } from '../types';
 import Formatters, { enums } from './formatters';
 
 // 获取列render
-export function getRender<TRow>(column: AbstractColumnType<TRow>) {
+export function getRender<TRow = any>(column: AbstractColumnType<TRow>) {
   const format = column.format;
   const formatData = typeof format === 'string' ? [format] : format || [];
   const formatName = formatData[0];
@@ -26,7 +26,7 @@ export function getRender<TRow>(column: AbstractColumnType<TRow>) {
  * @param {*} columns 表格所有列
  * @param {*} clientWidth 表格实际可见宽度
  */
-function remainColumnWidth(columns: AbstractColumnType<AbstractRow>[], clientWidth: number) {
+function remainColumnWidth<TRow = any>(columns: AbstractColumnType<TRow>[], clientWidth: number) {
   if (clientWidth > 0) {
     const columns2 = columns.filter((column) => Number(column.width) > 0);
     const sum = columns2.reduce((total, column) => total + parseInt(column.width as any) + 32, 0);

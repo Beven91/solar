@@ -117,7 +117,7 @@ export default function Dynamic<TRow extends AbstractRow>({
     );
   };
 
-  const renderStyle = () => {
+  const renderWithType = () => {
     switch (props.groupStyle) {
       case 'tabs':
         return <TabsGroup {...props} />;
@@ -155,7 +155,7 @@ export default function Dynamic<TRow extends AbstractRow>({
   if (pure) {
     return (
       <>
-        {groups.length < 1 ? props.children : renderStyle()}
+        {groups.length < 1 ? props.children : renderWithType()}
       </>
     );
   }
@@ -163,7 +163,7 @@ export default function Dynamic<TRow extends AbstractRow>({
   // 渲染
   return (
     <div className={`abstract-form ${props.isReadOnly ? 'readonly' : ''}`}>
-      {renderStyle()}
+      {renderWithType()}
     </div>
   );
 }

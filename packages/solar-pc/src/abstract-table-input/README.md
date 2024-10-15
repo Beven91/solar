@@ -13,7 +13,7 @@
 
 <AppCodebox 
   console="true"
-  src="src/abstract-table-input/demo/index" 
+  src="src/abstract-table-input/demo/index.multipart" 
   title="多行编辑" 
   desc="可快速通过配置实现一个可录入的表格。" 
 />

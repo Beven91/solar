@@ -145,6 +145,9 @@ export default function InputWrap<TRow>(props: InputWrapProps<TRow>) {
   if (item.render2) {
     (options as any).title = item.title;
   }
+  if (item.for) {
+    (options as any).id = id;
+  }
 
   return (
     <div className="abstract-input-wrap" ref={containerRef} id={id}>
