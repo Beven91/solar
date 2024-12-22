@@ -5,7 +5,7 @@ import { } from 'antd';
 export interface CommodityModel {
   name: string
   color: string
-  size: string
+  size?: string
 }
 
 export default function App() {
@@ -13,7 +13,6 @@ export default function App() {
   const [record] = useState<CommodityModel>({
     name: 'Surface Book3',
     color: 'Black',
-    size: '',
   });
 
   const rules: AbstractRules = {
@@ -24,7 +23,7 @@ export default function App() {
   const groups: AbstractGroups<CommodityModel> = [
     { title: '商品名', name: 'name', extra: (r)=>r.name },
     { title: '颜色', name: 'color' },
-    { title: '尺寸', name: 'size' },
+    { title: '尺寸', name: 'size', initialValue: 100 },
   ];
 
   return (

@@ -25,6 +25,7 @@ export interface FormActionsProps<TRow> {
   // 按钮渲染目标容器
   container?: React.RefObject<HTMLElement>
   children?: React.ReactNode
+  renderActions?: (children: React.ReactNode) => React.ReactNode
 }
 
 export interface FormActionsInstance<TRow> {
@@ -82,44 +83,49 @@ export default React.forwardRef(function FormActions<TRow>(props: FormActionsPro
       },
     };
     const isOkEnable = () => okEnable ? okEnable(formValues) : true;
+    const actionsNode = (
+      <>
+        {
+          showCancel && (
+            <Button
+              className="btn-back"
+              disabled={okLoading}
+              onClick={handleCancel}
+              icon={btnCancel?.icon}
+              size="large"
+              {...(btnCancel || {})}
+            >
+              {useValue(btnCancel?.title, '返回')}
+            </Button>
+          )
+        }
+        {showOkBtn && (
+          <Button
+            loading={okLoading}
+            className="btn-submit"
+            type="primary"
+            disabled={!isOkEnable()}
+            onClick={handleSubmit}
+            icon={btnSubmit?.icon}
+            size="large"
+            {...(btnSubmit || {})}
+          >
+            {useValue(btnSubmit?.title, '确定')}
+          </Button>
+        )}
+        {
+          actions?.map((render, i) => {
+            const node = render(formValues || {} as TRow, ctx);
+            return (<ActionWrap key={i}>{node}</ActionWrap>);
+          })
+        }
+      </>
+    );
     return (
       <div className={`action-view-container ${props.className || ''}`}>
         <div className="form-actions-wrapper">
           <div className="form-actions">
-            {
-              showCancel && (
-                <Button
-                  className="btn-back"
-                  disabled={okLoading}
-                  onClick={handleCancel}
-                  icon={btnCancel?.icon}
-                  size="large"
-                  {...(btnCancel || {})}
-                >
-                  {useValue(btnCancel?.title, '返回')}
-                </Button>
-              )
-            }
-            {showOkBtn && (
-              <Button
-                loading={okLoading}
-                className="btn-submit"
-                type="primary"
-                disabled={!isOkEnable()}
-                onClick={handleSubmit}
-                icon={btnSubmit?.icon}
-                size="large"
-                {...(btnSubmit || {})}
-              >
-                {useValue(btnSubmit?.title, '确定')}
-              </Button>
-            )}
-            {
-              actions?.map((render, i) => {
-                const node = render(formValues || {} as TRow, ctx);
-                return (<ActionWrap key={i}>{node}</ActionWrap>);
-              })
-            }
+            {props.renderActions ? props.renderActions(actionsNode) : actionsNode}
             {props.children}
           </div>
         </div>

@@ -80,8 +80,10 @@ export default function FormGroup<TRow extends AbstractRow>({
 
     return (
       <Card
-        headStyle={style}
-        bodyStyle={style}
+        styles={{
+          header: style,
+          body: style,
+        }}
         className={`form-group ${readonly ? 'readonly' : ''} ${className} ${mode || ''}`}
         title={props.title ? title : ''}
       >

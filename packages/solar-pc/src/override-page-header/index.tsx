@@ -32,11 +32,12 @@ OverridePageHeader.PageHeader = (props: PageHeaderProps) => {
   const { appendRoutes, visible, ...options } = context?.getOptions() || {};
 
   let breadcrumb = props.breadcrumb || {} as any;
-  if ('routes' in breadcrumb) {
+  const items = breadcrumb.items;
+  if (items) {
     breadcrumb = {
       ...breadcrumb,
-      routes: [
-        ...(breadcrumb.routes || []),
+      items: [
+        ...(items || []),
         ...(appendRoutes || []),
       ],
     };

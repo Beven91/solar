@@ -6,6 +6,7 @@ interface ActivityModel {
   id: number
   name: string
   price: number
+  size?: string
 }
 
 // 这个组件推荐单独放到一个文件中，这里为了演示直观需要，直接写到此处。
@@ -18,6 +19,7 @@ function ActivityView() {
   const groups: AbstractGroups<ActivityModel> = [
     { title: '活动名称', name: 'name' },
     { title: '价格', name: 'price' },
+    { title: '尺寸', name: 'size', initialValue: 20 },
   ];
 
   return (
@@ -36,6 +38,7 @@ export default function App() {
   const columns: AbstractColumns<ActivityModel> = [
     { title: '活动名称', name: 'name' },
     { title: '活动价格', name: 'price' },
+    { title: '尺寸', name: 'size' },
   ];
 
   const buttons: AbstractButtons<ActivityModel> = [

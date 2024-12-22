@@ -3,7 +3,9 @@
 
   &.should-hide-list {
     .abstract-actions-list {
-      height: 0;
+      position: absolute;
+      z-index: -1;
+      opacity: 0;
       overflow: hidden;
     }
   }
@@ -33,11 +35,6 @@
 
   .abstract-object-wrap .object-view-body{
     padding:0px;
-  }
-  .abstract-form {
-    .tabs-group-form-inner {
-      padding-left: 0px;
-    }
   }
 
   .abstract-actions-drawer-footer {

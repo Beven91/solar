@@ -9,7 +9,6 @@ export interface ActionsContext<TRow = AbstractRow> {
   subRecord?: any
   subConfirmLoading?: boolean
   confirmLoading?: boolean
-  inject?: boolean
   onMatch?: (action:string) => void
   shouldHiddenList?: (hidden: boolean, isSubAction:boolean) => void
   onAction?: OnActionRoute<TRow>

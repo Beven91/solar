@@ -71,8 +71,6 @@ export interface AbstractActionsProps<TRow> {
   // 定义:列表操作按钮与表单操作按钮渲染容器位置
   getActionsContainer?: () => HTMLElement
   children?: React.ReactNode
-  // 是否使用injecter
-  inject?: boolean
   // 是否在值改变时更新当前组件
   shouldUpdate?: () => boolean
   intoViewOptions?: AbstractFormContext['intoViewOptions']
@@ -144,7 +142,6 @@ export default function AbstractActions<TRow extends AbstractRow>(props: Abstrac
     record,
     subRecord: subModel,
     ...props,
-    inject: props.inject,
     onMatch: (action) => {
     },
     onCancel: () => {

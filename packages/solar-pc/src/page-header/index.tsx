@@ -13,7 +13,7 @@ export interface PageHeaderProps {
   title?: React.ReactNode;
   subTitle?: React.ReactNode;
   style?: React.CSSProperties;
-  breadcrumb?: BreadcrumbProps | React.ReactElement<typeof Breadcrumb>;
+  breadcrumb?: Omit<BreadcrumbProps, 'routes'> | React.ReactElement<typeof Breadcrumb>;
   breadcrumbRender?: (props: PageHeaderProps, defaultDom: React.ReactNode) => React.ReactNode;
   tags?: React.ReactElement<TagType> | React.ReactElement<TagType>[];
   footer?: React.ReactNode;
@@ -123,7 +123,7 @@ const PageHeader: React.FC<PageHeaderProps> = props => {
   const onResize = ({ width }: { width: number }) => {
     updateCompact(width < 768, true);
   };
-  const { pageHeader, direction } = useContext(ConfigProvider.ConfigContext);
+  const { direction } = useContext(ConfigProvider.ConfigContext);
   const {
     style,
     footer,
@@ -137,14 +137,11 @@ const PageHeader: React.FC<PageHeaderProps> = props => {
   // Use `ghost` from `props` or from `ConfigProvider` instead.
   if ('ghost' in props) {
     ghost = props.ghost;
-  } else if (pageHeader && 'ghost' in pageHeader) {
-    ghost = pageHeader.ghost;
   }
-
   const prefixCls = 'my-page-header';
 
   const getDefaultBreadcrumbDom = () => {
-    if ((breadcrumb as BreadcrumbProps)?.routes) {
+    if ((breadcrumb as BreadcrumbProps)?.items) {
       return renderBreadcrumb(breadcrumb as BreadcrumbProps);
     }
     return null;

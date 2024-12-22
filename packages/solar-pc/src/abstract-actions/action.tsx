@@ -11,7 +11,6 @@ import { Drawer } from 'antd';
 import { DrawerProps } from 'antd/lib/drawer';
 import { AbstractRow, SubmitAction } from '../interface';
 import FormActions, { FormActionsInstance } from '../abstract-object/FormActions';
-import { useInjecter } from '../abstract-injecter';
 
 interface ActionProps {
   action?: string
@@ -129,7 +128,6 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
     return { data: { isFullOpened: false } };
   }, []);
   const c = useContext(Context);
-  const injecter = useInjecter('inject' in props ? props.inject : c.inject);
   const realtime = props.realtime == true;
   const context = getMatchContext(c, props);
   const visible = !!context;
@@ -194,6 +192,7 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                 btnCancel={props.btnCancel}
                 btnSubmit={props.btnSubmit}
                 record={c.record}
+                renderActions={props.renderActions}
                 showCancel={showCancel}
                 showOk={showOk}
                 className={props.className ? `${props.className}-footer` : ''}
@@ -204,7 +203,6 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
                 okLoading={context.loading}
                 actions={props.footActions}
               >
-                {injecter?.node?.appendAbstractObjectFooter?.(context.action)}
               </FormActions>
             )
           }
@@ -214,9 +212,11 @@ export function DrawerIfHook<TRow = AbstractRow>(props: DrawerActionProps<TRow>)
       {...(drawer || {})}
       {...(realtime ? { mask: true, maskClosable: true } : {})}
       rootStyle={style}
-      contentWrapperStyle={myStyle}
+      styles={{
+        wrapper: myStyle,
+      }}
       width={finalWidth}
-      className={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
+      rootClassName={`${className} abstract-object-view abstract-actions-drawer ${realtime ? 'realtime' : ''}`}
       title={props.title || ''}
       open={visible}
       onClose={onCancel}

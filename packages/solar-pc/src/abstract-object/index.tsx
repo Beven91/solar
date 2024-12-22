@@ -8,17 +8,25 @@ import './index.scss';
 import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Modal, Form, ButtonProps, ModalFuncProps, ModalProps } from 'antd';
 import AbstractForm from '../abstract-form';
-import { AbstractActionItem, AbstractFormContext, AbstractRow, FormScrollIntoViewOptions } from '../interface';
+import { AbstractActionItem, AbstractFormContext, AbstractRow, FormItemLayout, FormScrollIntoViewOptions } from '../interface';
 import { FormInstance } from 'antd/lib/form';
 import { Travel } from 'solar-core';
 import FormActions, { FormActionsInstance } from './FormActions';
 import CrashProvider from '../crash-provider';
 import { mergeFormValues } from '../abstract-form/deepmerge';
 import { AbstractObjectContext } from './context';
-import { useInjecter } from '../abstract-injecter';
 import { IsolationError } from '../abstract-form/context';
 
 let formIdIndex = 0;
+
+const defaultFormItemLayout: FormItemLayout = {
+  labelCol: {
+    span: 5,
+  },
+  wrapperCol: {
+    span: 18,
+  },
+};
 
 const objectFilter = (values: any) => {
   return Travel.travel(values, (v: any) => {
@@ -74,12 +82,12 @@ export interface BaseObjectProps<TRow> {
   showActions?: 'ok' | 'ok-cancel' | 'cancel' | 'none'
   // 当有值发生改变时
   onValuesChange?: (values: TRow, prevValues: TRow, mergedAllValues: TRow) => void
-  // 是否使用injecter
-  inject?: boolean
   // 弹窗属性
   popupOptions?: Partial<ModalProps>
   // 表单定位滚动选项
   intoViewOptions?: AbstractFormContext['intoViewOptions']
+  // 自定义actions渲染
+  renderActions?: (children: React.ReactNode) => React.ReactNode
 }
 
 export interface AbstractObjectProps<TRow> extends BaseObjectProps<TRow> {
@@ -109,7 +117,6 @@ export default React.forwardRef(function AbstractObject<TRow = AbstractRow>({
   record,
   action,
   footer = true,
-  inject,
   popupOptions,
   intoViewOptions = { behavior: 'smooth', block: 'center' } as FormScrollIntoViewOptions,
   ...props
@@ -119,26 +126,25 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   const memo = useRef({ pendingReadOnly: null, isFirst: true, visible: false, cancelId: null, cancelSubmiting: false, isDestoryed: false });
   const [formId] = useState(`abstract-form-${formIdIndex++}`);
   const visible = useMemo(() => action !== 'none' && !!action, [action]);
-  const formRef = useRef<FormInstance>();
+  const [formInstance] = Form.useForm();
   const footerRef = useRef<FormActionsInstance<TRow>>();
   const headerRef = useRef<FormActionsInstance<TRow>>();
   const scopedValues = { ...(record || {}) };
-  const injecter = useInjecter(inject);
 
   memo.current.visible = visible;
 
   useEffect(() => {
     if (!memo.current.isFirst) {
-      formRef.current?.resetFields();
+      formInstance.resetFields();
       memo.current.isFirst = false;
     }
-    formRef.current?.setFieldsValue(record);
+    formInstance.setFieldsValue(record);
     return () => {
       memo.current.isDestoryed = true;
       resetFields();
       clearTimeout(memo.current.cancelId);
     };
-  }, [action, record]);
+  }, [action, record, formInstance]);
 
   // 是否在只读模式下
   const isReadOnly = useMemo(() => {
@@ -161,8 +167,8 @@ ref: React.MutableRefObject<AbstractObjectInstance>
 
   const resetFields = () => {
     if (memo.current.visible === false) return;
-    formRef.current?.resetFields?.();
-    const values = formRef.current?.getFieldsValue?.() || {} as TRow;
+    formInstance.resetFields?.();
+    const values = formInstance.getFieldsValue?.() || {} as TRow;
     if (footerRef.current) {
       footerRef.current.refresh(values);
     }
@@ -188,9 +194,8 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   };
 
   const validateForms = async() => {
-    const form = formRef.current;
     try {
-      await form.validateFields();
+      await formInstance.validateFields();
     } catch (ex) {
       onFinishFailed(ex);
       return Promise.reject(ex);
@@ -202,8 +207,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
     if (isReadOnly) {
       return handleCancel();
     }
-    const form = formRef.current;
-    return form.submit();
+    return formInstance.submit();
   };
 
   // 表单校验成功
@@ -236,12 +240,11 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   };
 
   const onFinishFailed = (res: any) => {
-    const form = formRef.current;
-    doFinishFailed(form, res.errorFields);
+    doFinishFailed(formInstance, res.errorFields);
   };
 
   const doFinishFailed = (form: FormInstance, errorFields: any) => {
-    const fields = errorFields.filter((m:any)=>!(m.errors[0]?.type === IsolationError));
+    const fields = errorFields.filter((m: any) => !(m.errors[0]?.type === IsolationError));
     if (fields.length > 0 && scrollToFirstError) {
       setTimeout(() => {
         form.scrollToField(fields[0].name, intoViewOptions);
@@ -281,7 +284,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   const onValuesChange = (changedValues: TRow, allValues: TRow) => {
     const { onValuesChange } = props;
     // const useValues = deepmerge(scopedValues, allValues);
-    const model = mergeFormValues(scopedValues, formRef.current) as TRow;
+    const model = mergeFormValues(scopedValues, formInstance) as TRow;
     if (footerRef.current) {
       footerRef.current.refresh(model);
     }
@@ -294,15 +297,17 @@ ref: React.MutableRefObject<AbstractObjectInstance>
   // 设置共享context数据
   const formContext = {
     isReadOnly: isReadOnly,
-    form: formRef,
+    form: {
+      current: formInstance,
+    },
     width: (props.width),
-    inject: inject,
     // 提交
     submitAction: handleSubmit,
     // 取消
     handleCancel: handleCancel,
     // 校验表单
     validateForms: validateForms,
+    formItemLayout: defaultFormItemLayout,
     intoViewOptions: intoViewOptions,
     record: record || {},
     model: record || {},
@@ -344,7 +349,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
 
   // 渲染底部
   const renderFooter = () => {
-    const { btnSubmit, btnCancel, footActions } = props;
+    const { btnSubmit, btnCancel, footActions, renderActions } = props;
     if (!visible || !footer) return null;
     return (
       <FormActions
@@ -360,16 +365,16 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         validateForms={validateForms}
         okEnable={props.okEnable}
         isReadOnly={isReadOnly}
+        renderActions={renderActions}
         okLoading={props.loading}
         actions={footActions}
       >
-        {injecter?.node?.appendAbstractObjectFooter?.(action)}
       </FormActions>
     );
   };
 
   const renderHeader = () => {
-    const { btnSubmit, btnCancel, headActions, headContainer } = props;
+    const { btnSubmit, btnCancel, headActions, headContainer, renderActions } = props;
     if (!visible || !headActions || headActions.length < 1) return null;
     return (
       <FormActions
@@ -380,6 +385,7 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         showCancel={false}
         showOk={false}
         record={record}
+        renderActions={renderActions}
         className={`header-actions ${props.className ? `${props.className}-header` : ''}`}
         handleCancel={handleCancel}
         handleSubmit={handleSubmit}
@@ -429,16 +435,14 @@ ref: React.MutableRefObject<AbstractObjectInstance>
         <Form
           key={action}
           name={formId}
-          ref={formRef}
+          form={formInstance}
           onValuesChange={onValuesChange}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-          initialValues={record || {}}
         >
           <AbstractForm.Context.Provider value={formContext}>
             {props.children}
           </AbstractForm.Context.Provider>
-          {injecter?.node?.appendAbstractObjectBody?.(action)}
         </Form>
       </CrashProvider>
     );

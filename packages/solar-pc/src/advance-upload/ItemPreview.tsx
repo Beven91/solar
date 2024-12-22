@@ -2,7 +2,7 @@
  * @module ItemPreview
  * @description 预览指定项
  */
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { Image } from 'antd';
 import { FileList } from './type';
@@ -32,7 +32,12 @@ export default function ItemPreview(props: ItemPreviewProps) {
     });
   }, [fileList]);
 
+  const [current, setCurrent] = useState(urls.indexOf(url));
   const isImage = imgExtRegexp.test(url) || /image/.test(accept);
+
+  useEffect(()=>{
+    setCurrent(urls.indexOf(url));
+  }, [url]);
 
   const defaultPreview = () => {
     if (!isImage) {
@@ -44,7 +49,8 @@ export default function ItemPreview(props: ItemPreviewProps) {
       <Image.PreviewGroup
         preview={{
           ...(props.previewOptions || {}),
-          current: urls.indexOf(url),
+          current: current,
+          onChange: setCurrent,
           onVisibleChange: onCancel,
           visible: true,
         }}

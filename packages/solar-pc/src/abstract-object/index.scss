@@ -116,6 +116,9 @@
     background-color: #fff;
     padding-bottom: 0px;
     border-radius: 4px;
+    > div {
+      height: 100%;
+    }
 
     .ant-modal-content {
       display: flex;
