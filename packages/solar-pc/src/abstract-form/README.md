@@ -51,7 +51,7 @@
 ```tsx
 import { AbstractForm } from 'solar-pc';
 
-AbstractForm.registerConverter('moment',{
+AbstractForm.registerConverter('date',{
 
   // 将表单控件返回的value值转换成需要的类型 fmt 为配置参数，可以多个
   getValue(value, fmt = 'YYYY-MM-DD') {
@@ -59,7 +59,7 @@ AbstractForm.registerConverter('moment',{
   },
   // 转换值为表单控件对应的value类型
   setInput(value, fmt = 'YYYY-MM-DD') {
-    return value ? moment(value,fmt) : null;
+    return value ? dayjs(value,fmt) : null;
   }
 
 });
@@ -79,7 +79,7 @@ const groups:AbstractGroups = [
   {
     title: '截止时间',
     name: 'validateStartTime',
-    convert: () => ['moment','YYYY-MM'],
+    convert: () => ['date','YYYY-MM'],
     render: <DatePicker />,
   },
 ]

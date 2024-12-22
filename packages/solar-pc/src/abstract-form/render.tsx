@@ -10,9 +10,6 @@ const defaultFormItemLayout: FormItemLayout = {
   },
   wrapperCol: {
     span: 19,
-    xs: {
-      span: 17,
-    },
   },
 };
 
@@ -89,7 +86,6 @@ export function renderNormalLayoutInput<TRow = any>(item: AbstractFormItemType<T
         rules={itemRules}
         validateFirst={props.validateFirst}
         model={props.model}
-        inject={props.inject}
         formName={props.name}
         style={{
           ...(props.itemStyle || {}),

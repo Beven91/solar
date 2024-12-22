@@ -14,6 +14,12 @@ const demoRows = [
   { id: 1, name: 'Surface Book3', price: 17800, status: 'new' },
   { id: 2, name: 'Mac Book Pro3', price: 20000, status: 'online' },
   { id: 3, name: 'Thinkpad', price: 10000, status: 'offline' },
+  { id: 4, name: 'Surface Book4', price: 17800, status: 'new' },
+  { id: 5, name: 'Mac Book Pro5', price: 20000, status: 'online' },
+  { id: 6, name: 'Thinkpad 6', price: 10000, status: 'offline' },
+  { id: 7, name: 'Surface Book7', price: 17800, status: 'new' },
+  { id: 8, name: 'Mac Book Pro8', price: 20000, status: 'online' },
+  { id: 9, name: 'Thinkpad 9', price: 10000, status: 'offline' },
 ];
 
 export default function App() {
@@ -71,6 +77,8 @@ export default function App() {
     >
       <AbstractTable
         rowKey="id"
+        pageSize={3}
+        // preserveSelectRowKeys={true}
         onActionRoute={(action) => console.log('进入动作:', action)}
         columns={columns}
         buttons={buttons}

@@ -4,7 +4,7 @@
  *  一个隔离的form容器,其中配置的表单项和dyanmic相互独立，
  *  不过在abstract-object提交时，会进行提交
  */
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import Dynamic from './dynamic';
 import FormContext, { TopFormContext } from './context';
 import { AbstractFormProps } from './index';
@@ -49,14 +49,20 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
   const context = useContext(FormContext);
   const isolationContext = useContext(ISolationContext);
   const topContext = useContext(TopFormContext);
-  const memoRef = useRef({ requestId: 0 });
-  const name = useMemo(() => `iso_${runtime.id++}`, []);
+  const memo = useMemo(() => {
+    return {
+      name: `iso_${runtime.id++}`,
+      requestId: null,
+      changeValues: [],
+    };
+  }, []);
   const onValuesChange = useCallback((changedValues: TRow, values: TRow) => {
     const model = mergeFormValues(props.value || values, formInstance) as TRow;
     props.onValuesChange && props.onValuesChange(changedValues, values);
     // 用于解决嵌套表单，在子表单内容多的场景，连续输入会卡顿问题
-    cancelAnimationFrame(memoRef.current.requestId);
-    memoRef.current.requestId = requestAnimationFrame(() => {
+    cancelAnimationFrame(memo.requestId);
+    memo.requestId = requestAnimationFrame(() => {
+      memo.changeValues.push(model);
       onChange && onChange(model);
     });
   }, [onChange, props.onValuesChange, formInstance, props.value, isolationContext]);
@@ -86,6 +92,18 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
     });
   }, []);
 
+  useEffect(() => {
+    // 使用memo.changeValues保证在嵌套模式下，当为isolation改变时，无需重复执行formInstance.setFieldsValue
+    // 从而提升组件渲染效率
+    const idx = memo.changeValues.indexOf(props.value);
+    if (idx < 0 && props.value !== undefined) {
+      formInstance.setFieldsValue(props.value || {});
+      memo.changeValues.length = 0;
+    } else {
+      memo.changeValues.splice(0, idx + 1);
+    }
+  }, [props.value]);
+
   const childContext = useMemo(() => {
     return {
       isReadOnly: context.isReadOnly,
@@ -96,10 +114,9 @@ export default function ISolation<TRow>({ onChange, pure, formRef, ...props }: R
 
   return (
     <Form
-      name={name}
+      name={memo.name}
       form={formInstance}
       component={false}
-      initialValues={props.value}
       onValuesChange={onValuesChange}
     >
       <FormContext.Provider

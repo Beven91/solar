@@ -21,6 +21,7 @@ export interface TopActionsProps<TRow> {
   renderTopBar?: () => ReactNode
   onAction: OnActionRoute<TRow>
   getContainer?: () => HTMLElement
+  onDone?: (btn: AbstractButton<TRow>)=> void
 }
 
 export function usePermissionButtons<TRow>(buttons: AbstractButton<TRow>[]) {
@@ -49,6 +50,7 @@ export default function TopActions<TRow = AbstractRow>({
       <TopButton
         onAction={onAction}
         options={button}
+        onDone={props.onDone}
         key={`top-actions-${index}`}
         selectedRows={selectedRows}
       />

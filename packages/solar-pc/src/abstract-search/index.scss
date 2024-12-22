@@ -6,6 +6,23 @@
   }
   .abstract-search-inner {
     padding: 24px 24px 0px 24px;
+    &.collapse {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      .abstract-form  {
+        flex: 1;
+        max-height: 56px;
+        overflow-y: hidden;
+      }
+      .search-newline-btn {
+        padding: 0 0 0 10px;
+      }
+      .search-buttons {
+        flex-shrink: 0;
+      }
+    }
   }
   flex-shrink: 0;
 
@@ -25,11 +42,6 @@
     height: 62px;
   }
 
-  .abstract-form-item-col {
-    // padding-bottom:12px;
-    min-width: 270px;
-  }
-
   .search-actions-btns {
     display: flex;
     flex-direction: row;
@@ -39,6 +51,8 @@
   .search-buttons {
     position: static;
     text-align: left;
+    /*为了保证操作全部可见，这里需要取消max-with*/
+    max-width: initial;
 
     .ant-form-item-children {
       white-space: nowrap;

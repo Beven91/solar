@@ -14,7 +14,7 @@ export default function App() {
     <AbstractSearch
       fields={fields}
       span={8}
-      defaultCount={2}
+      collapse
       initialValues={{
         name: '张三',
       }}

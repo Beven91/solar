@@ -140,6 +140,8 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   renderTopBar?: () => React.ReactNode
   // 选择数据时
   onSelectRows?: (selectedRows: TRow[]) => void
+  // 是否在表格刷新或者搜索时，保留之前选择的行数据，默认为false
+  preserveSelectRowKeys?: boolean
   // 是否强制开启选择模式
   select?: SelectMode
   // 默认选择的行数据
@@ -181,8 +183,6 @@ export interface AbstractTableProps<TRow extends AbstractRow> extends Omit<RcTab
   showSorterTooltip?: boolean
   // 自定义顶部按钮渲染容器
   getActionsContainer?: () => HTMLElement
-  // 是否使用injecter
-  inject?: boolean
   // 操作按钮描述
   extraNode?: React.ReactNode
   // 布局模式

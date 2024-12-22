@@ -9,7 +9,6 @@ import InputWrap, { } from './InputWrap';
 import { AbstractFormItemType, AbstractFormLayout, RecordModel, AbstractRow, onValuesChangeHandler, FunctionItemType } from '../interface';
 import ConfigConsumer from '../abstract-provider';
 import ISolation, { } from './isolation';
-import { useInjecter } from '../abstract-injecter';
 import { FormGroupContext } from '../form-group';
 import { ColProps } from 'antd/lib/grid';
 import { NamePath } from 'antd/lib/form/interface';
@@ -75,8 +74,6 @@ export interface AbstractItemProps<TRow> {
   validateFirst?: boolean | 'parallel'
   // 表单容器名
   formName?: string
-  // 是否使用injecter
-  inject?: boolean
 }
 
 export interface AbstractItemState {
@@ -139,7 +136,6 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   const [updateId, setUpdateId] = useState<number>(0);
   const [updater] = useState({ formatUpdate: false });
   const extraNode = useExtraNode(item.extra, formValues);
-  const injecter = useInjecter(props.inject);
   const visible = isVisible(item, formValues);
   const disabled = isDisabled(item, formValues);
   const colOptions = useMemo(() => {
@@ -304,7 +300,6 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
           style={props.style}
           label={title}
           colon={item.colon !== false}
-          name={name}
           rules={rules}
           validateFirst={validateFirst}
           extra={extraNode}
@@ -331,6 +326,9 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
   };
 
   const { colOption } = props;
+  const children = renderItem();
+  const node = item.wrapper ? item.wrapper(children) : children;
+
   if (colOption) {
     return (
       <Col
@@ -339,16 +337,11 @@ export default function Item<TRow extends AbstractRow = AbstractRow>(props: Abst
         offset={colOption.offset}
         data-id={props.item.id}
         data-name={props.item.name?.toString()}
-        onDoubleClick={(e) => {
-          if (injecter?.listener?.onFieldDbClick) {
-            injecter?.listener?.onFieldDbClick(props.item, props?.formName, e);
-          }
-        }}
         className={`abstract-form-item-col ${visible ? '' : 'hidden'} ${colOption.className}`}
       >
-        {renderItem()}
+        {node}
       </Col>
     );
   }
-  return renderItem();
+  return node;
 }

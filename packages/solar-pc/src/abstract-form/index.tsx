@@ -53,10 +53,6 @@ export interface AbstractFormProps<TRow> {
   validateFirst?: boolean | 'parallel'
   // 容器名称
   name?: string
-  // 是否使用injecter
-  inject?: boolean
-  // 使用独立的form
-  useForm?: boolean
 }
 
 export default function AbstractForm<TRow extends AbstractRow>(props: React.PropsWithChildren<AbstractFormProps<TRow>>) {

@@ -52,9 +52,9 @@ export default function App() {
     {
       title: '截止时间',
       name: 'validateStartTime',
-      convert: () => 'moment',
+      convert: () => 'date',
       render: <DatePicker />,
-      extra: '例如：像DatePicker会返回moment，如果希望返回成日期字符串，则可以设置convert参数来指定转换器',
+      extra: '例如：像DatePicker会返回moment|dayjs，如果希望返回成日期字符串，则可以设置convert参数来指定转换器',
     },
   ];
 

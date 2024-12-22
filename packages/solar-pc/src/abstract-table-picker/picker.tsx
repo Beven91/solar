@@ -133,6 +133,12 @@ export default function ObjectPicker<TRow = AbstractRow>(
     return <Button type="primary" icon={<PlusOutlined />}>{props.btnText || '请选择...'}</Button>;
   };
 
+  const styles = useMemo(() => {
+    return {
+      content: { height },
+    };
+  }, [height]);
+
   return (
     <div>
       <div onClick={() => setVisible(true)}>
@@ -145,7 +151,7 @@ export default function ObjectPicker<TRow = AbstractRow>(
         okText="确定选择"
         cancelText="取消"
         width={width}
-        style={{ height: height }}
+        styles={styles}
         onOk={() => handleSubmit(selectedRows)}
         onCancel={handleCancel}
         okButtonProps={{ loading: loading }}
@@ -154,6 +160,7 @@ export default function ObjectPicker<TRow = AbstractRow>(
           <AbstractTable
             filters={filters}
             {...rest}
+            preserveSelectRowKeys={true}
             select={select}
             rowKey={rowKey}
             operation={operation}

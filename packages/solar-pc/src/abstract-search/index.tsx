@@ -11,7 +11,6 @@ import { AbstractQueryType, PlainObject, AbstractSField, RecordModel, AbstractRo
 import { FormInstance } from 'antd/lib/form';
 import AdvancePicker from '../advance-picker';
 import AbstractForm, { AbstractFormProps } from '../abstract-form';
-import { useInjecter } from '../abstract-injecter';
 
 export interface AbstractSearchProps<TRow> {
   // 获取表单实例
@@ -49,14 +48,14 @@ export interface AbstractSearchProps<TRow> {
   onChange?: (allValues: Record<string, any>) => void
   // 搜索项style
   itemStyle?: React.CSSProperties
-  // 是否使用injecter
-  inject?: boolean
-  // 默认展示条件个数
-  defaultCount?: number
+  // 是否开启折叠
+  collapse?: boolean
   // 是否开启回车搜索
   enterKeySubmit?: boolean
   // 表单布局配置
   formItemLayout?: AbstractFormProps<TRow>['formItemLayout']
+  // 渲染在搜索按钮后额内容
+  afterContent?: React.ReactNode
 }
 
 const FormItem = Form.Item;
@@ -108,17 +107,15 @@ export default function AbstractSearch<TRow = AbstractRow>({
   span = 8,
   onQuery = () => { },
   resetMode = 'all',
-  defaultCount = 0,
+  collapse,
   enterKeySubmit = true,
   ...props
 }: PropsWithChildren<AbstractSearchProps<TRow>>) {
   const formRef = useFormRef(props.formRef);
-  const [delayTimerId, setDelayTimerId] = useState<ReturnType<typeof setTimeout>>();
-  const isNewline = props.actionStyle == 'newline';
-  const injecter = useInjecter(props.inject);
-  const context = useContext(ConfigProvider.ConfigContext);
   const [expand, setExpand] = useState(false);
-  const showExpander = defaultCount > 0;
+  const [delayTimerId, setDelayTimerId] = useState<ReturnType<typeof setTimeout>>();
+  const isNewline = (props.actionStyle == 'newline' || collapse) && !expand;
+  const context = useContext(ConfigProvider.ConfigContext);
 
   const fields = useMemo(() => {
     return (props.fields || []).map((item) => ({
@@ -199,7 +196,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
             {useValue(props.btnCancel?.title, '清空')}
           </Button>
           {
-            showExpander && (
+            collapse && (
               <Button
                 onClick={toggleExpander}
                 icon={expand ? <UpOutlined /> : <DownOutlined />}
@@ -209,7 +206,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
               </Button>
             )
           }
-          {injecter?.node?.appendSearchAfter?.()}
+          {props.afterContent}
         </div>
       </FormItem>
     );
@@ -228,19 +225,14 @@ export default function AbstractSearch<TRow = AbstractRow>({
     if (isNewline) return null;
     return (
       <Col
-        span={span - 1}
+        span={span}
         key="table-search-buttons"
-        className={`search-buttons abstract-search-item ${showExpander ? 'showExpander' : ''}`}
+        className={`search-buttons abstract-search-item ${collapse ? 'collapse' : ''}`}
       >
         {renderSearchActions()}
       </Col>
     );
   };
-
-  const useFields = useMemo(() => {
-    if (!showExpander || expand) return fields;
-    return fields.slice(0, defaultCount);
-  }, [expand, defaultCount, showExpander, fields]);
 
   // 渲染
   if (fields.length < 1) {
@@ -251,7 +243,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
 
   return (
     <div className={`abstract-search-form abstract-form ${context.getPrefixCls('form-horizontal')}`}>
-      <div className="abstract-search-inner" onKeyUp={onKeyUp}>
+      <div className={`abstract-search-inner ${collapse && !expand ? 'collapse' : ''}`} onKeyUp={onKeyUp}>
         <Form
           component={false}
           className={`abstract-search-form-container ${props.className || ''}`}
@@ -262,10 +254,9 @@ export default function AbstractSearch<TRow = AbstractRow>({
           onFinish={handleSearch}
         >
           <AbstractForm
-            groups={useFields}
+            groups={fields}
             itemStyle={props.itemStyle}
             name="AbstractSearch"
-            inject={props.inject}
             formItemLayout={props.formItemLayout}
             formItemCls={`${props.formItemCls || ''} abstract-search-form-item`}
             formChildren={renderInlineActions()}

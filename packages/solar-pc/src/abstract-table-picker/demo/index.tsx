@@ -49,7 +49,7 @@ export default function App() {
       <AbstractTablePicker
         title="商品选择"
         width={800}
-        height={500}
+        height={570}
         rowKey="id"
         pageSize={3}
         searchFields={search}

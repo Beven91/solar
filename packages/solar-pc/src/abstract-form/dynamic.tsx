@@ -11,7 +11,6 @@ import {
   AbstractFormLayout, AbstractRules,
   FormGroupStyle, onValuesChangeHandler, AbstractRow,
 } from '../interface';
-import { useInjecter } from '../abstract-injecter';
 import TabsGroup from './tabs';
 import { renderFormItem } from './render';
 
@@ -48,8 +47,6 @@ export interface DynamicProps<TRow> {
   validateFirst?: boolean | 'parallel'
   // 容器名称
   name?: string
-  // 是否使用injecter
-  inject?: boolean
   // 是否不渲染html节点
   pure?: boolean
   // 默认选中tab下标
@@ -72,7 +69,6 @@ export default function Dynamic<TRow extends AbstractRow>({
   ...props
 }: React.PropsWithChildren<DynamicProps<TRow>>) {
   const groups = props.groups || [];
-  const injecter = useInjecter(props.inject);
 
   // 渲染分组
   const renderGroup = (groupItem: AbstractFormGroupItemType<TRow>, index: number) => {
@@ -90,7 +86,6 @@ export default function Dynamic<TRow extends AbstractRow>({
         data-name={groupItem.group}
         data-group-id={groupItem.group}
         span={24}
-        onDoubleClick={(e) => injecter?.listener?.onFieldGroupDbClick?.(groupItem, props.name, e)}
         key={`from-group-${groupItem.group}-${index}`}
       >
         <FormGroup
@@ -111,7 +106,7 @@ export default function Dynamic<TRow extends AbstractRow>({
               i,
             ))}
           </Row>
-          {injecter?.node?.appendFormGroup?.(groupItem)}
+          {groupItem.children}
         </FormGroup>
       </Col>
     );
@@ -128,14 +123,11 @@ export default function Dynamic<TRow extends AbstractRow>({
 
   const renderNorml = () => {
     const { groups = [], children } = props;
-    const last = groups[groups.length - 1] || {};
     const first = groups[0] || {};
-    const lastIsGroup = ('group' in last) || props.name == 'AbstractSearch';
     const firstGroup = ('group' in first);
     const node = (
       <>
         {groups.map((groupItem, index) => renderGroup(groupItem as any, index))}
-        {lastIsGroup ? null : injecter?.node?.appendFormGroup?.({ group: undefined })}
       </>
     );
     if (!wrapper) {

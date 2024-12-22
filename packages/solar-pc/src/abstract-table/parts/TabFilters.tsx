@@ -2,7 +2,7 @@
  * @name FilterTabs
  * @description 过滤tab组件
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Tabs } from 'antd';
 import { FilterTabType } from '../../interface';
 
@@ -55,10 +55,10 @@ export default function FilterTabs({
   };
 
   useEffect(() => {
-    if (loadFilters) {
+    if (typeof loadFilters == 'function') {
       loadFilters().then((filters) => initItems(filters));
     }
-  }, []);
+  }, [loadFilters]);
 
   useEffect(() => {
     if (!loadFilters) {
@@ -80,16 +80,20 @@ export default function FilterTabs({
     props.onChange?.(tab);
   };
 
-  if (items.length < 1) {
+  const tabs = useMemo(()=>{
+    return items.map((filter) => {
+      return {
+        label: filter.label,
+        key: String(filter.value),
+        children: null,
+      };
+    });
+  }, [items]);
+
+  if (tabs.length < 1) {
     return null;
   }
-  const tabs = filters.map((filter) => {
-    return {
-      label: filter.label,
-      key: String(filter.value),
-      children: null,
-    };
-  });
+
   return (
     <div className="tab-filters">
       <Tabs

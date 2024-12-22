@@ -8,6 +8,7 @@ export interface CellButtonProps<TRow> {
   onAction: CellActionsProps<TRow>['onAction']
   options: AbstractButton<TRow>
   selectedRows: TRow[]
+  onDone: (btn: AbstractButton<TRow>) => void
 }
 
 const Noop = () => { };
@@ -59,7 +60,10 @@ export function TopButton<TRow>(props: CellButtonProps<TRow>) {
       Promise.resolve(r).finally(() => {
         clearTimeout(memo.current.timerId);
         setLoading(false);
+        props.onDone?.(button);
       });
+    } else {
+      props.onDone?.(button);
     }
   };
 

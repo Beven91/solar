@@ -22,7 +22,6 @@
   "devDependencies": {
     "solar-core": "*", 
 
-    
     "solar-jest-mock": "^1.0.0"
   },
   "publishConfig": {

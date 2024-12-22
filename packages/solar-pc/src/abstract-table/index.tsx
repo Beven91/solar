@@ -4,7 +4,7 @@
  *    后台系统，抽象列表页组件，包括：搜索条件，操作按钮，表格组件
  */
 import './index.scss';
-import React, { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Table, TablePaginationConfig } from 'antd';
 import AbstractSearch, { AbstractSearchProps } from '../abstract-search';
 import TopActions from './parts/TopActions';
@@ -13,23 +13,19 @@ import Formatters2 from './util/formatters';
 import CellRenders from './util/cellRenders';
 import TabFilters from './parts/TabFilters';
 import AbstractTableContext from './context';
-import { AbstractTableProps, AbstractColumnType } from './types';
+import { AbstractTableProps, AbstractColumnType, AbstractButton } from './types';
 import { AbstractResponseModel } from '../interface';
 import { AbstractRow, AbstractAction, FilterTabType } from '../interface';
 import useScrollResizeable from './hooks/use-scroll-resizeable';
 import { FormInstance } from 'antd/lib/form';
 import { SorterResult } from 'antd/lib/table/interface';
-import { useInjecter } from '../abstract-injecter';
 import DrawerFilter from './parts/DrawerFilter';
 
-function Title(props: { column: AbstractColumnType<any>, inject: boolean }) {
+function Title(props: { column: AbstractColumnType<any> }) {
   const column = props.column;
-  const injecter = useInjecter(props.inject);
   return (
-    <div
-      className="abstract-table-column column-th"
-      onDoubleClick={() => injecter?.listener?.onColumnDbClick?.(column)}
-    >{column.title}
+    <div className="abstract-table-column column-th">
+      {column.title}
     </div>
   );
 }
@@ -62,7 +58,7 @@ export default React.forwardRef(function AbstractTable<TRow extends AbstractRow>
   initialPageIndex = 1,
   extraNode,
   buttons = [],
-  inject,
+  preserveSelectRowKeys = false,
   ...props
 }: AbstractTableProps<TRow>,
 ref: React.MutableRefObject<AbstractTableInstance>
@@ -86,6 +82,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const useInnerLoading = !('loading' in props);
   const [innerLoading, setInnerLoading] = useState(props.loading);
   const { drawer, ...sOptions } = (props.searchOptions || {});
+
   const searchOptions = useMemo(() => {
     return {
       ...sOptions,
@@ -130,6 +127,25 @@ ref: React.MutableRefObject<AbstractTableInstance>
 
   // 获取需要显示在表格外面的操作按钮
   const topOperators = useMemo(() => (buttons || []).filter(b => b.target !== 'cell'), [buttons]);
+
+  // 清除选中行
+  const tryClearSelectRowKeys = useCallback(()=>{
+    if (!preserveSelectRowKeys && !('selectedRows' in props)) {
+      props.onSelectRows?.([]);
+      memo.selectedRows = [];
+    }
+  }, [preserveSelectRowKeys]);
+
+  // 按钮执行完毕
+  const onActionDone = useCallback((btn: AbstractButton<TRow>)=>{
+    if (btn.select) {
+      // 清空选择
+      props.onSelectRows?.([]);
+      memo.selectedRows = [];
+      setUpdateId(updateId + 1);
+    }
+  }, [props.onSelectRows, updateId]);
+
 
   // 选中行信息
   const rowSelection = useMemo(() => {
@@ -226,18 +242,18 @@ ref: React.MutableRefObject<AbstractTableInstance>
       const { width, ellipsis } = column;
       return {
         ...column,
-        title: <Title column={column} inject={inject} />,
+        title: <Title column={column} />,
         key: `col-${column.name}`,
         width: width || defaultWidth,
         ellipsis: ellipsis === undefined ? true : ellipsis,
         render: CellRenders.getRender<TRow>(column),
         className: `column-${column.name}`,
-        dataIndex: column.name || column.dataIndex,
+        dataIndex: column.name ? column.name.split('.') : column.dataIndex,
         defaultSortOrder: sort === column.sort ? order : undefined,
         sorter: column.sort !== undefined ? true : false,
       };
     });
-  }, [props.columns, props.cellWidth, props.sort, cellOperators, operatorColumn, inject]);
+  }, [props.columns, props.cellWidth, props.sort, cellOperators, operatorColumn]);
 
   // 分页，排序
   const handleQuery = (pageNo: number, pageSize: number, sort: SortMeta, callback?: (data: any) => void) => {
@@ -246,6 +262,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
     memo.sort = sort;
     const currentTab = memo.currentTab;
     const { onQuery } = props;
+    tryClearSelectRowKeys();
     if (typeof onQuery !== 'function') {
       callback?.(undefined);
       return;
@@ -358,7 +375,6 @@ ref: React.MutableRefObject<AbstractTableInstance>
   const tabs = typeof filters?.tabs === 'function' ? null : filters?.tabs;
   const loadFilters = typeof filters?.tabs === 'function' ? filters?.tabs : null;
   const showFilters = filters || loadFilters;
-  const injecter = useInjecter(inject);
   const onlyTable = (!showFilters && topOperators.length < 1);
 
   const renderSearch = (props?: Partial<AbstractSearchProps<TRow>>) => {
@@ -367,7 +383,6 @@ ref: React.MutableRefObject<AbstractTableInstance>
         fields={searchFields}
         className={searchBoxCls}
         actionsCls={searchBoxActionCls}
-        inject={inject}
         {...props}
         {...(searchOptions)}
         onQuery={(query) => {
@@ -394,6 +409,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
       <div className={`abstract-table abstract-flex ${onlyTable ? 'only-table' : ''}`}>
         <div className="top-actions-wrapper">
           <TopActions
+            onDone={onActionDone}
             className={buttonBoxCls}
             onAction={onAction}
             buttons={topOperators}
@@ -433,7 +449,6 @@ ref: React.MutableRefObject<AbstractTableInstance>
             columns={columns as any}
           />
         </div>
-        {injecter?.node?.appendAbstractTableInner?.()}
       </div>
     </div>
   );

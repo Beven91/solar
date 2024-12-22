@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { AbstractForm, AbstractGroups, AbstractTableInput } from 'solar-pc';
 import { Form, FormInstance, Button, Input } from 'antd';
 import { AbstractEColumns } from '../../interface';
@@ -17,7 +17,21 @@ const rules = {
   like: [{ required: true, message: '爱好不能为空' }],
 };
 
+function NestedNestedApp(props: { value?: any, onChange?: (value: any) => void }) {
+  const groups: AbstractGroups<CommodityModel> = [
+    { title: '省份', name: 'provinvce' },
+    { title: '详细地址', name: 'detail' },
+  ];
+
+  return (
+    <>
+      <AbstractForm.ISolation rules={rules} value={props.value} onChange={props.onChange} groups={groups} />
+    </>
+  );
+}
+
 function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
+  const form = Form.useFormInstance();
   const columns: AbstractEColumns<any> = [
     {
       name: 'like', title: '爱好', editor: () => {
@@ -29,10 +43,22 @@ function NestedApp(props: { value?: any, onChange?: (value: any) => void }) {
     { title: '编号', name: 'id', initialValue: 200 },
     { title: '信息', name: 'info', render: <AbstractTableInput rules={rules} columns={columns} /> },
     { title: '年龄', name: 'age' },
+    { title: '住址', name: 'address', render: <NestedNestedApp /> },
   ];
+
+  const setProvince = useCallback(()=>{
+    form.setFieldsValue({
+      user: {
+        address: {
+          provinvce: '上海省',
+        },
+      },
+    });
+  }, [form]);
 
   return (
     <>
+      <Button onClick={setProvince} >设定省份值</Button>
       <Form.Item label="联动值">
         {props.value?.info?.[0]?.like}
       </Form.Item>
