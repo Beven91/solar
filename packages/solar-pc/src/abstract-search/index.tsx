@@ -96,7 +96,7 @@ const useValue = (value: string, dv: string) => {
   return value === null || value == undefined ? dv : value;
 };
 
-const useFormRef = (formRef: React.MutableRefObject<FormInstance>) => {
+export const useSearchFormRef = (formRef: React.MutableRefObject<FormInstance>) => {
   if (formRef) {
     return formRef;
   }
@@ -111,7 +111,7 @@ export default function AbstractSearch<TRow = AbstractRow>({
   enterKeySubmit = true,
   ...props
 }: PropsWithChildren<AbstractSearchProps<TRow>>) {
-  const formRef = useFormRef(props.formRef);
+  const formRef = useSearchFormRef(props.formRef);
   const [expand, setExpand] = useState(false);
   const [delayTimerId, setDelayTimerId] = useState<ReturnType<typeof setTimeout>>();
   const isNewline = (props.actionStyle == 'newline' || collapse) && !expand;

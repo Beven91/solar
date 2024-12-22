@@ -6,7 +6,7 @@
 import './index.scss';
 import React, { useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Table, TablePaginationConfig } from 'antd';
-import AbstractSearch, { AbstractSearchProps } from '../abstract-search';
+import AbstractSearch, { AbstractSearchProps, useSearchFormRef } from '../abstract-search';
 import TopActions from './parts/TopActions';
 import CellActions from './parts/CellActions';
 import Formatters2 from './util/formatters';
@@ -72,7 +72,7 @@ ref: React.MutableRefObject<AbstractTableInstance>
     sort: { order: order, column: { sort: props.sort } } as SortMeta,
   });
   const [dataSource, setDataSource] = useState<AbstractResponseModel<TRow>>(props.data);
-  const searchFormRef = useRef<FormInstance>();
+  const searchFormRef = useSearchFormRef(props.searchOptions?.formRef);
   const containerRef = useRef<HTMLDivElement>();
   const tableInnerRef = useRef<HTMLDivElement>();
   const tableContext = useContext(AbstractTableContext);
